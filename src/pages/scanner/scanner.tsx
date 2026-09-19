@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { localize } from '@deriv-com/translations';
 
-import EntryScannerModal from '@/components/ai-entry-scanner/EntryScannerModal';
-import AIScannerButton from '@/components/ai-scanner-button/AIScannerButton';
 import { useApiBase } from '@/hooks/useApiBase';
 import useLiveTicks from '@/hooks/useLiveTicks';
 import {
@@ -150,7 +148,6 @@ const Scanner = observer(() => {
     const [log, setLog] = useState<TLogEntry[]>([]);
     const [dashboard, setDashboard] = useState<TDashboard>(CLOSED_DASHBOARD);
     const [scramble, setScramble] = useState<string[] | null>(null);
-    const [entry_open, setEntryOpen] = useState(false);
     const [sound_on, setSoundOn] = useState<boolean>(() => {
         try {
             return localStorage.getItem(SOUND_KEY) !== '0';
@@ -531,9 +528,6 @@ const Scanner = observer(() => {
                     </div>
                 </div>
             )}
-
-            <EntryScannerModal isOpen={entry_open} onClose={() => setEntryOpen(false)} />
-            <AIScannerButton onClick={() => setEntryOpen(true)} />
         </div>
     );
 });

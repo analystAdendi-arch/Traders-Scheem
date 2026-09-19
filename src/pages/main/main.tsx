@@ -3,6 +3,8 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useLocation, useNavigate } from 'react-router-dom';
+import EntryScannerModal from '@/components/ai-entry-scanner/EntryScannerModal';
+import AIScannerButton from '@/components/ai-scanner-button/AIScannerButton';
 import ChunkLoader from '@/components/loader/chunk-loader';
 import { generateOAuthURL } from '@/components/shared';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
@@ -103,6 +105,7 @@ const AppWrapper = observer(() => {
 
     // Trade type modal state
     const [tradeTypeModalState, setTradeTypeModalState] = useState(getModalState());
+    const [is_ai_scanner_open, setAiScannerOpen] = useState(false);
 
     /**
      * Helper function to get modal props with enhanced type safety and clear documentation
@@ -656,6 +659,10 @@ const AppWrapper = observer(() => {
                     />
                 );
             })()}
+
+            {/* AI Scanner floats across every tab */}
+            <EntryScannerModal isOpen={is_ai_scanner_open} onClose={() => setAiScannerOpen(false)} />
+            <AIScannerButton onClick={() => setAiScannerOpen(true)} />
         </React.Fragment>
     );
 });
