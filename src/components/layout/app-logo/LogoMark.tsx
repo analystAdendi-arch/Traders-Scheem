@@ -1,0 +1,102 @@
+// Shared logo + app name "mark" rendered in the header (desktop & mobile, next to the
+// hamburger) and in the mobile drawer. Logo priority: live App Builder preview data URL
+// → public/logo.<png|jpg|jpeg|webp> → letter-badge fallback. The app name comes from the
+// live preview, else the resolved deploy/build name (see getAppName).
+import { useEffect, useMemo, useState } from 'react';
+import {
+    getPreviewAppName,
+    getPreviewLogo,
+    subscribePreviewAppName,
+    subscribePreviewLogo,
+} from '@/utils/live-branding-store';
+import { isPreviewMode } from '@/utils/is-preview-mode';
+import { getAppName, LOGO_CANDIDATES } from '../../../utils/branding';
+
+type TLogoMarkProps = {
+    height?: number;
+};
+
+/** "TradersEdge" -> ["Traders", "Edge"]: splits at the last capital so each half gets its own colour. */
+const splitWordmark = (name: string): [string, string] => {
+    for (let i = name.length - 1; i > 0; i--) {
+        if (/[A-Z]/.test(name[i])) return [name.slice(0, i), name.slice(i)];
+    }
+    return [name, ''];
+};
+
+/** Round emblem used until a real logo file is supplied in public/logo.<ext>. */
+const Emblem = ({ size, initials }: { size: number; initials: string }) => (
+    <svg
+        className='app-header__logo-emblem'
+        width={size}
+        height={size}
+        viewBox='0 0 40 40'
+        aria-hidden='true'
+    >
+        <defs>
+            <linearGradient id='te-ring' x1='0' y1='0' x2='1' y2='1'>
+                <stop offset='0%' stopColor='#22c55e' />
+                <stop offset='100%' stopColor='#e11d48' />
+            </linearGradient>
+            <radialGradient id='te-core' cx='50%' cy='40%' r='60%'>
+                <stop offset='0%' stopColor='#1e293b' />
+                <stop offset='100%' stopColor='#020617' />
+            </radialGradient>
+        </defs>
+        <circle cx='20' cy='20' r='19' fill='url(#te-ring)' />
+        <circle cx='20' cy='20' r='16.5' fill='url(#te-core)' />
+        <rect x='10' y='24' width='2.4' height='6' rx='0.6' fill='#22c55e' opacity='0.8' />
+        <rect x='14' y='21' width='2.4' height='9' rx='0.6' fill='#e11d48' opacity='0.8' />
+        <rect x='18' y='18' width='2.4' height='12' rx='0.6' fill='#22c55e' opacity='0.8' />
+        <text x='20' y='19' textAnchor='middle' fontSize='12' fontWeight='900' fontFamily='Arial, sans-serif'>
+            <tspan fill='#22c55e'>{initials.charAt(0)}</tspan>
+            <tspan fill='#f43f5e'>{initials.charAt(1)}</tspan>
+        </text>
+    </svg>
+);
+
+export const LogoMark = ({ height = 32 }: TLogoMarkProps) => {
+    const [previewLogo, setPreviewLogo] = useState<string | null>(getPreviewLogo());
+    const [previewAppName, setPreviewAppName] = useState<string | null>(getPreviewAppName());
+    const [candidateIndex, setCandidateIndex] = useState(0);
+
+    useEffect(() => subscribePreviewLogo(setPreviewLogo), []);
+    useEffect(() => subscribePreviewAppName(setPreviewAppName), []);
+
+    // Preview data URL wins, then the deploy-time public/logo.<ext> candidates. The static
+    // preview build ships no public/logo.* (the live App Builder logo arrives as a data URL),
+    // so skip the file candidates there to avoid pointless 404 probes — fall back to the badge.
+    const candidates = useMemo(() => {
+        const fileFallbacks = isPreviewMode() ? [] : LOGO_CANDIDATES;
+        return previewLogo ? [previewLogo, ...fileFallbacks] : [...fileFallbacks];
+    }, [previewLogo]);
+
+    // Restart probing whenever the candidate list changes (e.g. a new preview logo).
+    useEffect(() => setCandidateIndex(0), [candidates]);
+
+    const appName = previewAppName || getAppName();
+    const logoSrc = candidateIndex < candidates.length ? candidates[candidateIndex] : null;
+    const [first, second] = splitWordmark(appName.trim());
+    const initials = `${first.charAt(0)}${second.charAt(0) || first.charAt(1) || ''}`.toUpperCase();
+
+    return (
+        <span className='app-header__logo-mark'>
+            {logoSrc ? (
+                <img
+                    data-logo
+                    src={logoSrc}
+                    alt={appName}
+                    className='app-header__logo-img'
+                    style={{ height: `${height}px` }}
+                    onError={() => setCandidateIndex((index) => index + 1)}
+                />
+            ) : (
+                <Emblem size={height + 8} initials={initials || 'A'} />
+            )}
+            <span className='app-header__logo-text' aria-label={appName}>
+                <span className='app-header__logo-text-first'>{first}</span>
+                {second && <span className='app-header__logo-text-second'>{second}</span>}
+            </span>
+        </span>
+    );
+};

@@ -1,0 +1,370 @@
+.signal-scanner {
+    --ss-cyan: #00e5ff;
+    --ss-green: #22ff55;
+    --ss-red: #ff2020;
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 52rem;
+    overflow: hidden;
+    background: #000;
+    font-size: 1.2rem;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    /* ------------------------------------------- live Deriv activity feed */
+
+    &__matrix {
+        position: absolute;
+        inset: 0;
+        padding: 0.4rem 0.6rem;
+        overflow: hidden;
+        font-size: 1.3rem;
+        line-height: 1.45;
+        word-break: break-word;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    // The feed scrolls upward continuously, like a terminal; faster during a scan.
+    &__matrix-track {
+        animation: signal-scanner-scroll 7s linear infinite;
+        will-change: transform;
+
+        &--fast {
+            animation-duration: 2.5s;
+        }
+    }
+
+    &__matrix-block {
+        padding-bottom: 0.4rem;
+    }
+
+    &__log {
+        color: var(--ss-green);
+        white-space: normal;
+
+        &--history {
+            color: rgba(34, 255, 85, 0.55);
+        }
+
+        &--tick {
+            color: #6cff8f;
+        }
+
+        &--data,
+        &--ok {
+            color: #00ff9d;
+        }
+
+        &--analysis {
+            color: #9dff00;
+        }
+
+        &--warning {
+            color: #ffd21f;
+        }
+
+        &--error {
+            color: #ff5a5a;
+        }
+    }
+
+    /* -------------------------------------------------- signal analyzer */
+
+    &__stage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1.6rem;
+    }
+
+    &__panel {
+        width: min(70rem, 100%);
+        padding: 2.4rem 3.2rem 3.2rem;
+        text-align: center;
+        border: 3px solid var(--ss-cyan);
+        border-radius: 1rem;
+        background: rgba(0, 0, 0, 0.92);
+        box-shadow:
+            0 0 14px var(--ss-cyan),
+            0 0 44px rgba(0, 229, 255, 0.45),
+            inset 0 0 22px rgba(0, 229, 255, 0.12);
+    }
+
+    &__title {
+        margin: 1.2rem 0 3.2rem;
+        font-size: 2.4rem;
+        font-weight: 400;
+        color: var(--ss-red);
+        text-shadow: 0 0 10px rgba(255, 32, 32, 0.6);
+    }
+
+    &__selects {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.6rem;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+
+        span {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        select {
+            height: 3.6rem;
+            padding: 0 1rem;
+            border: 0;
+            border-radius: 0.4rem;
+            background: #1a1a1a;
+            color: var(--ss-red);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            text-align-last: center;
+            cursor: pointer;
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            option {
+                background: #1a1a1a;
+                color: #ffffff;
+                text-align: center;
+            }
+        }
+    }
+
+    &__tick {
+        margin: 3.2rem auto 0;
+        width: min(42rem, 100%);
+        padding: 2.4rem 1.6rem;
+        border-radius: 1rem;
+        background: #050505;
+        box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.9);
+        color: var(--ss-green);
+        font-size: 1.7rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-shadow: 0 0 10px rgba(34, 255, 85, 0.75);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__tick-digit {
+        margin-inline-start: 0.2rem;
+        font-size: 2.6rem;
+        font-weight: 800;
+        text-shadow: 0 0 14px rgba(34, 255, 85, 0.9);
+    }
+
+    &__tick-error {
+        color: #ff5a5a;
+        font-size: 1.3rem;
+        font-weight: 600;
+        text-shadow: none;
+    }
+
+    &__analyse {
+        margin-top: 3.2rem;
+        min-width: 12rem;
+        padding: 1rem 2.4rem;
+        border: 0;
+        border-radius: 0.4rem;
+        background: #12a02c;
+        color: #ffffff;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(18, 160, 44, 0.55);
+
+        &:hover:not(:disabled) {
+            background: #15b833;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    }
+
+    &__sound {
+        display: block;
+        margin: 1.4rem auto 0;
+        padding: 0.4rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        background: transparent;
+        color: #9ca3af;
+        font-size: 1.1rem;
+        cursor: pointer;
+
+        &:hover {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.45);
+        }
+    }
+
+    /* ----------------------------------------------- analysis dashboard */
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1.6rem;
+        background: rgba(0, 0, 0, 0.55);
+    }
+
+    &__dashboard {
+        display: flex;
+        flex-direction: column;
+        width: min(78rem, 100%);
+        min-height: min(52rem, 100%);
+        max-height: 100%;
+        padding: 1.6rem 2rem 1.2rem;
+        border: 3px solid var(--ss-cyan);
+        border-radius: 0.6rem;
+        background: #000;
+        box-shadow:
+            0 0 14px var(--ss-cyan),
+            0 0 40px rgba(0, 229, 255, 0.4);
+    }
+
+    &__dashboard-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.6rem;
+    }
+
+    &__dots {
+        display: inline-flex;
+        gap: 0.6rem;
+        padding-top: 0.4rem;
+
+        i {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: var(--ss-red);
+        }
+    }
+
+    &__close {
+        width: 3.2rem;
+        height: 3.2rem;
+        border: 0;
+        border-radius: 0.3rem;
+        background: #e60000;
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 800;
+        cursor: pointer;
+
+        &:hover {
+            background: #ff1a1a;
+        }
+    }
+
+    &__lines {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 1.6rem 0 1.2rem;
+    }
+
+    &__line.signal-scanner__dash-title {
+        margin: 1.2rem 0 0;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(0, 229, 255, 0.55);
+    }
+
+    &__line {
+        margin: 0 0 1rem;
+        font-size: 1.5rem;
+        line-height: 1.5;
+        color: #ffffff;
+
+        &--title,
+        &--success {
+            color: var(--ss-green);
+        }
+
+        &--scramble {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.5rem;
+            line-height: 1.35;
+            letter-spacing: 0.04em;
+            color: var(--ss-green);
+            white-space: nowrap;
+            overflow: hidden;
+            text-shadow: 0 0 6px rgba(34, 255, 85, 0.6);
+        }
+
+        &--warn {
+            color: #ffd21f;
+        }
+
+        &--error {
+            color: #ff5a5a;
+        }
+    }
+
+    &__status {
+        padding-top: 1.2rem;
+        border-top: 1px solid #4a4a4a;
+        color: var(--ss-green);
+        font-size: 1.3rem;
+        word-break: break-word;
+    }
+
+    @media (max-width: 700px) {
+        &__panel {
+            padding: 1.6rem;
+        }
+
+        &__selects {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        &__title {
+            font-size: 2rem;
+            margin-bottom: 2.4rem;
+        }
+
+        &__line {
+            font-size: 1.3rem;
+        }
+    }
+}
+
+@keyframes signal-scanner-scroll {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-50%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .signal-scanner__matrix-track {
+        animation-duration: 60s;
+    }
+}

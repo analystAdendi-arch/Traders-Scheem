@@ -1,0 +1,288 @@
+.te-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 100050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.6rem 1.6rem 6rem;
+    background: #050a18;
+    color: #e2e8f0;
+    font-family: var(--brand-font-primary, sans-serif);
+
+    &__bg {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(40rem 30rem at 20% 70%, rgba(16, 185, 129, 0.12), transparent 60%),
+            radial-gradient(40rem 30rem at 80% 30%, rgba(244, 63, 94, 0.1), transparent 60%),
+            repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.05) 0 1px, transparent 1px 8rem),
+            repeating-linear-gradient(0deg, rgba(148, 163, 184, 0.05) 0 1px, transparent 1px 8rem);
+        filter: blur(0.5px);
+    }
+
+    &__card {
+        position: relative;
+        width: min(52rem, 100%);
+        padding: 3.2rem 3.2rem 2.4rem;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 2.4rem;
+        background: rgba(12, 18, 32, 0.88);
+        box-shadow: 0 2.4rem 6rem rgba(0, 0, 0, 0.55);
+        text-align: center;
+        backdrop-filter: blur(8px);
+    }
+
+    &__logo {
+        margin: 0;
+        font-size: 4rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        line-height: 1;
+    }
+
+    &__logo-a {
+        color: #10d9a0;
+        text-shadow: 0 0 2.4rem rgba(16, 217, 160, 0.55);
+    }
+
+    &__logo-b {
+        color: #ff4d6a;
+        text-shadow: 0 0 2.4rem rgba(255, 77, 106, 0.6);
+    }
+
+    &__hub {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.4rem;
+        margin-top: 1rem;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.6em;
+        color: #64748b;
+    }
+
+    &__live {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.2rem 0.9rem;
+        border: 1px solid rgba(16, 217, 160, 0.45);
+        border-radius: 999px;
+        color: #10d9a0;
+        letter-spacing: 0.12em;
+        font-size: 1rem;
+
+        i {
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            background: #10d9a0;
+            animation: te-pulse 1.2s ease-in-out infinite;
+        }
+    }
+
+    &__divider {
+        margin: 2.4rem 0;
+        border-top: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    &__welcome {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #ffffff;
+    }
+
+    &__sub {
+        margin: 0.8rem 0 2.4rem;
+        font-size: 1.35rem;
+        color: #64748b;
+    }
+
+    &__progress {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+    }
+
+    &__bar {
+        flex: 1;
+        height: 0.6rem;
+        border-radius: 999px;
+        background: #1e293b;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #10d9a0 0%, #22d3ee 100%);
+        transition: width 120ms linear;
+    }
+
+    &__pct {
+        min-width: 3.6rem;
+        font-size: 1.2rem;
+        color: #94a3b8;
+        text-align: end;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__status {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        font-size: 1.35rem;
+        color: #94a3b8;
+        text-align: start;
+    }
+
+    &__spinner {
+        width: 1.8rem;
+        height: 1.8rem;
+        border: 2px solid rgba(16, 217, 160, 0.25);
+        border-top-color: #10d9a0;
+        border-radius: 50%;
+        animation: te-spin 0.8s linear infinite;
+    }
+
+    &__dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        margin: 2.4rem 0;
+
+        i {
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 999px;
+            background: #334155;
+            transition: all 200ms ease;
+
+            &.active {
+                width: 3rem;
+                background: #10d9a0;
+            }
+        }
+    }
+
+    &__features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
+    }
+
+    &__feature {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 1.15rem;
+        color: #94a3b8;
+    }
+
+    &__feature-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 6.4rem;
+        height: 6.4rem;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 50%;
+        background: #111a2e;
+        font-size: 2.2rem;
+    }
+
+    &__tagline {
+        margin: 2.4rem 0 0;
+        font-size: 1.25rem;
+        font-style: italic;
+        color: #64748b;
+    }
+}
+
+/* ------------------------------------------------------------ live ticker */
+
+.te-ticker {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 100051;
+    overflow: hidden;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(5, 10, 24, 0.95);
+    font-family: 'Courier New', Courier, monospace;
+
+    &__track {
+        display: inline-flex;
+        gap: 4rem;
+        padding: 1.2rem 0;
+        white-space: nowrap;
+        animation: te-marquee 28s linear infinite;
+    }
+
+    &__item {
+        display: inline-flex;
+        gap: 0.8rem;
+        font-size: 1.2rem;
+        color: #cbd5e1;
+    }
+
+    &__label {
+        color: #94a3b8;
+    }
+
+    &__price {
+        color: #ffffff;
+    }
+
+    &__change--up {
+        color: #10d9a0;
+    }
+
+    &__change--down {
+        color: #ff4d6a;
+    }
+}
+
+@keyframes te-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes te-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}
+
+@keyframes te-marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@media (max-width: 480px) {
+    .te-splash__card {
+        padding: 2.4rem 1.6rem 2rem;
+    }
+
+    .te-splash__logo {
+        font-size: 3rem;
+    }
+
+    .te-splash__hub {
+        letter-spacing: 0.3em;
+    }
+}

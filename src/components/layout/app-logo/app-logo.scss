@@ -1,0 +1,91 @@
+.app-header {
+    &__logo {
+        padding-inline-start: 1.6rem;
+        padding-inline-end: 1.6rem;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    // Logo + app name mark (shared by the header and the mobile drawer).
+    &__logo-mark {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+
+    &__logo-img {
+        width: auto;
+        max-width: 160px;
+        object-fit: contain;
+    }
+
+    // Letter-badge fallback shown when no logo file/data URL is available.
+    &__logo-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        border-radius: 0.8rem;
+        background: color-mix(in srgb, var(--brand-primary, var(--text-general)) 10%, transparent);
+        color: var(--brand-primary, var(--text-general));
+        font-weight: 700;
+        font-size: 1.4rem;
+        line-height: 1;
+    }
+
+    &__logo-emblem {
+        flex: none;
+        filter: drop-shadow(0 0.2rem 0.4rem rgba(0, 0, 0, 0.25));
+    }
+
+    // Two-tone bold wordmark, e.g. "Traders" green + "Edge" red.
+    &__logo-text {
+        margin-left: 0.8rem;
+        color: var(--text-general);
+        font-family: 'Arial Black', 'Segoe UI Black', var(--brand-font-primary, sans-serif);
+        font-weight: 900;
+        font-size: 2.7rem;
+        letter-spacing: -0.01em;
+        // Thicker strokes + a dark edge so the wordmark reads bold on light and dark.
+        -webkit-text-stroke: 0.08rem rgba(0, 0, 0, 0.35);
+        paint-order: stroke fill;
+        filter: drop-shadow(0 0.15rem 0.2rem rgba(0, 0, 0, 0.3));
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 260px;
+    }
+
+    &__logo-text-first {
+        color: #16a34a;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    &__logo-text-second {
+        color: #e11d48;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    // On mobile the mark sits next to the hamburger and the account section, so
+    // tighten the padding and show the logo only — the app name is desktop-only
+    // here to avoid crowding. (The mobile drawer header still shows the name.)
+    &--mobile {
+        .app-header__logo {
+            padding-inline-start: 0.8rem;
+            padding-inline-end: 0.8rem;
+        }
+
+        .app-header__logo-text {
+            display: none;
+        }
+    }
+}
+
+// The same mark inside the mobile drawer header shows the app name (the header's
+// --mobile rule hides it, but the drawer has room) and can use the full available width.
+.mobile-menu__header .app-header__logo-text {
+    display: block;
+    max-width: 180px;
+}

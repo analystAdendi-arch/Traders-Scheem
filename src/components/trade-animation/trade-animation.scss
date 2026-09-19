@@ -1,0 +1,318 @@
+@use 'components/shared/styles/constants' as *;
+@use 'components/shared/styles/devices' as *;
+
+@keyframes animate-progress {
+    0% {
+        width: 0%;
+    }
+
+    100% {
+        width: 51%;
+    }
+}
+
+@keyframes animate-progress-complete {
+    0% {
+        width: 50%;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes animate-circle {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.5);
+    }
+
+    100% {
+        transform: scale(0);
+    }
+}
+
+@keyframes animate-circle-appear {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes animate-circle-pop {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(0);
+    }
+}
+
+.animation {
+    $static-circle-diameter: 2px;
+    $dynamic-circle-diameter: 10px;
+    $animation: &;
+
+    &__wrapper {
+        display: flex;
+        align-items: stretch;
+        height: 4.8rem;
+        border-radius: 0.8rem;
+        box-shadow: 0 0.6rem 2rem rgba(5, 11, 31, 0.25);
+    }
+
+    &__overlay {
+        border-top-left-radius: 0;
+        border-bottom-right-radius: $BORDER_RADIUS;
+    }
+
+    &__run-button,
+    &__stop-button {
+        width: fit-content;
+        min-width: 10rem;
+        height: 100% !important;
+        padding: 0 2rem !important;
+        border-radius: 0.8rem 0 0 0.8rem !important;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+
+    &__run-button {
+        background-color: #4aa9a2 !important;
+
+        &:hover {
+            background-color: #3f9790 !important;
+        }
+    }
+
+    &__stop-button {
+        background-color: #e5484d !important;
+
+        &:hover {
+            background-color: #cf3d42 !important;
+        }
+    }
+
+    &__container {
+        height: 100%;
+        min-width: 38rem;
+        padding: 0.6rem 1.2rem 0.6rem 1.4rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.4rem;
+        border-radius: 0 0.8rem 0.8rem 0;
+        border: 1px solid #b9e2cd;
+        border-inline-start: 0;
+        background: #eaf7f0;
+        position: relative;
+    }
+
+    &__label {
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.2;
+        color: #6b7f76;
+    }
+
+    &__status {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.2rem;
+    }
+
+    // Execution Speed toggle (normal / fast).
+    &__speed {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0 0 0 1.2rem;
+        border: 0;
+        border-inline-start: 1px solid #b9e2cd;
+        background: transparent;
+        cursor: pointer;
+        text-align: start;
+
+        strong {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            color: #10231b;
+            white-space: nowrap;
+        }
+    }
+
+    &__speed-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    &__switch {
+        position: relative;
+        width: 4rem;
+        height: 2.2rem;
+        border-radius: 999px;
+        background: #cbd5e1;
+        transition: background 160ms ease;
+
+        i {
+            position: absolute;
+            top: 0.3rem;
+            left: 0.3rem;
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            transition: transform 160ms ease;
+        }
+    }
+
+    &__speed--fast &__switch {
+        background: #4aa9a2;
+
+        i {
+            transform: translateX(1.8rem);
+        }
+    }
+
+    &__text {
+        color: #10231b;
+        font-size: 1.2rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        text-align: start;
+        line-height: 1.4;
+    }
+
+    &__progress {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        height: 4px;
+        margin-top: 0.2rem;
+
+        .circular-wrapper {
+            width: $static-circle-diameter;
+            height: $static-circle-diameter;
+            align-self: center;
+            display: flex;
+
+            .static-circle {
+                width: $static-circle-diameter;
+                height: $static-circle-diameter;
+                background-color: $color-black-7;
+                border-radius: 100%;
+                align-self: center;
+                z-index: 1;
+            }
+
+            .dynamic-circle {
+                border-radius: 100%;
+                height: $dynamic-circle-diameter;
+                width: $dynamic-circle-diameter;
+                margin-left: -4px;
+                margin-top: -4px;
+                opacity: 0.32;
+                position: absolute;
+            }
+
+            &:nth-child(2) {
+                margin-left: 3px;
+            }
+
+            &:last-child {
+                margin-right: 3px;
+            }
+        }
+
+        &-line {
+            background-color: var(--border-normal);
+            height: 100%;
+            width: 100%;
+            border-radius: $BORDER_RADIUS;
+            position: absolute;
+        }
+
+        &-bar {
+            background-color: var(--status-success);
+            border-radius: $BORDER_RADIUS;
+            width: 0;
+            height: 100%;
+        }
+
+        &-4 {
+            animation: animate-progress 0.5s 1;
+            animation-fill-mode: forwards;
+        }
+
+        &-5 {
+            width: 51%;
+            border-radius: 5px 0 0 5px;
+        }
+
+        &-6 {
+            animation: animate-progress-complete 0.5s 1;
+            animation-fill-mode: forwards;
+        }
+    }
+
+    &--running {
+        #{$animation}__progress {
+            .circular-wrapper {
+                &.completed,
+                &.active {
+                    .static-circle {
+                        background-color: $color-green-2;
+                    }
+                }
+
+                &.active {
+                    .dynamic-circle {
+                        animation: animate-circle 0.8s infinite;
+                        animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+                        background-color: var(--status-success);
+
+                        // transform: translate(-50%, -50%);
+                        // z-index: 1;
+                    }
+                }
+
+                .static-circle {
+                    animation: animate-circle-appear 1s;
+                    background-color: $COLOR_CORAL_RED;
+                }
+
+                .dynamic-circle {
+                    animation: animate-circle 1s;
+                    background-color: $COLOR_CORAL_RED;
+                    transform: scale(0);
+                }
+            }
+        }
+    }
+}
+
+.dc-modal__container_animation__modal {
+    @include mobile-or-tablet-screen {
+        width: 31.2rem !important;
+    }
+}
