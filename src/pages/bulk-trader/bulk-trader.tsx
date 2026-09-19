@@ -36,7 +36,9 @@ const BulkTrader = () => {
     const [numTrades, setNumTrades] = useState<number>(1);
     const [isTrading, setIsTrading] = useState(false);
     const [arrowLeft, setArrowLeft] = useState<string>('50%');
-    const [statusText, setStatusText] = useState<string>(localize('Bot is not running'));
+    // Shown only while trading or after a failed trade; idle shows nothing.
+    const [statusText, setStatusText] = useState<string | null>(null);
+    const [statusIsError, setStatusIsError] = useState(false);
 
     const circlesContainerRef = useRef<HTMLDivElement>(null);
     const indicatorTrackRef = useRef<HTMLDivElement>(null);
@@ -224,7 +226,8 @@ const BulkTrader = () => {
 
             abortTradingRef.current = false;
             setIsTrading(true);
-            setStatusText(localize('Bot is running'));
+            setStatusIsError(false);
+            setStatusText(localize('Placing trades…'));
 
             try {
                 const currency = (api_base.account_info as any)?.currency || 'USD';
@@ -281,12 +284,13 @@ const BulkTrader = () => {
                     await new Promise(resolve => setTimeout(resolve, 150));
                 }
 
-                if (isMountedRef.current) setStatusText(localize('Bot is not running'));
+                if (isMountedRef.current) setStatusText(null);
             } catch (e: any) {
                 if (isMountedRef.current) {
                     // Surface Deriv's reason instead of silently resetting.
-                    const reason = e?.message && e.message !== 'Trading cancelled' ? `: ${e.message}` : '';
-                    setStatusText(`${localize('Bot is not running')}${reason}`);
+                    const has_reason = e?.message && e.message !== 'Trading cancelled';
+                    setStatusIsError(!!has_reason);
+                    setStatusText(has_reason ? `${localize('Trade failed')}: ${e.message}` : null);
                 }
             } finally {
                 if (isMountedRef.current) setIsTrading(false);
@@ -474,21 +478,15 @@ const BulkTrader = () => {
                 </button>
             </div>
 
-            <div className='bulk-trader__footer'>
-                <div className='bulk-trader__status-wrapper' style={{ width: '100%', justifyContent: 'center' }}>
-                    <div className='bulk-trader__status'>
-                        <div className='bulk-trader__status-text'>{statusText}</div>
-                        <div className='bulk-trader__status-timeline'>
-                            <div className='bulk-trader__status-line' />
-                            <div className='bulk-trader__status-dots'>
-                                <span className='bulk-trader__status-dot' />
-                                <span className='bulk-trader__status-dot' />
-                                <span className='bulk-trader__status-dot' />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {statusText && (
+                <p
+                    className={`bulk-trader__status-message${
+                        statusIsError ? ' bulk-trader__status-message--error' : ''
+                    }`}
+                >
+                    {statusText}
+                </p>
+            )}
             </div>
         </div>
     );

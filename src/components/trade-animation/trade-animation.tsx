@@ -228,6 +228,8 @@ const TradeAnimation = observer(({ className, should_show_overlay }: TTradeAnima
                 })}
             >
                 {show_overlay && <ContractResultOverlay profit={profit} />}
+                {/* Idle shows only the speed toggle; the status appears once the bot runs. */}
+                {(contract_stage > 0 || show_overlay) && (
                 <div className='animation__status'>
                     <span className='animation__label'>{localize('Bot status')}</span>
                     <span className='animation__text'>
@@ -242,6 +244,7 @@ const TradeAnimation = observer(({ className, should_show_overlay }: TTradeAnima
                         ))}
                     </div>
                 </div>
+                )}
                 <button
                     type='button'
                     className={classNames('animation__speed', { 'animation__speed--fast': speed === 'fast' })}

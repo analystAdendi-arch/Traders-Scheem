@@ -21,7 +21,7 @@ const MIN_TICKS = 100;
 const MAX_TICKS = 5000;
 const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const SEQUENCE_LENGTH = 10;
-const DETAIL_SEQUENCE_LENGTH = 30;
+const EXPANDED_SEQUENCE_LENGTH = 50;
 const STORAGE_KEY = 'analysis-tool-prefs';
 
 const percent = (value: number, total: number): string => (total > 0 ? `${value.toFixed(1)}%` : '--');
@@ -87,74 +87,7 @@ const DigitChips = ({
     </div>
 );
 
-const HISTORY_ROWS = 25;
-
-/** Newest-first tick history shown under "+ More": price, last digit and outcome. */
-const TickHistory = ({
-    quotes,
-    digits,
-    decimals,
-    outcomes,
-}: {
-    quotes: number[];
-    digits: number[];
-    decimals: number;
-    outcomes: TOutcome[];
-}) => {
-    const rows = [];
-    const offset = quotes.length - outcomes.length; // rise/fall has one fewer outcome
-    for (let i = quotes.length - 1; i >= 0 && rows.length < HISTORY_ROWS; i--) {
-        const outcome = outcomes[i - offset];
-        rows.push(
-            <tr key={i}>
-                <td>#{quotes.length - i}</td>
-                <td>{formatQuote(quotes[i], decimals)}</td>
-                <td>
-                    <strong>{digits[i]}</strong>
-                </td>
-                <td>
-                    {outcome ? (
-                        <span className={`analysis-tool__seq analysis-tool__seq--${outcome.tone}`}>
-                            {outcome.label}
-                        </span>
-                    ) : (
-                        '--'
-                    )}
-                </td>
-            </tr>
-        );
-    }
-    return (
-        <div className='analysis-tool__history'>
-            <span className='analysis-tool__history-title'>{localize('Tick history (newest first)')}</span>
-            <table className='analysis-tool__table'>
-                <thead>
-                    <tr>
-                        <th>{localize('Tick')}</th>
-                        <th>{localize('Price')}</th>
-                        <th>{localize('Digit')}</th>
-                        <th>{localize('Result')}</th>
-                    </tr>
-                </thead>
-                <tbody>{rows}</tbody>
-            </table>
-        </div>
-    );
-};
-
-const Sequence = ({ outcomes }: { outcomes: TOutcome[] }) => (
-    <div className='analysis-tool__sequence'>
-        {outcomes.map((item, index) => (
-            <span
-                key={`${index}-${item.label}`}
-                className={`analysis-tool__seq analysis-tool__seq--${item.tone}`}
-            >
-                {item.label}
-            </span>
-        ))}
-    </div>
-);
-
+/** Latest outcomes as chips; "+ More" widens the same row to a longer run. */
 const Panel = ({
     title,
     badge,
@@ -162,8 +95,7 @@ const Panel = ({
     expanded,
     onToggle,
     children,
-    sequence,
-    details,
+    outcomes,
 }: {
     title: string;
     badge: string | null;
@@ -171,8 +103,7 @@ const Panel = ({
     expanded: boolean;
     onToggle: () => void;
     children: ReactNode;
-    sequence: TOutcome[];
-    details: ReactNode;
+    outcomes: TOutcome[];
 }) => (
     <section className='analysis-tool__panel'>
         <header className='analysis-tool__panel-head'>
@@ -185,13 +116,16 @@ const Panel = ({
         </header>
         <div className='analysis-tool__panel-body'>
             {children}
-            <div className='analysis-tool__panel-footer'>
-                <Sequence outcomes={sequence} />
+            <div className='analysis-tool__sequence'>
+                {outcomes.slice(-(expanded ? EXPANDED_SEQUENCE_LENGTH : SEQUENCE_LENGTH)).map((item, index) => (
+                    <span key={index} className={`analysis-tool__seq analysis-tool__seq--${item.tone}`}>
+                        {item.label}
+                    </span>
+                ))}
                 <button type='button' className='analysis-tool__more' onClick={onToggle} aria-expanded={expanded}>
-                    {expanded ? localize('- Less') : localize('+ More')}
+                    {expanded ? localize('− Less') : localize('+ More')}
                 </button>
             </div>
-            {expanded && <div className='analysis-tool__details'>{details}</div>}
         </div>
     </section>
 );
@@ -329,12 +263,6 @@ const AnalysisTool = observer(() => {
     const match_differ = useMemo(() => matchDifferSplit(digits, match_digit), [digits, match_digit]);
     const even_odd = useMemo(() => evenOddSplit(digits), [digits]);
     const rise_fall = useMemo(() => riseFallSplit(quotes), [quotes]);
-
-    const all_barriers = useMemo(
-        () => DIGITS.map(barrier => ({ barrier, split: overUnderSplit(digits, barrier) })),
-        [digits]
-    );
-    const all_match = useMemo(() => DIGITS.map(digit => ({ digit, split: matchDifferSplit(digits, digit) })), [digits]);
 
     const directions = useMemo(() => {
         const out: ('up' | 'down' | 'flat')[] = [];
@@ -503,54 +431,7 @@ const AnalysisTool = observer(() => {
                     status={status_text}
                     expanded={!!expanded.over_under}
                     onToggle={() => toggle('over_under')}
-                    sequence={over_under_outcomes.slice(-SEQUENCE_LENGTH)}
-                    details={
-                        <>
-                            <table className='analysis-tool__table'>
-                                <thead>
-                                    <tr>
-                                        <th>{localize('Barrier')}</th>
-                                        <th>{localize('Over')}</th>
-                                        <th>{localize('Under (incl.)')}</th>
-                                        <th>{localize('Equal')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {all_barriers.map(row => (
-                                        <tr
-                                            key={row.barrier}
-                                            className={
-                                                row.barrier === over_under_barrier
-                                                    ? 'analysis-tool__table-row--active'
-                                                    : ''
-                                            }
-                                        >
-                                            <td>{row.barrier}</td>
-                                            <td>{percent(row.split.first, row.split.total)}</td>
-                                            <td>{percent(100 - row.split.first, row.split.total)}</td>
-                                            <td>
-                                                {percent(
-                                                    100 - row.split.first - row.split.second,
-                                                    row.split.total
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            <p className='analysis-tool__note'>
-                                {localize(
-                                    'Under includes the barrier digit so Over + Under = 100%. A Deriv "Under" contract loses when the barrier digit itself prints - see the Equal column.'
-                                )}
-                            </p>
-                            <TickHistory
-                                quotes={quotes}
-                                digits={digits}
-                                decimals={live.decimals}
-                                outcomes={over_under_outcomes}
-                            />
-                        </>
-                    }
+                    outcomes={over_under_outcomes}
                 >
                     <DigitChips selected={over_under_barrier} onSelect={setOverUnderBarrier} tone='over' />
                     <Meter label={localize('Over')} value={over_under.first} total={over_under.total} tone='over' />
@@ -571,42 +452,7 @@ const AnalysisTool = observer(() => {
                     status={status_text}
                     expanded={!!expanded.match_differ}
                     onToggle={() => toggle('match_differ')}
-                    sequence={match_outcomes.slice(-SEQUENCE_LENGTH)}
-                    details={
-                        <>
-                            <table className='analysis-tool__table'>
-                            <thead>
-                                <tr>
-                                    <th>{localize('Digit')}</th>
-                                    <th>{localize('Matches')}</th>
-                                    <th>{localize('Differs')}</th>
-                                    <th>{localize('Hits')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {all_match.map(row => (
-                                    <tr
-                                        key={row.digit}
-                                        className={
-                                            row.digit === match_digit ? 'analysis-tool__table-row--active' : ''
-                                        }
-                                    >
-                                        <td>{row.digit}</td>
-                                        <td>{percent(row.split.first, row.split.total)}</td>
-                                        <td>{percent(row.split.second, row.split.total)}</td>
-                                        <td>{row.split.first_count}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            </table>
-                            <TickHistory
-                                quotes={quotes}
-                                digits={digits}
-                                decimals={live.decimals}
-                                outcomes={match_outcomes}
-                            />
-                        </>
-                    }
+                    outcomes={match_outcomes}
                 >
                     <DigitChips selected={match_digit} onSelect={setMatchDigit} tone='match' />
                     <Meter
@@ -629,26 +475,7 @@ const AnalysisTool = observer(() => {
                     status={status_text}
                     expanded={!!expanded.even_odd}
                     onToggle={() => toggle('even_odd')}
-                    sequence={even_outcomes.slice(-SEQUENCE_LENGTH)}
-                    details={
-                        <div className='analysis-tool__detail-block'>
-                            <div className='analysis-tool__detail-row'>
-                                <span>{localize('Even ticks')}</span>
-                                <strong>{even_odd.first_count}</strong>
-                            </div>
-                            <div className='analysis-tool__detail-row'>
-                                <span>{localize('Odd ticks')}</span>
-                                <strong>{even_odd.second_count}</strong>
-                            </div>
-                            <Sequence outcomes={even_outcomes.slice(-DETAIL_SEQUENCE_LENGTH)} />
-                            <TickHistory
-                                quotes={quotes}
-                                digits={digits}
-                                decimals={live.decimals}
-                                outcomes={even_outcomes}
-                            />
-                        </div>
-                    }
+                    outcomes={even_outcomes}
                 >
                     <Meter label={localize('Even')} value={even_odd.first} total={even_odd.total} tone='even' />
                     <Meter label={localize('Odd')} value={even_odd.second} total={even_odd.total} tone='odd' />
@@ -660,30 +487,7 @@ const AnalysisTool = observer(() => {
                     status={status_text}
                     expanded={!!expanded.rise_fall}
                     onToggle={() => toggle('rise_fall')}
-                    sequence={rise_outcomes.slice(-SEQUENCE_LENGTH)}
-                    details={
-                        <div className='analysis-tool__detail-block'>
-                            <div className='analysis-tool__detail-row'>
-                                <span>{localize('Rises')}</span>
-                                <strong>{rise_fall.first_count}</strong>
-                            </div>
-                            <div className='analysis-tool__detail-row'>
-                                <span>{localize('Falls')}</span>
-                                <strong>{rise_fall.second_count}</strong>
-                            </div>
-                            <div className='analysis-tool__detail-row'>
-                                <span>{localize('Flat ticks')}</span>
-                                <strong>{Math.max(0, directions.length - rise_fall.total)}</strong>
-                            </div>
-                            <Sequence outcomes={rise_outcomes.slice(-DETAIL_SEQUENCE_LENGTH)} />
-                            <TickHistory
-                                quotes={quotes}
-                                digits={digits}
-                                decimals={live.decimals}
-                                outcomes={rise_outcomes}
-                            />
-                        </div>
-                    }
+                    outcomes={rise_outcomes}
                 >
                     <Meter label={localize('Rise')} value={rise_fall.first} total={rise_fall.total} tone='rise' />
                     <Meter label={localize('Fall')} value={rise_fall.second} total={rise_fall.total} tone='fall' />

@@ -26,9 +26,8 @@
         justify-content: space-between;
         gap: 1.6rem;
         flex-wrap: wrap;
-        padding: 1.2rem 1.6rem;
+        padding: 1rem 1.6rem 0.6rem;
         background: var(--at-surface);
-        border-bottom: 1px solid var(--at-border);
     }
 
     &__toolbar-left {
@@ -48,10 +47,8 @@
         border-radius: 8px;
         background: var(--at-surface);
         color: var(--at-text);
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
         cursor: pointer;
         white-space: nowrap;
 
@@ -204,7 +201,7 @@
         justify-content: center;
         gap: 1rem;
         flex-wrap: wrap;
-        padding: 2rem 1.6rem;
+        padding: 0.4rem 1.6rem 1.4rem;
         background: var(--at-surface);
         border-bottom: 1px solid var(--at-border);
     }
@@ -227,7 +224,7 @@
             box-shadow 140ms ease;
 
         // Ranked by how often each digit printed, as solid dark fills:
-        // most (green), 2nd (blue), 3rd (violet), least (red). Ties share a colour.
+        // most (green), 2nd (blue), 3rd (orange), least (red). Ties share a colour.
         &--hot,
         &--second,
         &--third,
@@ -252,11 +249,10 @@
             box-shadow: 0 0 1.2rem rgba(59, 130, 246, 0.45);
         }
 
-        // Third place is violet rather than the reference's orange.
         &--third {
-            border-color: #a855f7;
-            background: radial-gradient(circle at 50% 35%, #581c87 0%, #2e1065 100%);
-            box-shadow: 0 0 1.2rem rgba(168, 85, 247, 0.45);
+            border-color: #f59e0b;
+            background: radial-gradient(circle at 50% 35%, #92400e 0%, #451a03 100%);
+            box-shadow: 0 0 1.2rem rgba(245, 158, 11, 0.5);
         }
 
         &--cold {
@@ -280,41 +276,17 @@
         border-bottom: 0.7rem solid #f97316;
     }
 
-    // Orange "Circles" header bar.
+    // Light-blue "Circles" header bar.
     &__mode {
-        margin: 1.2rem 1.6rem 0;
-        padding: 0.9rem;
+        margin: 1rem 1.6rem 0;
+        padding: 0.8rem;
         border-radius: 0.6rem;
-        background: linear-gradient(180deg, #ff7a45 0%, #f25c2a 100%);
-        box-shadow: 0 0.4rem 1.2rem rgba(242, 92, 42, 0.3);
-        color: #ffffff;
-        font-size: 1.4rem;
+        background: linear-gradient(180deg, #7dd3fc 0%, #38bdf8 100%);
+        box-shadow: 0 0.4rem 1.2rem rgba(56, 189, 248, 0.3);
+        color: #0c4a6e;
+        font-size: 1.3rem;
         font-weight: 700;
         text-align: center;
-    }
-
-    &__note {
-        margin: 0.8rem 0 0;
-        font-size: 1.05rem;
-        line-height: 1.5;
-        color: var(--at-muted);
-    }
-
-    &__history {
-        margin-top: 1.2rem;
-        max-height: 26rem;
-        overflow-y: auto;
-        border-top: 1px solid var(--at-border);
-    }
-
-    &__history-title {
-        display: block;
-        padding: 0.8rem 0 0.4rem;
-        font-size: 1rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--at-muted);
     }
 
     &__digit-value {
@@ -335,8 +307,9 @@
     &__grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 1.6rem;
-        padding: 1.6rem;
+        align-items: start;
+        gap: 1.2rem;
+        padding: 1.2rem 1.6rem 7rem; // bottom room for the floating Run bar
     }
 
     &__panel {
@@ -353,7 +326,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 1.2rem;
-        padding: 1.2rem 1.6rem;
+        padding: 0.8rem 1.2rem;
         border-bottom: 1px solid var(--at-border);
     }
 
@@ -381,14 +354,6 @@
         font-size: 1rem;
         font-weight: 700;
         white-space: nowrap;
-    }
-
-    &__panel-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1.2rem;
-        flex-wrap: wrap;
     }
 
     &__counted {
@@ -454,8 +419,8 @@
     &__panel-body {
         display: flex;
         flex-direction: column;
-        gap: 1.2rem;
-        padding: 1.6rem;
+        gap: 0.6rem;
+        padding: 1rem 1.2rem 1.2rem;
     }
 
     &__chips {
@@ -466,9 +431,13 @@
         flex-wrap: wrap;
     }
 
+    &__chips {
+        margin-bottom: 0.4rem;
+    }
+
     &__chip {
-        width: 3.2rem;
-        height: 3.2rem;
+        width: 2.8rem;
+        height: 2.8rem;
         border-radius: 50%;
         border: 1px solid var(--at-border);
         background: var(--at-surface);
@@ -515,7 +484,7 @@
     }
 
     &__meter-track {
-        height: 0.9rem;
+        height: 0.7rem;
         border-radius: 999px;
         background: var(--at-page);
         overflow: hidden;
@@ -608,9 +577,10 @@
 
     /* ------------------------------------------------------------ details */
 
+    // Sits inline at the end of the chip row.
     &__more {
-        align-self: flex-start;
-        padding: 0.5rem 1rem;
+        height: 2.4rem;
+        padding: 0 1rem;
         border: 1px solid var(--at-border);
         border-radius: 6px;
         background: var(--at-surface);
@@ -624,70 +594,12 @@
         }
     }
 
-    &__details {
-        padding-top: 0.8rem;
-        border-top: 1px dashed var(--at-border);
-    }
-
-    &__table {
-        width: 100%;
-        border-collapse: collapse;
-        font-variant-numeric: tabular-nums;
-
-        th,
-        td {
-            padding: 0.5rem 0.8rem;
-            text-align: right;
-            font-size: 1.05rem;
-        }
-
-        th {
-            font-size: 0.95rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--at-muted);
-        }
-
-        th:first-child,
-        td:first-child {
-            text-align: left;
-        }
-
-        tbody tr:nth-child(odd) {
-            background: var(--at-page);
-        }
-    }
-
-    &__table-row--active {
-        font-weight: 800;
-        box-shadow: inset 2px 0 0 var(--status-primary, #6d19b5);
-    }
-
-    &__detail-block {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-    }
-
-    &__detail-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1.2rem;
-        font-size: 1.1rem;
-        color: var(--at-muted);
-
-        strong {
-            color: var(--at-text);
-            font-variant-numeric: tabular-nums;
-        }
-    }
-
     &__sequence {
         display: flex;
         flex-wrap: wrap;
+        align-items: center;
         gap: 0.4rem;
+        margin-top: 0.4rem;
     }
 
     /* ------------------------------------------------------- narrow width */

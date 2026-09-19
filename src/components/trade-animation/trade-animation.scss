@@ -106,7 +106,7 @@
 
     &__container {
         height: 100%;
-        min-width: 38rem;
+        min-width: 27rem;
         padding: 0.6rem 1.2rem 0.6rem 1.4rem;
         display: flex;
         flex-direction: row;
@@ -137,16 +137,23 @@
 
     // Execution Speed toggle (normal / fast).
     &__speed {
-        flex: none;
+        flex: 1 0 auto;
         display: inline-flex;
         align-items: center;
-        gap: 1rem;
+        justify-content: space-between;
+        gap: 2.4rem;
         padding: 0 0 0 1.2rem;
         border: 0;
         border-inline-start: 1px solid #b9e2cd;
         background: transparent;
         cursor: pointer;
         text-align: start;
+
+        // Alone in the panel (bot idle): no divider, fills the width.
+        &:first-child {
+            padding-inline-start: 0;
+            border-inline-start: 0;
+        }
 
         strong {
             display: block;
