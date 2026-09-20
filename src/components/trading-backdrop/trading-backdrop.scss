@@ -1,6 +1,7 @@
-// Shared dark backdrop: place inside a `position: relative` container.
+// Shared dark backdrop. Fixed to the viewport so it keeps covering the page
+// while a long tab (Free Bots) scrolls; the nav strip sits above it.
 .trading-backdrop {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 0;
     overflow: hidden;

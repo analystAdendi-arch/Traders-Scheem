@@ -89,6 +89,9 @@
                 justify-content: start;
                 min-width: 0;
                 overflow: hidden;
+                // Keeps the nav above a page's fixed backdrop.
+                position: relative;
+                z-index: 2;
 
                 .dc-themed-scrollbars-wrapper {
                     flex: 1 1 auto;
