@@ -1,8 +1,12 @@
 /**
  * Front-page copy and links. Edit here - the components only render it.
+ * Keep claims factual: no invented numbers, no promise of profit.
  */
+import { getAppName } from '@/utils/branding';
 
-/** Deriv sign-up through the TradersEdge affiliate link (commission tracking). */
+const APP = getAppName();
+
+/** Deriv sign-up through the affiliate link (commission tracking). */
 export const AFFILIATE_SIGNUP_URL =
     process.env.NEXT_PUBLIC_DERIV_REFERRAL_LINK ||
     'https://partner-tracking.deriv.com/click?a=54565&o=1&c=3&link_id=1';
@@ -17,28 +21,28 @@ export const TELEGRAM_URL = 'https://t.me/TradersEdgecom';
 
 export const HEADLINES = [
     {
-        title: 'Welcome to TradersEdge',
-        text: 'Your all-in-one workspace for automated trading, smart bots and live market insights.',
+        title: `Welcome to ${APP}`,
+        text: 'Market analysis, ready-made bots and hands-off automation, in one workspace on your Deriv account.',
     },
     {
-        title: 'Trade with better tools',
-        text: 'Live digit analysis, a market scanner and an auto trader - all on real Deriv data.',
+        title: 'Read the market first',
+        text: 'Digit frequencies, live streaks and measured hit rates, counted from real Deriv ticks as they arrive.',
     },
     {
-        title: 'Simplify your market analysis',
-        text: 'See digit frequencies, streaks and win rates at a glance instead of guessing.',
+        title: 'Let the numbers pick the market',
+        text: 'The scanner rates every open market and contract type, then loads the strongest one straight into a bot.',
     },
     {
-        title: 'Get access to free bots',
-        text: 'Load ready-made strategies into the bot builder and start in seconds - no coding.',
+        title: 'Bots that follow your rules',
+        text: 'Set the stake, the trade type and the limits. The bot does the clicking and keeps to the plan you wrote.',
     },
     {
-        title: 'Trade smarter, not harder',
-        text: 'Automate repetitive strategies and stay focused on your plan, not the screen.',
+        title: 'Practise before you risk anything',
+        text: 'Every tool works on a free Deriv demo account with virtual funds, so you can test an idea for nothing.',
     },
     {
-        title: 'Built for every kind of trader',
-        text: 'From manual trades to full automation, TradersEdge adapts to the way you work.',
+        title: 'No spreadsheets, no guesswork',
+        text: 'Scanner, digit analysis, charts, auto trader and copy trading sit side by side and share the same data.',
     },
 ];
 
@@ -70,43 +74,43 @@ export const HIGHLIGHTS: THighlight[] = [
     {
         badge: 'AT',
         title: 'Auto Trader',
-        subtitle: 'Rule-based automation',
-        text: 'Set a condition like "last 5 digits even" or "Over % above 60" and let it place and track trades for you.',
+        subtitle: 'Trades on a condition',
+        text: 'Name the trigger - five even digits in a row, Over above 60% - and it places and tracks the trade for you.',
         tone: 'teal',
     },
     {
         badge: 'SC',
         title: 'Signal Scanner',
-        subtitle: 'Live market analysis',
-        text: 'Analyse any market for Even/Odd, Over/Under, Matches/Differs or Rise/Fall and see the real win rates.',
+        subtitle: 'Analysis, not promises',
+        text: 'Reads a market for Even/Odd, Over/Under, Matches/Differs or Rise/Fall and reports what actually happened.',
         tone: 'violet',
     },
     {
         badge: 'AI',
         title: 'AI Entry Scanner',
-        subtitle: 'Best-market search',
-        text: 'Scans every open market and contract type, ranks them by measured edge and loads the best into a bot.',
+        subtitle: 'Finds the strongest market',
+        text: 'Sweeps every open market, ranks them by the edge it can measure, and hands the winner to the bot builder.',
         tone: 'sky',
     },
     {
         badge: 'CT',
         title: 'Copy Trading',
-        subtitle: 'Demo to Real and clients',
-        text: 'Mirror your Demo trades to your Real account, or copy your trades to clients through Deriv Bulk Purchase.',
+        subtitle: 'Demo to real, or to clients',
+        text: 'Mirror your demo trades onto your real account, or send the same trade to client accounts in one request.',
         tone: 'emerald',
     },
     {
         badge: 'FB',
         title: 'Free Bots',
-        subtitle: 'Ready-made strategies',
-        text: 'Browse a library of free bots, filter by trade type and load any of them into the bot builder.',
+        subtitle: 'Strategies ready to load',
+        text: 'A library of bots you can filter by trade type, open in the editor and adjust until the rules suit you.',
         tone: 'violet',
     },
     {
         badge: 'AN',
         title: 'Analysis Tool',
-        subtitle: 'Digit circles & streaks',
-        text: 'Track digit frequency, current streaks and tick history for any market in real time.',
+        subtitle: 'Digit circles and streaks',
+        text: 'Watch each digit fill up live, with the current run, the tick history and Over/Under split as they change.',
         tone: 'teal',
     },
 ];
@@ -114,39 +118,89 @@ export const HIGHLIGHTS: THighlight[] = [
 export const FEATURES = [
     {
         icon: 'bot',
-        title: 'Smart Trading Bots',
-        subtitle: 'Automate your plan',
-        text: 'Build bots visually, load free strategies or let the Auto Trader follow your rules. No coding required.',
+        title: 'Automation without code',
+        subtitle: 'Your plan, on repeat',
+        text: 'Drag blocks together, load a free bot or give the Auto Trader a condition. Nothing here needs programming.',
         tone: 'sky',
     },
     {
         icon: 'chart',
-        title: 'Real-Time Market Analysis',
-        subtitle: 'Data-driven decisions',
-        text: 'Live Deriv ticks, digit statistics, charts and a scanner that measures real win rates across markets.',
+        title: 'Numbers you can check',
+        subtitle: 'Counted, not guessed',
+        text: 'Every percentage comes from live Deriv ticks, over a tick count you choose, so you can see how it was measured.',
         tone: 'emerald',
     },
     {
         icon: 'users',
-        title: 'Copy Trading',
-        subtitle: 'Mirror trades automatically',
-        text: 'Copy your Demo trades to your Real account, or share your trades with clients using Deriv Bulk Purchase.',
+        title: 'Copy trading built in',
+        subtitle: 'One trade, many accounts',
+        text: 'Practise on demo while your real account follows along, or place a trade across client accounts at once.',
         tone: 'violet',
     },
     {
         icon: 'shield',
-        title: 'Risk Management Tools',
-        subtitle: 'Protect your capital',
-        text: 'Stake, martingale, stop-loss and take-profit settings, plus a free Deriv demo account to practise on.',
+        title: 'Limits you set first',
+        subtitle: 'Decide before you start',
+        text: 'Stake, martingale step, stop loss and take profit are part of every run, so a bad streak has a floor.',
         tone: 'sky',
     },
 ] as const;
 
 export const WHY_CHOOSE = [
-    'Official Deriv login - we never see your password',
-    'Free Deriv demo account with virtual funds for risk-free testing',
-    'Live market data straight from the Deriv API',
-    'Free bots, signal scanner and analysis tools in one place',
-    'Synthetic markets you can trade 24/7',
-    'Direct support on Telegram',
+    'You log in through Deriv itself - your password never passes through us',
+    'Free Deriv demo account, so every tool can be tested with virtual funds',
+    'Prices, digits and results come straight from the Deriv API, live',
+    'Analysis, scanner, free bots and automation in a single workspace',
+    'Synthetic markets that keep trading at weekends and through the night',
+    'A person to talk to on Telegram when something needs explaining',
+];
+
+export type TStep = { badge: string; title: string; text: string };
+
+/** Three-step onboarding shown under the features panel. */
+export const HOW_IT_WORKS: TStep[] = [
+    {
+        badge: '1',
+        title: 'Log in with Deriv',
+        text: `Open the official Deriv login from the button above. ${APP} receives a session, never your password.`,
+    },
+    {
+        badge: '2',
+        title: 'Analyse, then choose a bot',
+        text: 'Check the digits or run the scanner, then load a free bot or set an Auto Trader rule that matches what you saw.',
+    },
+    {
+        badge: '3',
+        title: 'Test on demo, then decide',
+        text: 'Run it on your demo account first. When the result convinces you, switch the account to real and set your limits.',
+    },
+];
+
+export type TFaq = { q: string; a: string };
+
+export const FAQ: TFaq[] = [
+    {
+        q: `Do I need a Deriv account to use ${APP}?`,
+        a: 'Yes. The tools read live prices and place trades on your own Deriv account, so you log in with Deriv. Opening an account is free, and the demo account comes with virtual funds.',
+    },
+    {
+        q: 'Is my Deriv password safe?',
+        a: 'You type it on Deriv\'s own login page, never here. Deriv sends back a session for your account only, and you can end it any time from your Deriv settings.',
+    },
+    {
+        q: 'Can I try everything without spending money?',
+        a: 'Yes. Switch the account selector to Demo and the scanner, analysis tool, bots and auto trader all run on virtual funds.',
+    },
+    {
+        q: 'Do I need to know how to code?',
+        a: 'No. The free bots load with one click, the Auto Trader takes plain conditions, and the bot builder works by joining blocks together.',
+    },
+    {
+        q: 'Which markets can I trade?',
+        a: 'Whatever your Deriv account offers, including the synthetic indices that trade around the clock. The market list comes from Deriv, so it is always current.',
+    },
+    {
+        q: 'Will a bot make me money?',
+        a: 'No tool can promise that, and nothing here does. Bots remove the clicking and the hesitation; the risk stays yours, which is why limits and demo testing matter.',
+    },
 ];

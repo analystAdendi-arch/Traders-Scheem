@@ -8,8 +8,10 @@ import { getAppName } from '@/utils/branding';
 import {
     AFFILIATE_SIGNUP_URL,
     FEATURES,
+    FAQ,
     HEADLINES,
     HIGHLIGHTS,
+    HOW_IT_WORKS,
     MASTER_PARTNER_URL,
     REVIEWS,
     TELEGRAM_URL,
@@ -284,11 +286,11 @@ const LandingPage = () => {
                 {/* features */}
                 <section className='te-landing__panel'>
                     <span className='te-landing__chip'>PLATFORM</span>
-                    <h2 className='te-landing__h2'>Powerful Features for Modern Traders</h2>
-                    <p className='te-landing__muted'>Everything you need in one workspace, powered by live Deriv data.</p>
+                    <h2 className='te-landing__h2'>Four things this platform does well</h2>
+                    <p className='te-landing__muted'>Built on live Deriv data, with the workings shown rather than hidden.</p>
                     <p className='te-landing__body'>
-                        Whether you prefer manual decisions, automated bots or copy trading, {getAppName()} gives you
-                        practical tools for finding setups, managing risk and keeping your workflow simple.
+                        Trade by hand, hand it to a bot, or copy one account onto another - {getAppName()} keeps the
+                        same numbers in front of you either way, so a decision can be checked before it costs anything.
                     </p>
                     <div className='te-landing__features'>
                         {FEATURES.map(feature => (
@@ -302,6 +304,24 @@ const LandingPage = () => {
                             </article>
                         ))}
                     </div>
+                </section>
+
+                {/* how it works */}
+                <section className='te-landing__panel'>
+                    <span className='te-landing__chip'>HOW IT WORKS</span>
+                    <h2 className='te-landing__h2'>Three steps from login to first trade</h2>
+                    <p className='te-landing__muted'>No installs, no licence keys, nothing to configure first.</p>
+                    <ol className='te-landing__steps'>
+                        {HOW_IT_WORKS.map(step => (
+                            <li key={step.title} className='te-step'>
+                                <span className='te-step__badge' aria-hidden='true'>
+                                    {step.badge}
+                                </span>
+                                <h3 className='te-step__title'>{step.title}</h3>
+                                <p className='te-step__text'>{step.text}</p>
+                            </li>
+                        ))}
+                    </ol>
                 </section>
 
                 {/* referral */}
@@ -350,8 +370,8 @@ const LandingPage = () => {
                 {/* why */}
                 <section className='te-landing__panel'>
                     <span className='te-landing__chip'>WHY {getAppName().toUpperCase()}</span>
-                    <h2 className='te-landing__h2'>Why Choose {getAppName()}?</h2>
-                    <p className='te-landing__muted'>Join the platform that makes automated trading simple</p>
+                    <h2 className='te-landing__h2'>What you get for signing in</h2>
+                    <p className='te-landing__muted'>Plain advantages, not slogans.</p>
                     <ul className='te-landing__why'>
                         {WHY_CHOOSE.map(item => (
                             <li key={item}>
@@ -362,13 +382,28 @@ const LandingPage = () => {
                     </ul>
                 </section>
 
+                {/* faq */}
+                <section className='te-landing__panel'>
+                    <span className='te-landing__chip'>QUESTIONS</span>
+                    <h2 className='te-landing__h2'>Asked before you sign in</h2>
+                    <p className='te-landing__muted'>Straight answers, including the one about profit.</p>
+                    <div className='te-landing__faq'>
+                        {FAQ.map(item => (
+                            <details key={item.q} className='te-faq'>
+                                <summary className='te-faq__q'>{item.q}</summary>
+                                <p className='te-faq__a'>{item.a}</p>
+                            </details>
+                        ))}
+                    </div>
+                </section>
+
                 {/* cta */}
                 <section className='te-landing__cta'>
                     <span className='te-landing__chip'>GET STARTED</span>
-                    <h2 className='te-landing__h2'>Ready to Transform Your Trading?</h2>
+                    <h2 className='te-landing__h2'>Start on demo, with virtual funds</h2>
                     <p className='te-landing__muted'>
-                        Open a free Deriv account and practise with virtual funds on the demo account before risking
-                        real money.
+                        Opening a Deriv account is free. Practise on the demo account for as long as you like, and move
+                        to real money only when your own results say so.
                     </p>
                     <button type='button' className='te-landing__btn te-landing__btn--green' onClick={signup}>
                         Start Free Demo <span aria-hidden='true'>→</span>
@@ -376,7 +411,7 @@ const LandingPage = () => {
                     <div className='te-landing__checks'>
                         <span>✓ Free to open</span>
                         <span>✓ Virtual funds from Deriv</span>
-                        <span>✓ Full platform access</span>
+                        <span>✓ Every tool included</span>
                     </div>
                     <p className='te-landing__muted te-landing__small'>
                         Already have a Deriv account?{' '}
