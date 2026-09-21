@@ -62,8 +62,9 @@ const TopTicker = ({ feed }: { feed: TFeedState }) => {
     );
 };
 
+// "TradersEdgeX" -> ["Traders", "EdgeX"]: split at the first inner capital.
 const splitName = (name: string): [string, string] => {
-    for (let i = name.length - 1; i > 0; i--) if (/[A-Z]/.test(name[i])) return [name.slice(0, i), name.slice(i)];
+    for (let i = 1; i < name.length; i++) if (/[A-Z]/.test(name[i])) return [name.slice(0, i), name.slice(i)];
     return [name, ''];
 };
 

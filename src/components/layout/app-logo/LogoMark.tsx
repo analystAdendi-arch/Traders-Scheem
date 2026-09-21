@@ -16,9 +16,12 @@ type TLogoMarkProps = {
     height?: number;
 };
 
-/** "TradersEdge" -> ["Traders", "Edge"]: splits at the last capital so each half gets its own colour. */
+/**
+ * "TradersEdgeX" -> ["Traders", "EdgeX"]: splits at the first inner capital so
+ * each half gets its own colour and the emblem initials stay "TE".
+ */
 const splitWordmark = (name: string): [string, string] => {
-    for (let i = name.length - 1; i > 0; i--) {
+    for (let i = 1; i < name.length; i++) {
         if (/[A-Z]/.test(name[i])) return [name.slice(0, i), name.slice(i)];
     }
     return [name, ''];

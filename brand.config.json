@@ -1,11 +1,11 @@
 {
-    "brand_name": "TradersEdge",
-    "brand_domain": "yourbrand.com",
+    "brand_name": "TradersEdgeX",
+    "brand_domain": "tradersedgex.com",
     "brand_hostname": {
-        "staging": "staging.yourbrand.com/dashboard",
-        "production": "yourbrand.com/dashboard"
+        "staging": "staging.tradersedgex.com/dashboard",
+        "production": "tradersedgex.com/dashboard"
     },
-    "domain_name": "YourBrand.com",
+    "domain_name": "TradersEdgeX.com",
     "colors": {
         "primary": "#3B82F6",
         "secondary": "#64748b",
@@ -79,17 +79,17 @@
         "css_variable_prefix": "--brand"
     },
     "platform": {
-        "name": "TradersEdge",
+        "name": "TradersEdgeX",
         "footer": {
             "enable_language_settings": false,
             "enable_theme_toggle": true
         },
         "hostname": {
             "production": {
-                "com": "bot.yourbrand.com"
+                "com": "tradersedgex.com"
             },
             "staging": {
-                "com": "staging-bot.yourbrand.com"
+                "com": "staging.tradersedgex.com"
             }
         },
         "auth2_url": {
