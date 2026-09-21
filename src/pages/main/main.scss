@@ -74,9 +74,13 @@
             grid-template-columns: minmax(0, 1fr);
             width: 100%;
 
-            // The active tab is marked by its own fill, so the sliding
-            // underline is dropped - it landed across the tab label.
+            // The active tab is marked by its own fill, so both active
+            // markers are dropped - they landed across the tab label.
             &__active-line {
+                display: none;
+            }
+
+            &__item--is-scrollable-and-active::after {
                 display: none;
             }
 
