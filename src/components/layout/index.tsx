@@ -21,13 +21,13 @@ import './layout.scss';
 const SPLASH_KEY = 'te-splash-shown';
 
 /**
- * The login gate applies everywhere, so localhost shows the front page just
- * like a visitor sees it. Add ?bypass=1 on localhost to skip it while working
- * on the tools; a deployed domain never matches.
+ * Local development skips the login gate, so the tools open straight away.
+ * Only localhost / 127.0.0.1 - a deployed domain never matches. Add ?landing=1
+ * to see the front page as a visitor does.
  */
 const isLocalDevBypass = () => {
     const is_local = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
-    return is_local && new URLSearchParams(window.location.search).has('bypass');
+    return is_local && !new URLSearchParams(window.location.search).has('landing');
 };
 
 /** A stored, unexpired Deriv OAuth session. */
