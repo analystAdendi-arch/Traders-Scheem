@@ -133,6 +133,8 @@ const AIScannerButton = ({ onClick }: TAIScannerButtonProps) => {
             }}
         >
             <div className='ai-scanner-button__button-wrap'>
+                <span className='ai-scanner-button__ring' aria-hidden='true' />
+                <span className='ai-scanner-button__pulse' aria-hidden='true' />
                 <button
                     type='button'
                     className='ai-scanner-button__button'
@@ -140,8 +142,15 @@ const AIScannerButton = ({ onClick }: TAIScannerButtonProps) => {
                     aria-hidden='true'
                     onClickCapture={handleButtonClickCapture}
                 >
-                    AI
+                    <span className='ai-scanner-button__label'>AI</span>
+                    <span className='ai-scanner-button__sheen' aria-hidden='true' />
+                    {/* Scan line sweeping the face, like a radar pass. */}
+                    <span className='ai-scanner-button__scan' aria-hidden='true' />
                 </button>
+                <span className='ai-scanner-button__status' aria-hidden='true' />
+                {[0, 1, 2].map(i => (
+                    <span key={i} className={`ai-scanner-button__spark ai-scanner-button__spark--${i}`} aria-hidden='true' />
+                ))}
             </div>
             <div className='ai-scanner-button__tooltip'>{'AI Scanner - Click to analyze'}</div>
         </div>
