@@ -16,7 +16,7 @@ import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
 import './header.scss';
 
-const TELEGRAM_URL = 'https://t.me/TradersEdgecom';
+const TELEGRAM_URL = 'https://t.me/VolaTradescom';
 
 /** Blue phone handset that opens the VolaTrades Telegram chat/call. */
 const TelegramCallButton = () => (

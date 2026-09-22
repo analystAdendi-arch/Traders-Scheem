@@ -17,7 +17,7 @@ export const AFFILIATE_SIGNUP_URL =
  */
 export const MASTER_PARTNER_URL = '';
 
-export const TELEGRAM_URL = 'https://t.me/TradersEdgecom';
+export const TELEGRAM_URL = 'https://t.me/VolaTradescom';
 
 export const HEADLINES = [
     {
