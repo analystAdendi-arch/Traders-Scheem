@@ -20,6 +20,7 @@
         max-width: 200px;
         object-fit: contain;
         border-radius: 50%;
+        flex: none;
     }
 
     // Letter-badge fallback shown when no logo file/data URL is available.
@@ -47,7 +48,7 @@
         color: var(--text-general);
         font-family: 'Arial Black', 'Segoe UI Black', var(--brand-font-primary, sans-serif);
         font-weight: 900;
-        font-size: 2.7rem;
+        font-size: 2.3rem;
         letter-spacing: -0.01em;
         // Thicker strokes + a dark edge so the wordmark reads bold on light and dark.
         -webkit-text-stroke: 0.08rem rgba(0, 0, 0, 0.35);

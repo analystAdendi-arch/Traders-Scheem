@@ -2,6 +2,11 @@
 @use 'components/shared/styles/mixins' as *;
 
 .app-header {
+    // Above a page's fixed backdrop (Dashboard, Free Bots), which would
+    // otherwise paint over the logo and the auth buttons.
+    position: relative;
+    z-index: 3;
+
     &__account-settings {
         padding-inline-end: 1.2rem;
         border-inline-end: 0.1rem solid var(--general-section-1);

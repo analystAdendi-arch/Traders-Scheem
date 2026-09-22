@@ -109,13 +109,10 @@ export const LogoMark = ({ height = 32 }: TLogoMarkProps) => {
             ) : (
                 <Emblem size={height + 8} initials={initials || 'A'} />
             )}
-            {/* A supplied logo file carries the name itself, so skip the wordmark. */}
-            {!logoSrc && (
-                <span className='app-header__logo-text' aria-label={appName}>
-                    <span className='app-header__logo-text-first'>{first}</span>
-                    {second && <span className='app-header__logo-text-second'>{second}</span>}
-                </span>
-            )}
+            <span className='app-header__logo-text' aria-label={appName}>
+                <span className='app-header__logo-text-first'>{first}</span>
+                {second && <span className='app-header__logo-text-second'>{second}</span>}
+            </span>
         </span>
     );
 };
