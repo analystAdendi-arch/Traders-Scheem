@@ -40,7 +40,7 @@
         filter: drop-shadow(0 0.2rem 0.4rem rgba(0, 0, 0, 0.25));
     }
 
-    // Two-tone bold wordmark, e.g. "Traders" green + "Edge" red.
+    // Two-tone bold wordmark, e.g. "Vola" cyan + "Trades" violet.
     &__logo-text {
         margin-left: 0.8rem;
         color: var(--text-general);
@@ -59,12 +59,12 @@
     }
 
     &__logo-text-first {
-        color: #16a34a;
+        color: #22d3ee;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
     }
 
     &__logo-text-second {
-        color: #e11d48;
+        color: #a855f7;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
     }
 

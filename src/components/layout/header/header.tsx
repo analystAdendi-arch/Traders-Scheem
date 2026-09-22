@@ -18,14 +18,14 @@ import './header.scss';
 
 const TELEGRAM_URL = 'https://t.me/TradersEdgecom';
 
-/** Blue phone handset that opens the TradersEdgeX Telegram chat/call. */
+/** Blue phone handset that opens the VolaTrades Telegram chat/call. */
 const TelegramCallButton = () => (
     <a
         className='app-header__telegram'
         href={TELEGRAM_URL}
         target='_blank'
         rel='noopener noreferrer'
-        aria-label='Contact TradersEdgeX on Telegram'
+        aria-label='Contact VolaTrades on Telegram'
         title='Chat or call us on Telegram'
     >
         <svg width='30' height='30' viewBox='0 0 24 24' aria-hidden='true'>

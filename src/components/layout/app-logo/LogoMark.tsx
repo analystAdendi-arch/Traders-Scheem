@@ -17,8 +17,8 @@ type TLogoMarkProps = {
 };
 
 /**
- * "TradersEdgeX" -> ["Traders", "EdgeX"]: splits at the first inner capital so
- * each half gets its own colour and the emblem initials stay "TE".
+ * "VolaTrades" -> ["Vola", "Trades"]: splits at the first inner capital so
+ * each half gets its own colour and the emblem initials read "VT".
  */
 const splitWordmark = (name: string): [string, string] => {
     for (let i = 1; i < name.length; i++) {
@@ -27,7 +27,10 @@ const splitWordmark = (name: string): [string, string] => {
     return [name, ''];
 };
 
-/** Round emblem used until a real logo file is supplied in public/logo.<ext>. */
+/**
+ * Round emblem used until a real logo file is supplied in public/logo.<ext>:
+ * a volatility wave under the app initials, on a cyan-to-violet ring.
+ */
 const Emblem = ({ size, initials }: { size: number; initials: string }) => (
     <svg
         className='app-header__logo-emblem'
@@ -37,23 +40,34 @@ const Emblem = ({ size, initials }: { size: number; initials: string }) => (
         aria-hidden='true'
     >
         <defs>
-            <linearGradient id='te-ring' x1='0' y1='0' x2='1' y2='1'>
-                <stop offset='0%' stopColor='#22c55e' />
-                <stop offset='100%' stopColor='#e11d48' />
+            <linearGradient id='vt-ring' x1='0' y1='0' x2='1' y2='1'>
+                <stop offset='0%' stopColor='#22d3ee' />
+                <stop offset='55%' stopColor='#6366f1' />
+                <stop offset='100%' stopColor='#a855f7' />
             </linearGradient>
-            <radialGradient id='te-core' cx='50%' cy='40%' r='60%'>
+            <radialGradient id='vt-core' cx='50%' cy='38%' r='62%'>
                 <stop offset='0%' stopColor='#1e293b' />
                 <stop offset='100%' stopColor='#020617' />
             </radialGradient>
+            <linearGradient id='vt-wave' x1='0' x2='1'>
+                <stop offset='0%' stopColor='#22d3ee' />
+                <stop offset='100%' stopColor='#a855f7' />
+            </linearGradient>
         </defs>
-        <circle cx='20' cy='20' r='19' fill='url(#te-ring)' />
-        <circle cx='20' cy='20' r='16.5' fill='url(#te-core)' />
-        <rect x='10' y='24' width='2.4' height='6' rx='0.6' fill='#22c55e' opacity='0.8' />
-        <rect x='14' y='21' width='2.4' height='9' rx='0.6' fill='#e11d48' opacity='0.8' />
-        <rect x='18' y='18' width='2.4' height='12' rx='0.6' fill='#22c55e' opacity='0.8' />
-        <text x='20' y='19' textAnchor='middle' fontSize='12' fontWeight='900' fontFamily='Arial, sans-serif'>
-            <tspan fill='#22c55e'>{initials.charAt(0)}</tspan>
-            <tspan fill='#f43f5e'>{initials.charAt(1)}</tspan>
+        <circle cx='20' cy='20' r='19' fill='url(#vt-ring)' />
+        <circle cx='20' cy='20' r='16.5' fill='url(#vt-core)' />
+        {/* volatility swing */}
+        <path
+            d='M7 27 l4.5-6 3.5 4 4-9 4 7 3.5-4.5 3.5 5'
+            fill='none'
+            stroke='url(#vt-wave)'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        <text x='20' y='17' textAnchor='middle' fontSize='12' fontWeight='900' fontFamily='Arial, sans-serif'>
+            <tspan fill='#22d3ee'>{initials.charAt(0)}</tspan>
+            <tspan fill='#c084fc'>{initials.charAt(1)}</tspan>
         </text>
     </svg>
 );

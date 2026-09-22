@@ -1,11 +1,11 @@
 {
-    "brand_name": "TradersEdgeX",
-    "brand_domain": "tradersedgex.com",
+    "brand_name": "VolaTrades",
+    "brand_domain": "volatrades.com",
     "brand_hostname": {
-        "staging": "staging.tradersedgex.com/dashboard",
-        "production": "tradersedgex.com/dashboard"
+        "staging": "staging.volatrades.com/dashboard",
+        "production": "volatrades.com/dashboard"
     },
-    "domain_name": "TradersEdgeX.com",
+    "domain_name": "VolaTrades.com",
     "colors": {
         "primary": "#3B82F6",
         "secondary": "#64748b",
@@ -79,17 +79,17 @@
         "css_variable_prefix": "--brand"
     },
     "platform": {
-        "name": "TradersEdgeX",
+        "name": "VolaTrades",
         "footer": {
             "enable_language_settings": false,
             "enable_theme_toggle": true
         },
         "hostname": {
             "production": {
-                "com": "tradersedgex.com"
+                "com": "volatrades.com"
             },
             "staging": {
-                "com": "staging.tradersedgex.com"
+                "com": "staging.volatrades.com"
             }
         },
         "auth2_url": {
