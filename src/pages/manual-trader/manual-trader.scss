@@ -1,3 +1,9 @@
+@keyframes manual-trader-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .manual-trader-container {
     width: 100%;
     height: 100%;
@@ -5,7 +11,6 @@
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-    flex-grow: 1;
     min-height: 0;
     background: transparent;
     box-sizing: border-box;
@@ -34,6 +39,99 @@
             display: block;
             border: 0;
             background: #ffffff;
+        }
+
+        /* --------------------------------------------------- loading cover */
+
+        &__loader {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem;
+            padding: 2.4rem;
+            text-align: center;
+            background: var(--general-main-1, #ffffff);
+        }
+
+        &__ring {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 12rem;
+            height: 12rem;
+
+            // Two arcs turning in opposite directions, as in the reference.
+            &::before,
+            &::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 50%;
+                border: 3px solid transparent;
+            }
+
+            &::before {
+                border-top-color: #22d3ee;
+                border-right-color: #22d3ee;
+                animation: manual-trader-spin 1.4s linear infinite;
+            }
+
+            &::after {
+                inset: 0.8rem;
+                border-bottom-color: #a855f7;
+                border-left-color: #a855f7;
+                animation: manual-trader-spin 2s linear infinite reverse;
+            }
+        }
+
+        &__ring-logo {
+            width: 7rem;
+            height: 7rem;
+            border-radius: 50%;
+            object-fit: contain;
+        }
+
+        &__ring-mark {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--text-general);
+        }
+
+        &__loader-title {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--text-general);
+        }
+
+        &__loader-text {
+            margin: 0;
+            max-width: 42rem;
+            font-size: 1.35rem;
+            line-height: 1.6;
+            color: var(--text-less-prominent, #7b8698);
+        }
+
+        &__retry {
+            padding: 1rem 2rem;
+            border: 0;
+            border-radius: 0.8rem;
+            background: #4aa9a2;
+            color: #ffffff;
+            font-size: 1.35rem;
+            font-weight: 800;
+            cursor: pointer;
+
+            &:hover {
+                background: #3f9790;
+            }
         }
     }
 }
