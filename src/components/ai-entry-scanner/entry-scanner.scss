@@ -1,10 +1,10 @@
 @mixin ai-es-input {
     width: 100%;
-    padding: 1.4rem 1.8rem;
+    padding: 1rem 1.2rem;
     border: 1px solid #dbeafe;
-    border-radius: 1rem;
+    border-radius: 0.8rem;
     background: #eff6ff;
-    font-size: 1.6rem;
+    font-size: 1.35rem;
     font-weight: 500;
     color: #1e293b;
     outline: none;
@@ -22,11 +22,11 @@
 
 @mixin ai-es-label {
     display: block;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: #334155;
     letter-spacing: 0.03em;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.5rem;
 }
 
 .ai-entry-scanner {
@@ -42,10 +42,11 @@
         padding: 1.6rem;
     }
 
+    // Compact panel: wide enough for the two-column form, no more.
     &__modal {
         width: 100%;
-        max-width: 860px;
-        max-height: 92vh;
+        max-width: 560px;
+        max-height: 82vh;
         display: flex;
         flex-direction: column;
         background: #ffffff;
@@ -59,13 +60,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 1.8rem 2.4rem;
+        padding: 1.2rem 1.6rem;
         background: #ffffff;
         border-bottom: 1px solid #e2e8f0;
     }
 
     &__title {
-        font-size: 2.2rem;
+        font-size: 1.7rem;
         font-weight: 800;
         color: #0f172a;
         margin: 0;
@@ -94,28 +95,28 @@
     }
 
     &__body {
-        padding: 2.4rem;
+        padding: 1.6rem;
         background: linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 1.6rem;
+        gap: 1.2rem;
     }
 
     &__form-card {
         background: #ffffff;
-        border-radius: 1.4rem;
-        padding: 2.2rem;
+        border-radius: 1.2rem;
+        padding: 1.4rem;
         border: 1px solid #dbeafe;
         display: flex;
         flex-direction: column;
-        gap: 1.8rem;
+        gap: 1.2rem;
     }
 
     &__row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1.6rem;
+        gap: 1.2rem;
     }
 
     &__field {
@@ -147,16 +148,16 @@
     &__status-box {
         background: linear-gradient(90deg, #eff6ff 0%, #e0f2fe 100%);
         border: 1px solid #bfdbfe;
-        border-radius: 1rem;
-        padding: 1.8rem;
+        border-radius: 0.8rem;
+        padding: 1.2rem 1.4rem;
         display: flex;
         align-items: center;
-        gap: 1.2rem;
-        min-height: 70px;
+        gap: 1rem;
+        min-height: 50px;
     }
 
     &__status-text {
-        font-size: 1.6rem;
+        font-size: 1.35rem;
         font-weight: 700;
         color: #1e40af;
     }
@@ -207,12 +208,12 @@
     &__summary-box {
         background: linear-gradient(90deg, #eff6ff 0%, #eef2ff 100%);
         border: 1px solid #c7d2fe;
-        border-radius: 1rem;
-        padding: 1.6rem 1.8rem;
+        border-radius: 0.8rem;
+        padding: 1.2rem 1.4rem;
     }
 
     &__summary-text {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 700;
         color: #3730a3;
         line-height: 1.55;
@@ -221,15 +222,15 @@
     &__footer {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1.4rem;
-        padding: 2rem 2.4rem 2.4rem;
+        gap: 1.2rem;
+        padding: 1.2rem 1.6rem 1.6rem;
         background: #ffffff;
     }
 
     &__btn {
-        padding: 1.5rem 1.8rem;
-        border-radius: 1.2rem;
-        font-size: 1.6rem;
+        padding: 1.1rem 1.4rem;
+        border-radius: 1rem;
+        font-size: 1.4rem;
         font-weight: 800;
         cursor: pointer;
         border: none;
@@ -294,12 +295,12 @@
     &__status {
         display: flex;
         align-items: center;
-        gap: 1.2rem;
-        padding: 1.6rem 1.8rem;
+        gap: 1rem;
+        padding: 1.2rem 1.4rem;
         border: 1px solid #bfdbfe;
-        border-radius: 1rem;
+        border-radius: 0.8rem;
         background: linear-gradient(90deg, #eff6ff 0%, #e0f2fe 100%);
-        font-size: 1.35rem;
+        font-size: 1.25rem;
         font-weight: 600;
         color: #1e40af;
 
@@ -332,10 +333,10 @@
     &__result {
         display: flex;
         flex-direction: column;
-        gap: 1.6rem;
-        padding: 2rem;
+        gap: 1.2rem;
+        padding: 1.4rem;
         border: 1px solid #dbeafe;
-        border-radius: 1.4rem;
+        border-radius: 1.2rem;
         background: #ffffff;
     }
 
@@ -358,7 +359,7 @@
 
     &__result-market {
         margin: 0.2rem 0;
-        font-size: 2rem;
+        font-size: 1.7rem;
         font-weight: 800;
         color: #0f172a;
     }
@@ -376,7 +377,7 @@
     }
 
     &__result-quality-value {
-        font-size: 2.6rem;
+        font-size: 2.1rem;
         font-weight: 800;
         line-height: 1;
         color: #15803d;
@@ -391,9 +392,9 @@
 
     &__metrics {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-        gap: 1.2rem;
-        padding-top: 1.2rem;
+        grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+        gap: 1rem;
+        padding-top: 1rem;
         border-top: 1px solid #e2e8f0;
     }
 
