@@ -29,6 +29,9 @@ export default defineConfig({
     entry: { index: './src/main.tsx' },
     define: {
       'process.env': {
+        // 'production' for `rsbuild build`, 'development' for the dev server.
+        // The login gate reads this, so a production bundle never skips itself.
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV ?? 'production'),
         // Deriv app id — drives OAuth login/sign-up and WebSocket connections. The
         // preview pipeline sets this from BOT_APP_ID (see scripts/build-previews.js);
         // sibling templates use the same name.

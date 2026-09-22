@@ -21,11 +21,13 @@ import './layout.scss';
 const SPLASH_KEY = 'te-splash-shown';
 
 /**
- * Local development skips the login gate, so the tools open straight away.
- * Only localhost / 127.0.0.1 - a deployed domain never matches. Add ?landing=1
- * to see the front page as a visitor does.
+ * The dev server skips the login gate, so the tools open straight away while
+ * working. It needs both a development build and a local hostname, so a
+ * production bundle always demands a Deriv login - even if served from
+ * localhost. Add ?landing=1 to see the front page as a visitor does.
  */
 const isLocalDevBypass = () => {
+    if (process.env.NODE_ENV === 'production') return false;
     const is_local = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
     return is_local && !new URLSearchParams(window.location.search).has('landing');
 };
