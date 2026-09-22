@@ -11,11 +11,8 @@ export const AFFILIATE_SIGNUP_URL =
     process.env.NEXT_PUBLIC_DERIV_REFERRAL_LINK ||
     'https://partner-tracking.deriv.com/click?a=54565&o=1&c=3&link_id=1';
 
-/**
- * Master partner (client referral) link. Leave empty until you have it - the
- * "Refer a trader" button stays disabled and shows "Coming soon" meanwhile.
- */
-export const MASTER_PARTNER_URL = '';
+/** Master partner (client referral) link - the "Refer a trader" button. */
+export const MASTER_PARTNER_URL = 'https://t.deriv.link?t=CL5VDD7SGG27';
 
 export const TELEGRAM_URL = 'https://t.me/VolaTradescom';
 

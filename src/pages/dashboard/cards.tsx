@@ -13,7 +13,6 @@ import { localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 /* [AI] - Analytics event tracking removed - see migrate-docs/MONITORING_PACKAGES.md for re-implementation guide */
 /* [/AI] */
-import DashboardBotList from './bot-list/dashboard-bot-list';
 
 type TCardProps = {
     has_dashboard_strategies: boolean;
@@ -207,7 +206,6 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                         </MobileFullPageModal>
                     )}
                 </div>
-                <DashboardBotList />
             </div>
         ),
         // eslint-disable-next-line react-hooks/exhaustive-deps
