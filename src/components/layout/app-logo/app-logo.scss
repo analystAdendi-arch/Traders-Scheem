@@ -2,7 +2,7 @@
     &__logo {
         padding-inline-start: 1.6rem;
         padding-inline-end: 1.6rem;
-        height: 32px;
+        height: auto;
         display: flex;
         align-items: center;
         text-decoration: none;
@@ -17,8 +17,9 @@
 
     &__logo-img {
         width: auto;
-        max-width: 160px;
+        max-width: 200px;
         object-fit: contain;
+        border-radius: 50%;
     }
 
     // Letter-badge fallback shown when no logo file/data URL is available.
@@ -40,7 +41,7 @@
         filter: drop-shadow(0 0.2rem 0.4rem rgba(0, 0, 0, 0.25));
     }
 
-    // Two-tone bold wordmark, e.g. "Vola" cyan + "Trades" violet.
+    // Two-tone bold wordmark, e.g. "Vola" green + "Trades" red, matching the logo.
     &__logo-text {
         margin-left: 0.8rem;
         color: var(--text-general);
@@ -59,12 +60,12 @@
     }
 
     &__logo-text-first {
-        color: #22d3ee;
+        color: #16a34a;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
     }
 
     &__logo-text-second {
-        color: #a855f7;
+        color: #e11d48;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
     }
 

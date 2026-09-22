@@ -41,17 +41,16 @@ const Emblem = ({ size, initials }: { size: number; initials: string }) => (
     >
         <defs>
             <linearGradient id='vt-ring' x1='0' y1='0' x2='1' y2='1'>
-                <stop offset='0%' stopColor='#22d3ee' />
-                <stop offset='55%' stopColor='#6366f1' />
-                <stop offset='100%' stopColor='#a855f7' />
+                <stop offset='0%' stopColor='#22c55e' />
+                <stop offset='100%' stopColor='#ef4444' />
             </linearGradient>
             <radialGradient id='vt-core' cx='50%' cy='38%' r='62%'>
                 <stop offset='0%' stopColor='#1e293b' />
                 <stop offset='100%' stopColor='#020617' />
             </radialGradient>
             <linearGradient id='vt-wave' x1='0' x2='1'>
-                <stop offset='0%' stopColor='#22d3ee' />
-                <stop offset='100%' stopColor='#a855f7' />
+                <stop offset='0%' stopColor='#22c55e' />
+                <stop offset='100%' stopColor='#ef4444' />
             </linearGradient>
         </defs>
         <circle cx='20' cy='20' r='19' fill='url(#vt-ring)' />
@@ -66,8 +65,8 @@ const Emblem = ({ size, initials }: { size: number; initials: string }) => (
             strokeLinejoin='round'
         />
         <text x='20' y='17' textAnchor='middle' fontSize='12' fontWeight='900' fontFamily='Arial, sans-serif'>
-            <tspan fill='#22d3ee'>{initials.charAt(0)}</tspan>
-            <tspan fill='#c084fc'>{initials.charAt(1)}</tspan>
+            <tspan fill='#22c55e'>{initials.charAt(0)}</tspan>
+            <tspan fill='#f43f5e'>{initials.charAt(1)}</tspan>
         </text>
     </svg>
 );
@@ -110,10 +109,13 @@ export const LogoMark = ({ height = 32 }: TLogoMarkProps) => {
             ) : (
                 <Emblem size={height + 8} initials={initials || 'A'} />
             )}
-            <span className='app-header__logo-text' aria-label={appName}>
-                <span className='app-header__logo-text-first'>{first}</span>
-                {second && <span className='app-header__logo-text-second'>{second}</span>}
-            </span>
+            {/* A supplied logo file carries the name itself, so skip the wordmark. */}
+            {!logoSrc && (
+                <span className='app-header__logo-text' aria-label={appName}>
+                    <span className='app-header__logo-text-first'>{first}</span>
+                    {second && <span className='app-header__logo-text-second'>{second}</span>}
+                </span>
+            )}
         </span>
     );
 };

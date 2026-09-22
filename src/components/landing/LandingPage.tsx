@@ -3,7 +3,7 @@ import { type CSSProperties, useCallback, useEffect, useState } from 'react';
 import { generateOAuthURL } from '@/components/shared';
 import { TAB_IDS } from '@/constants/bot-contents';
 import { getFreeBots } from '@/pages/free-bots/free-bot-list';
-import { getAppName } from '@/utils/branding';
+import { getAppName, LOGO_CANDIDATES } from '@/utils/branding';
 
 import {
     AFFILIATE_SIGNUP_URL,
@@ -123,8 +123,23 @@ const Icon = ({ name }: { name: string }) => {
     }
 };
 
+/** The logo file if it is there, else the two-tone name. */
 const Wordmark = () => {
-    const [first, second] = splitName(getAppName());
+    const [logo_failed, setLogoFailed] = useState(false);
+    const name = getAppName();
+    const [first, second] = splitName(name);
+
+    if (!logo_failed) {
+        return (
+            <img
+                className='te-landing__logo'
+                src={LOGO_CANDIDATES[0]}
+                alt={name}
+                onError={() => setLogoFailed(true)}
+            />
+        );
+    }
+
     return (
         <span className='te-landing__wordmark'>
             <span className='te-landing__wordmark-a'>{first}</span>

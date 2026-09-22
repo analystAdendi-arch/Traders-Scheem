@@ -64,12 +64,20 @@
         letter-spacing: -0.01em;
     }
 
+    // Round brand logo in the top bar and the footer.
+    &__logo {
+        width: auto;
+        height: 5.6rem;
+        border-radius: 50%;
+        object-fit: contain;
+    }
+
     &__wordmark-a {
-        color: #22d3ee;
+        color: #22c55e;
     }
 
     &__wordmark-b {
-        color: #a855f7;
+        color: #f43f5e;
     }
 
     /* ---------------------------------------------------------- buttons */

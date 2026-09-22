@@ -41,6 +41,15 @@
         line-height: 1;
     }
 
+    // Round brand logo, when a logo file is supplied.
+    &__logo-img {
+        width: auto;
+        height: 14rem;
+        border-radius: 50%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 2.4rem rgba(16, 217, 160, 0.35));
+    }
+
     &__logo-a {
         color: #10d9a0;
         text-shadow: 0 0 2.4rem rgba(16, 217, 160, 0.55);

@@ -10,7 +10,8 @@ import './app-logo.scss';
 export const AppLogo = () => {
     return (
         <a href='/' className='app-header__logo' aria-label={localize('Home')}>
-            <LogoMark height={32} />
+            {/* Taller than the link box: the round logo carries the name inside it. */}
+            <LogoMark height={48} />
         </a>
     );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { getAppName } from '@/utils/branding';
+import { getAppName, LOGO_CANDIDATES } from '@/utils/branding';
 
 import { subscribePublicFeed, TFeedState, TICKER_SYMBOLS } from './public-feed';
 import './splash-screen.scss';
@@ -10,8 +10,9 @@ const MAX_MS = 8000;
 
 const STEPS = ['Connecting to Deriv markets...', 'Loading live market data...', 'Preparing your workspace...'];
 
+// "VolaTrades" -> ["Vola", "Trades"]: split at the first inner capital.
 const splitName = (name: string): [string, string] => {
-    for (let i = name.length - 1; i > 0; i--) if (/[A-Z]/.test(name[i])) return [name.slice(0, i), name.slice(i)];
+    for (let i = 1; i < name.length; i++) if (/[A-Z]/.test(name[i])) return [name.slice(0, i), name.slice(i)];
     return [name, ''];
 };
 
@@ -50,6 +51,7 @@ const SplashScreen = ({ onDone, hold = false }: { onDone: () => void; hold?: boo
     const [feed, setFeed] = useState<TFeedState>({ connected: false, markets: null, quotes: {} });
     const [elapsed, setElapsed] = useState(0);
     const [progress, setProgress] = useState(0);
+    const [logo_failed, setLogoFailed] = useState(false);
     const started = useRef(Date.now());
     const finished = useRef(false);
 
@@ -80,14 +82,24 @@ const SplashScreen = ({ onDone, hold = false }: { onDone: () => void; hold?: boo
     const [first, second] = splitName(getAppName());
     const status = hold && ready ? 'Signing you in securely...' : STEPS[step];
 
+
     return (
         <div className='te-splash' role='status' aria-live='polite'>
             <div className='te-splash__bg' aria-hidden='true' />
             <div className='te-splash__card'>
-                <h1 className='te-splash__logo'>
-                    <span className='te-splash__logo-a'>{first.toUpperCase()}</span>
-                    <span className='te-splash__logo-b'>{second.toUpperCase()}</span>
-                </h1>
+                {logo_failed ? (
+                    <h1 className='te-splash__logo'>
+                        <span className='te-splash__logo-a'>{first.toUpperCase()}</span>
+                        <span className='te-splash__logo-b'>{second.toUpperCase()}</span>
+                    </h1>
+                ) : (
+                    <img
+                        className='te-splash__logo-img'
+                        src={LOGO_CANDIDATES[0]}
+                        alt={getAppName()}
+                        onError={() => setLogoFailed(true)}
+                    />
+                )}
                 <div className='te-splash__hub'>
                     <span>TRADING HUB</span>
                     <span className='te-splash__live'>
