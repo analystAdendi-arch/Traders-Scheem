@@ -521,6 +521,62 @@
     margin-left: 0.1rem;
 }
 
+/* Copies every client token, one per line. */
+.copy-trader__copy-all {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border: 1px solid transparent;
+    border-radius: 0.4rem;
+    background: transparent;
+    color: var(--ct-orange-red);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.28);
+    }
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+}
+
+.copy-trader__copied-note {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #16a34a;
+}
+
+.copy-trader__client-token-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+/* Copies one client's full token. */
+.copy-trader__token-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid rgba(59, 130, 246, 0.28);
+    border-radius: 0.4rem;
+    background: rgba(59, 130, 246, 0.06);
+    color: #1d4ed8;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+        background: rgba(59, 130, 246, 0.14);
+    }
+}
+
 .copy-trader__clients-clear {
     margin-left: auto;
     font-size: 0.9rem;

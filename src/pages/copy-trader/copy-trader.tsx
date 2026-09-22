@@ -66,9 +66,15 @@ const UsersIcon = ({ size = 16 }: { size?: number }) => (
         <path d='M16 3.13a4 4 0 0 1 0 7.75' />
     </Svg>
 );
-const FolderIcon = () => (
-    <Svg size={16}>
-        <path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z' />
+const CopyIcon = ({ size = 16 }: { size?: number }) => (
+    <Svg size={size}>
+        <rect x='9' y='9' width='11' height='11' rx='2' />
+        <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' />
+    </Svg>
+);
+const CheckIcon = ({ size = 16 }: { size?: number }) => (
+    <Svg size={size}>
+        <polyline points='20 6 9 17 4 12' />
     </Svg>
 );
 const PlusIcon = () => (
@@ -169,7 +175,38 @@ const CopyTrader = observer(() => {
     const [inlineError, setInlineError] = useState<string | null>(null);
     const [dismissed, setDismissed] = useState<number[]>([]);
     const [tutorialOpen, setTutorialOpen] = useState(false);
+    /** Which token was just copied, so the button can confirm it briefly. */
+    const [copied, setCopied] = useState<string | null>(null);
     const timers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+    const copy_timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => () => {
+        if (copy_timer.current) clearTimeout(copy_timer.current);
+    }, []);
+
+    /** Clipboard API needs a secure context; fall back to a hidden textarea. */
+    const copyText = React.useCallback(async (text: string, key: string) => {
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                const area = document.createElement('textarea');
+                area.value = text;
+                area.setAttribute('readonly', '');
+                area.style.position = 'fixed';
+                area.style.opacity = '0';
+                document.body.appendChild(area);
+                area.select();
+                document.execCommand('copy');
+                document.body.removeChild(area);
+            }
+            setCopied(key);
+            if (copy_timer.current) clearTimeout(copy_timer.current);
+            copy_timer.current = setTimeout(() => setCopied(null), 1600);
+        } catch {
+            setInlineError(localize('Could not copy to the clipboard.'));
+        }
+    }, []);
 
     useEffect(() => () => timers.current.forEach(t => clearTimeout(t)), []);
 
@@ -377,10 +414,20 @@ const CopyTrader = observer(() => {
 
                 {/* clients */}
                 <div className='copy-trader__clients-header'>
-                    <FolderIcon />
+                    <button
+                        type='button'
+                        className='copy-trader__copy-all'
+                        title={localize('Copy every client token')}
+                        aria-label={localize('Copy every client token')}
+                        disabled={!clients.length}
+                        onClick={() => void copyText(clients.map(c => c.token).join('\n'), 'all')}
+                    >
+                        {copied === 'all' ? <CheckIcon /> : <CopyIcon />}
+                    </button>
                     <h2 className='copy-trader__clients-title'>
                         {localize('Clients')} <span className='copy-trader__clients-count'>{clients.length}</span>
                     </h2>
+                    {copied === 'all' && <span className='copy-trader__copied-note'>{localize('Copied')}</span>}
                     {clients.length > 0 && (
                         <button type='button' className='copy-trader__clients-clear' onClick={() => copyTrader.clearClientTokens()}>
                             {localize('Clear all')}
@@ -406,7 +453,21 @@ const CopyTrader = observer(() => {
                                     className={`copy-trader__client-row ${c.status === 'error' ? 'copy-trader__client-row--error' : ''}`}
                                 >
                                     <div className='copy-trader__client-main'>
-                                        <code className='copy-trader__client-token'>{maskToken(c.token)}</code>
+                                        <div className='copy-trader__client-token-row'>
+                                            <code className='copy-trader__client-token'>{maskToken(c.token)}</code>
+                                            <button
+                                                type='button'
+                                                className='copy-trader__token-copy'
+                                                title={localize('Copy this token')}
+                                                aria-label={localize('Copy this token')}
+                                                onClick={() => void copyText(c.token, c.token)}
+                                            >
+                                                {copied === c.token ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+                                                <span>
+                                                    {copied === c.token ? localize('Copied') : localize('Copy')}
+                                                </span>
+                                            </button>
+                                        </div>
                                         {c.accounts.length > 0 && (
                                             <select
                                                 className='copy-trader__client-account'
