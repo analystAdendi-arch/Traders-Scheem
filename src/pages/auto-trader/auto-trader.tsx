@@ -254,13 +254,15 @@ const NumberInput = ({
     />
 );
 
+// NoInfer keeps the inline `options` arrays from widening T to `string`, which
+// would stop a narrow setState (e.g. 'over' | 'under') from being accepted.
 function Choice<T extends string>({
     value,
     options,
     onChange,
 }: {
     value: T;
-    options: { value: T; label: string }[];
+    options: { value: NoInfer<T>; label: string }[];
     onChange: (next: T) => void;
 }) {
     return (
