@@ -19,8 +19,9 @@
     color: #1e293b;
     display: flex;
     flex-direction: column;
-    // Bottom room so the floating Run bar never sits over the trade buttons.
-    padding: 2.4rem 1.6rem 12rem;
+    // Sized to fit one screen, with just enough bottom room to clear the
+    // floating Run bar.
+    padding: 1.6rem 1.6rem 8rem;
     overflow: auto;
     overflow-x: hidden;
     box-sizing: border-box;
@@ -37,7 +38,7 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 1.4rem;
+        gap: 1.2rem;
     }
 
     &__top-row {
@@ -150,8 +151,8 @@
     }
 
     &__input {
-        min-height: 3.8rem;
-        padding: 0.8rem 1.2rem;
+        min-height: 3.6rem;
+        padding: 0.7rem 1.2rem;
     }
 
     &__current-tick {
@@ -164,7 +165,7 @@
     }
 
     &__current-tick-price {
-        font-size: 3rem;
+        font-size: 2.8rem;
         font-weight: 900;
         line-height: 1.1;
         color: var(--bulk-coral);
@@ -202,8 +203,8 @@
 
     &__circle {
         position: relative;
-        width: 7.4rem;
-        height: 7.4rem;
+        width: 6.8rem;
+        height: 6.8rem;
         border-radius: 999px;
         display: flex;
         flex-direction: column;
@@ -385,19 +386,19 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 4.4rem;
-        padding: 0.8rem 1rem;
+        min-height: 3.4rem;
+        padding: 0.4rem 1rem;
         font-weight: 800;
         line-height: 1.2;
         text-align: center;
     }
 
     &__button-label {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
     }
 
     &__button-percent {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         background: rgba(0, 0, 0, 0.14);
     }
 
