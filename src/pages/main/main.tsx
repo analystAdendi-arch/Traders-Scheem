@@ -106,6 +106,10 @@ const AppWrapper = observer(() => {
     // Trade type modal state
     const [tradeTypeModalState, setTradeTypeModalState] = useState(getModalState());
     const [is_ai_scanner_open, setAiScannerOpen] = useState(false);
+    // Tabs that trade on their own, so the bot Run bar has nothing to run.
+    const hide_run_panel = [DBOT_TABS.FREE_BOTS, DBOT_TABS.AUTO_TRADER, DBOT_TABS.MANUAL_TRADER].includes(
+        active_tab as number
+    );
 
     /**
      * Helper function to get modal props with enhanced type safety and clear documentation
@@ -618,14 +622,16 @@ const AppWrapper = observer(() => {
                 </div>
             </div>
             <DesktopWrapper>
-                <div className='main__run-strategy-wrapper'>
-                    <RunStrategy />
-                    <RunPanel />
-                </div>
+                {!hide_run_panel && (
+                    <div className='main__run-strategy-wrapper'>
+                        <RunStrategy />
+                        <RunPanel />
+                    </div>
+                )}
                 <ChartModal />
                 <TradingViewModal />
             </DesktopWrapper>
-            <MobileWrapper>{!is_open && <RunPanel />}</MobileWrapper>
+            <MobileWrapper>{!is_open && !hide_run_panel && <RunPanel />}</MobileWrapper>
             <Dialog
                 cancel_button_text={cancel_button_text || localize('Cancel')}
                 className='dc-dialog__wrapper--fixed'
