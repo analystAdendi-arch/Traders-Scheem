@@ -2,41 +2,134 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { addComma, getCurrencyDisplayCode, getDecimalPlaces } from '@/components/shared';
-import Text from '@/components/shared_ui/text';
 import { api_base } from '@/external/bot-skeleton/services/api/api-base';
 import { useApiBase } from '@/hooks/useApiBase';
+import { useLogout } from '@/hooks/useLogout';
 import { useStore } from '@/hooks/useStore';
 import { isDemoAccount } from '@/utils/account-helpers';
-import { Localize } from '@deriv-com/translations';
+import { Localize, localize } from '@deriv-com/translations';
 import { TAccountSwitcher } from './common/types';
 import AccountInfoWrapper from './account-info-wrapper';
 import './account-switcher.scss';
 
-const CoinIcon = ({ is_demo }: { is_demo: boolean }) => (
-    <svg className='acc-info__coin' width='26' height='26' viewBox='0 0 26 26' aria-hidden='true'>
-        <circle cx='13' cy='13' r='12' fill={is_demo ? '#0ea5e9' : '#14b8a6'} />
-        <circle cx='13' cy='13' r='9' fill='none' stroke='rgba(255,255,255,0.55)' strokeWidth='1.2' />
-        <text x='13' y='17.5' textAnchor='middle' fontSize='12' fontWeight='800' fill='#ffffff' fontFamily='Arial'>
-            {is_demo ? 'D' : '$'}
-        </text>
+const TRADERS_HUB_URL = 'https://hub.deriv.com/tradershub';
+
+/* --------------------------------------------------------------- currency marks */
+
+/** Country flag for a fiat currency; a lettered coin for anything else. */
+const CurrencyMark = ({ currency, is_demo, size = 24 }: { currency?: string; is_demo?: boolean; size?: number }) => {
+    const common = { width: size, height: size, viewBox: '0 0 24 24', 'aria-hidden': true as const };
+
+    if (is_demo) {
+        return (
+            <svg {...common} className='acc-mark'>
+                <circle cx='12' cy='12' r='11' fill='#ff444f' />
+                <text x='12' y='16.5' textAnchor='middle' fontSize='12' fontWeight='800' fill='#fff' fontFamily='Arial'>
+                    D
+                </text>
+            </svg>
+        );
+    }
+
+    const code = (currency || '').toUpperCase();
+
+    if (code === 'USD') {
+        // Stars and stripes, simplified to read clearly at 24px.
+        return (
+            <svg {...common} className='acc-mark'>
+                <defs>
+                    <clipPath id='acc-flag-clip'>
+                        <circle cx='12' cy='12' r='11' />
+                    </clipPath>
+                </defs>
+                <g clipPath='url(#acc-flag-clip)'>
+                    <rect width='24' height='24' fill='#ffffff' />
+                    {[0, 2, 4, 6, 8, 10].map(i => (
+                        <rect key={i} y={1 + i * 2} width='24' height='2' fill='#b22234' />
+                    ))}
+                    <rect width='11' height='13' fill='#3c3b6e' />
+                    {[2.5, 6.5, 10.5].map(y =>
+                        [1.8, 4.4, 7, 9.2].map(x => <circle key={`${x}-${y}`} cx={x} cy={y} r='0.7' fill='#fff' />)
+                    )}
+                </g>
+                <circle cx='12' cy='12' r='11' fill='none' stroke='rgba(0,0,0,0.12)' />
+            </svg>
+        );
+    }
+
+    if (code === 'EUR') {
+        return (
+            <svg {...common} className='acc-mark'>
+                <circle cx='12' cy='12' r='11' fill='#003399' />
+                <text x='12' y='16.5' textAnchor='middle' fontSize='12' fontWeight='800' fill='#ffcc00'>
+                    €
+                </text>
+            </svg>
+        );
+    }
+
+    if (code === 'GBP') {
+        return (
+            <svg {...common} className='acc-mark'>
+                <circle cx='12' cy='12' r='11' fill='#012169' />
+                <text x='12' y='16.5' textAnchor='middle' fontSize='12' fontWeight='800' fill='#ffffff'>
+                    £
+                </text>
+            </svg>
+        );
+    }
+
+    return (
+        <svg {...common} className='acc-mark'>
+            <circle cx='12' cy='12' r='11' fill='#14b8a6' />
+            <text x='12' y='16' textAnchor='middle' fontSize='8' fontWeight='800' fill='#ffffff' fontFamily='Arial'>
+                {code.slice(0, 3) || '$'}
+            </text>
+        </svg>
+    );
+};
+
+const Chevron = ({ up }: { up?: boolean }) => (
+    <svg
+        className={classNames('acc-chevron', { 'acc-chevron--up': up })}
+        width='14'
+        height='14'
+        viewBox='0 0 24 24'
+        fill='none'
+        aria-hidden='true'
+    >
+        <path d='M6 9l6 6 6-6' stroke='currentColor' strokeWidth='2.2' strokeLinecap='round' strokeLinejoin='round' />
     </svg>
 );
+
+const LogoutIcon = () => (
+    <svg width='15' height='15' viewBox='0 0 24 24' fill='none' aria-hidden='true'>
+        <path
+            d='M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+        />
+        <path d='M9 12h11M16 8l4 4-4 4' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
+    </svg>
+);
+
+/* ---------------------------------------------------------------------- page */
 
 const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
     const [isOpen, setIsOpen] = useState(false);
     const [typeTab, setTypeTab] = useState<'real' | 'demo'>('real');
+    const [listOpen, setListOpen] = useState(true);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const { accountList, activeLoginid } = useApiBase();
     const { client, run_panel } = useStore() ?? {};
+    const handleLogout = useLogout();
 
     const is_bot_running = run_panel?.is_running || api_base.is_running;
-    const isSingleAccount = !accountList || accountList.length <= 1;
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-                setIsOpen(false);
-            }
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setIsOpen(false);
         };
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') setIsOpen(false);
@@ -50,11 +143,12 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
     }, []);
 
     const toggleDropdown = useCallback(() => {
-        if (is_bot_running || isSingleAccount) return;
-        // Open on the tab of the account currently in use.
+        // The panel also holds the account list and logout, so it opens even
+        // with one account; only a running bot keeps it shut.
+        if (is_bot_running) return;
         if (!isOpen && activeLoginid) setTypeTab(isDemoAccount(activeLoginid) ? 'demo' : 'real');
         setIsOpen(prev => !prev);
-    }, [is_bot_running, isSingleAccount, isOpen, activeLoginid]);
+    }, [is_bot_running, isOpen, activeLoginid]);
 
     const handleAccountSelect = useCallback(
         (loginid: string) => {
@@ -67,15 +161,13 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
 
     const formattedAccounts = useMemo(() => {
         if (!accountList) return [];
-        return accountList
-            .map(account => ({
-                loginid: account.loginid,
-                currency: account.currency,
-                balance: addComma(Number(account.balance ?? 0).toFixed(getDecimalPlaces(account.currency))),
-                isVirtual: isDemoAccount(account.loginid),
-                isActive: account.loginid === activeLoginid,
-            }))
-            .sort((a, b) => (a.isActive ? -1 : b.isActive ? 1 : 0));
+        return accountList.map(account => ({
+            loginid: account.loginid,
+            currency: account.currency,
+            balance: addComma(Number(account.balance ?? 0).toFixed(getDecimalPlaces(account.currency))),
+            isVirtual: isDemoAccount(account.loginid),
+            isActive: account.loginid === activeLoginid,
+        }));
     }, [accountList, activeLoginid]);
 
     const realAccounts = formattedAccounts.filter(account => !account.isVirtual);
@@ -85,7 +177,6 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
     if (!activeAccount) return null;
 
     const { currency, isVirtual, balance } = activeAccount;
-    const showChevron = !isSingleAccount && !is_bot_running;
 
     return (
         <div className='acc-info__wrapper' ref={wrapperRef}>
@@ -93,83 +184,41 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
                 <div
                     data-testid='dt_acc_info'
                     id='dt_core_account-info_acc-info'
-                    role={showChevron ? 'button' : undefined}
-                    tabIndex={showChevron ? 0 : -1}
-                    aria-expanded={showChevron ? isOpen : undefined}
-                    aria-haspopup={showChevron ? 'listbox' : undefined}
-                    className={classNames('acc-info', {
-                        'acc-info--is-virtual': isVirtual,
-                        'acc-info--interactive': showChevron,
-                    })}
+                    role='button'
+                    tabIndex={0}
+                    aria-expanded={isOpen}
+                    aria-haspopup='menu'
+                    className={classNames('acc-trigger', { 'acc-trigger--disabled': is_bot_running })}
                     onClick={toggleDropdown}
                     onKeyDown={e => {
-                        if (showChevron && (e.key === 'Enter' || e.key === ' ')) {
+                        if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
                             toggleDropdown();
                         }
                     }}
                 >
-                    <span className='acc-info__id' aria-hidden='true'></span>
-                    <CoinIcon is_demo={!!isVirtual} />
-                    <div className='acc-info__content'>
-                        <div className='acc-info__account-type-header'>
-                            <Text as='p' size='xs' className='acc-info__account-type'>
-                                {isVirtual ? (
-                                    <Localize i18n_default_text='Demo account' />
-                                ) : (
-                                    <Localize i18n_default_text='Real account' />
-                                )}
-                            </Text>
-                            {showChevron && (
-                                <span
-                                    className={classNames('acc-info__select-arrow', {
-                                        'acc-info__select-arrow--invert': isOpen,
-                                    })}
-                                >
-                                    <svg width='12' height='12' viewBox='0 0 12 12' fill='none'>
-                                        <path
-                                            d='M2 4L6 8L10 4'
-                                            stroke='currentColor'
-                                            strokeWidth='1.5'
-                                            strokeLinecap='round'
-                                            strokeLinejoin='round'
-                                        />
-                                    </svg>
-                                </span>
-                            )}
-                        </div>
-                        {(typeof balance !== 'undefined' || !currency) && (
-                            <div className='acc-info__balance-section'>
-                                <p
-                                    data-testid='dt_balance'
-                                    className={classNames('acc-info__balance', {
-                                        'acc-info__balance--no-currency': !currency && !isVirtual,
-                                    })}
-                                >
-                                    {!currency ? (
-                                        <Localize i18n_default_text='No currency assigned' />
-                                    ) : (
-                                        `${balance} ${getCurrencyDisplayCode(currency)}`
-                                    )}
-                                </p>
-                            </div>
+                    <CurrencyMark currency={currency} is_demo={!!isVirtual} size={26} />
+                    <span data-testid='dt_balance' className='acc-trigger__balance'>
+                        {!currency ? (
+                            <Localize i18n_default_text='No currency assigned' />
+                        ) : (
+                            `${balance} ${getCurrencyDisplayCode(currency)}`
                         )}
-                    </div>
+                    </span>
+                    <Chevron up={isOpen} />
                 </div>
             </AccountInfoWrapper>
+
             {isOpen && (
-                <div className='acc-dropdown' role='listbox'>
-                    <div className='acc-dropdown__tabs' role='tablist'>
+                <div className='acc-menu' role='menu'>
+                    <div className='acc-menu__tabs' role='tablist'>
                         {(['real', 'demo'] as const).map(tab => (
                             <button
                                 key={tab}
                                 type='button'
                                 role='tab'
                                 aria-selected={typeTab === tab}
-                                className={classNames('acc-dropdown__tab', {
-                                    'acc-dropdown__tab--active': typeTab === tab,
-                                    'acc-dropdown__tab--demo': tab === 'demo',
-                                })}
+                                className={classNames('acc-menu__tab', { 'acc-menu__tab--active': typeTab === tab })}
                                 onClick={() => setTypeTab(tab)}
                             >
                                 {tab === 'real' ? (
@@ -177,60 +226,93 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
                                 ) : (
                                     <Localize i18n_default_text='Demo' />
                                 )}
-                                <span className='acc-dropdown__tab-count'>
-                                    {tab === 'real' ? realAccounts.length : demoAccounts.length}
-                                </span>
                             </button>
                         ))}
                     </div>
-                    {tabAccounts.length === 0 && (
-                        <div className='acc-dropdown__empty'>
-                            {typeTab === 'real' ? (
-                                <Localize i18n_default_text='No real account on this login yet.' />
+
+                    <button
+                        type='button'
+                        className='acc-menu__section'
+                        aria-expanded={listOpen}
+                        onClick={() => setListOpen(open => !open)}
+                    >
+                        <span>
+                            {tabAccounts.length === 1 ? (
+                                <Localize i18n_default_text='Deriv account' />
                             ) : (
-                                <Localize i18n_default_text='No demo account on this login.' />
+                                <Localize i18n_default_text='Deriv accounts' />
                             )}
+                        </span>
+                        <Chevron up={listOpen} />
+                    </button>
+
+                    {listOpen && (
+                        <div className='acc-menu__list'>
+                            {tabAccounts.length === 0 && (
+                                <p className='acc-menu__empty'>
+                                    {typeTab === 'real' ? (
+                                        <Localize i18n_default_text='No real account on this login yet.' />
+                                    ) : (
+                                        <Localize i18n_default_text='No demo account on this login.' />
+                                    )}
+                                </p>
+                            )}
+                            {tabAccounts.map(account => (
+                                <div
+                                    key={account.loginid}
+                                    role='menuitemradio'
+                                    aria-checked={account.isActive}
+                                    tabIndex={0}
+                                    className={classNames('acc-menu__row', {
+                                        'acc-menu__row--active': account.isActive,
+                                    })}
+                                    onClick={() => !account.isActive && handleAccountSelect(account.loginid)}
+                                    onKeyDown={e => {
+                                        if (!account.isActive && (e.key === 'Enter' || e.key === ' ')) {
+                                            e.preventDefault();
+                                            handleAccountSelect(account.loginid);
+                                        }
+                                    }}
+                                >
+                                    <CurrencyMark currency={account.currency} is_demo={account.isVirtual} />
+                                    <span className='acc-menu__row-text'>
+                                        <span className='acc-menu__row-title'>
+                                            {account.isVirtual ? (
+                                                <Localize i18n_default_text='Demo' />
+                                            ) : (
+                                                getCurrencyDisplayCode(account.currency) ||
+                                                localize('No currency')
+                                            )}
+                                        </span>
+                                        <span className='acc-menu__row-id'>{account.loginid}</span>
+                                    </span>
+                                    <span className='acc-menu__row-balance'>
+                                        {account.currency
+                                            ? `${account.balance} ${getCurrencyDisplayCode(account.currency)}`
+                                            : '--'}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     )}
-                    {tabAccounts.map(account => (
-                        <div
-                            key={account.loginid}
-                            role='option'
-                            aria-selected={account.isActive}
-                            tabIndex={0}
-                            className={classNames('acc-dropdown__account', {
-                                'acc-dropdown__account--selected': account.isActive,
-                                'acc-dropdown__account--virtual': account.isVirtual,
-                            })}
-                            onClick={() => !account.isActive && handleAccountSelect(account.loginid)}
-                            onKeyDown={e => {
-                                if (!account.isActive && (e.key === 'Enter' || e.key === ' ')) {
-                                    e.preventDefault();
-                                    handleAccountSelect(account.loginid);
-                                }
+
+                    <a className='acc-menu__hub' href={TRADERS_HUB_URL} target='_blank' rel='noopener noreferrer'>
+                        <Localize i18n_default_text="Looking for CFD accounts? Go to Trader's Hub" />
+                    </a>
+
+                    <div className='acc-menu__footer'>
+                        <button
+                            type='button'
+                            className='acc-menu__logout'
+                            onClick={() => {
+                                setIsOpen(false);
+                                handleLogout();
                             }}
                         >
-                            <Text
-                                size='xxxs'
-                                className={classNames('acc-dropdown__account-type', {
-                                    'acc-dropdown__account-type--virtual': account.isVirtual,
-                                })}
-                            >
-                                {account.isVirtual ? (
-                                    <Localize i18n_default_text='Demo account' />
-                                ) : (
-                                    <Localize i18n_default_text='Real account' />
-                                )}
-                            </Text>
-                            <Text size='xs' weight='bold' className='acc-dropdown__balance'>
-                                {account.currency ? (
-                                    `${account.balance} ${getCurrencyDisplayCode(account.currency)}`
-                                ) : (
-                                    <Localize i18n_default_text='No currency assigned' />
-                                )}
-                            </Text>
-                        </div>
-                    ))}
+                            <Localize i18n_default_text='Logout' />
+                            <LogoutIcon />
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
