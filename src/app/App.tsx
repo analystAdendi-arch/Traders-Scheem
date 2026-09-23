@@ -3,6 +3,7 @@ import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { cleanupUrl, handleOAuthCallback } from '@/external/deriv-core';
 import ChunkLoader from '@/components/loader/chunk-loader';
+import { getOAuthRedirectUri } from '@/components/shared/utils/config/config';
 import LocalStorageSyncWrapper from '@/components/localStorage-sync-wrapper';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { useAccountSwitching } from '@/hooks/useAccountSwitching';
@@ -59,6 +60,8 @@ const router = createBrowserRouter(
         >
             {/* All child routes will be passed as children to Layout */}
             <Route index element={<AppRoot />} />
+            {/* Deriv returns here after login; App swaps to / once the code is exchanged */}
+            <Route path='callback' element={<ChunkLoader message={localize('Signing you in...')} />} />
             {/* App Builder embeds the template at /preview — render the same app shell */}
             <Route path='preview' element={<AppRoot />} />
         </Route>
@@ -86,7 +89,8 @@ function App() {
             try {
                 const authInfo = await handleOAuthCallback(window.location.href, {
                     clientId: process.env.NEXT_PUBLIC_DERIV_APP_ID || '',
-                    redirectUri: window.location.origin,
+                    // Same value the login URL sent, or Deriv rejects the exchange.
+                    redirectUri: getOAuthRedirectUri(),
                     scopes: 'trade',
                 });
 
@@ -110,6 +114,11 @@ function App() {
                 console.error('OAuth callback error:', error);
             } finally {
                 cleanupUrl(window.location.origin);
+                // cleanupUrl only rewrites the address, so a login that returned
+                // to /callback would sit on a dead route. Land on the app root.
+                if (window.location.pathname !== '/') {
+                    window.location.replace(`${window.location.origin}/`);
+                }
             }
         };
 

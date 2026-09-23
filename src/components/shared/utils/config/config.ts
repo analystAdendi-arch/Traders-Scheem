@@ -93,6 +93,13 @@ export const getDebugServiceWorker = () => {
 };
 
 /**
+ * Where Deriv sends the user back after login. It must match a redirect URL
+ * registered on the Deriv app exactly, and the same value must be sent again
+ * when the code is exchanged for a token - so both callers read it from here.
+ */
+export const getOAuthRedirectUri = (): string => `${window.location.origin}/callback`;
+
+/**
  * Generates the OAuth login or sign-up URL using vendored deriv-core
  *
  * @param prompt - Optional prompt parameter ('registration' for sign-up flow)
@@ -105,7 +112,7 @@ export const generateOAuthURL = async (prompt?: string): Promise<string> => {
 
         const config: AuthConfig = {
             clientId,
-            redirectUri: window.location.origin,
+            redirectUri: getOAuthRedirectUri(),
             scopes: 'trade',
         };
 
