@@ -838,15 +838,17 @@
     }
 }
 
+// Hangs flush under the header, square at the top, rounded at the bottom.
 .acc-menu {
     position: absolute;
-    top: calc(100% + 0.6rem);
+    top: 100%;
     inset-inline-end: 0;
     z-index: 200;
     width: 32rem;
     padding-bottom: 0.4rem;
     border: 1px solid var(--general-section-1);
-    border-radius: 0.8rem;
+    border-top: 0;
+    border-radius: 0 0 0.8rem 0.8rem;
     background: var(--general-main-1);
     box-shadow: 0 1.2rem 3.2rem rgba(15, 23, 42, 0.22);
     overflow: hidden;
@@ -892,17 +894,24 @@
         font-size: 1.4rem;
         font-weight: 700;
         cursor: pointer;
+
+        // Dark chevron here, matching the reference's heading.
+        .acc-chevron {
+            color: currentColor;
+        }
     }
 
     &__list {
         padding: 0 1.2rem;
     }
 
+    // Selected account: white card with a light border, as in the reference.
     &__row {
         display: flex;
         align-items: center;
         gap: 1rem;
-        padding: 1rem 1.2rem;
+        min-height: 4.4rem;
+        padding: 0.8rem 1.2rem;
         border: 1px solid transparent;
         border-radius: 0.8rem;
         cursor: pointer;
@@ -912,8 +921,9 @@
         }
 
         &--active {
-            border-color: rgba(255, 68, 79, 0.45);
-            background: var(--general-section-1);
+            border-color: var(--general-section-1);
+            background: var(--general-main-1);
+            box-shadow: 0 0.1rem 0.3rem rgba(15, 23, 42, 0.08);
             cursor: default;
         }
     }
