@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { api_base } from '@/external/bot-skeleton';
+import { api_base, MessageTypes } from '@/external/bot-skeleton';
 import { LabelPairedChevronDownLgRegularIcon } from '@deriv/quill-icons/LabelPaired';
 import { localize } from '@deriv-com/translations';
+import { useStore } from '@/hooks/useStore';
 import { useTickData, type TPercentPair } from '@/hooks/useTickData';
 import './bulk-trader.scss';
 type TTradeType = 'even_odd' | 'over_under' | 'matches_differs';
@@ -14,6 +15,9 @@ const clampTicks = (value: number) => Math.min(Math.max(value, 1), MAX_TICKS);
 const clampDigit = (value: number) => Math.min(Math.max(value, 0), 9);
 
 const BulkTrader = () => {
+    // Same stores the bot writes to, so the run panel's Transactions and
+    // Journal tabs show these trades too.
+    const { transactions, journal } = useStore() ?? {};
     const {
         availableSymbols,
         selectedSymbol,
@@ -163,60 +167,96 @@ const BulkTrader = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, [updateArrowPosition]);
 
-    const waitForContractToClose = useCallback(
-        async (contract_id: number, timeoutMs = 60000) => {
-            if (!api_base.api) throw new Error('API not connected');
-            let subscriptionId: string | null = null;
-            return await new Promise<void>((resolve, reject) => {
-                const cleanup = () => {
-                    if (subscriptionId && api_base.api) {
-                        (api_base.api as any).forget(subscriptionId);
-                        subscriptionId = null;
-                    }
-                    subscription.unsubscribe();
-                };
+    /**
+     * Every contract we bought here, so the shared message stream can be
+     * filtered down to ours and fed to the run panel.
+     */
+    const ourContracts = useRef<Set<number>>(new Set());
 
-                const timeout = setTimeout(() => {
-                    cleanup();
-                    reject(new Error('Contract timeout'));
-                }, timeoutMs);
+    // Contract updates -> the bot's Transactions tab, settlements -> Journal.
+    useEffect(() => {
+        if (!api_base.api) return undefined;
+        const subscription = api_base.api.onMessage().subscribe(({ data }: { data: any }) => {
+            if (!data || data.error || data.msg_type !== 'proposal_open_contract') return;
+            const contract = data.proposal_open_contract;
+            const id = Number(contract?.contract_id);
+            if (!id || !ourContracts.current.has(id)) return;
 
-                const subscription = api_base.api.onMessage().subscribe(({ data }: { data: any }) => {
-                    if (!data || data?.error) return;
-                    if (data.msg_type !== 'proposal_open_contract') return;
-                    if (data.proposal_open_contract?.contract_id !== contract_id) return;
+            transactions?.onBotContractEvent(contract);
 
-                    if (data.subscription?.id) subscriptionId = data.subscription.id;
-                    if (data.proposal_open_contract?.is_sold) {
-                        clearTimeout(timeout);
-                        cleanup();
-                        resolve();
-                    }
-                });
+            if (contract.is_sold) {
+                const profit = Number(contract.profit ?? 0);
+                journal?.pushMessage(
+                    `${profit >= 0 ? localize('Won') : localize('Lost')} ${profit.toFixed(2)} ${
+                        contract.currency ?? ''
+                    } on ${contract.display_name ?? contract.underlying_symbol ?? ''} ${
+                        contract.contract_type ?? ''
+                    }`,
+                    profit >= 0 ? MessageTypes.SUCCESS : MessageTypes.ERROR,
+                    'journal__text'
+                );
+                ourContracts.current.delete(id);
+                if (data.subscription?.id) (api_base.api as any)?.forget(data.subscription.id);
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [transactions, journal]);
 
-                apiSend({ proposal_open_contract: 1, contract_id, subscribe: 1 }, 12000)
-                    .then((response: any) => {
-                        if (response?.error) {
-                            clearTimeout(timeout);
-                            cleanup();
-                            reject(new Error(response.error.message || 'proposal_open_contract error'));
-                            return;
-                        }
-                        if (response?.subscription?.id) subscriptionId = response.subscription.id;
-                        if (response?.proposal_open_contract?.is_sold) {
-                            clearTimeout(timeout);
-                            cleanup();
-                            resolve();
-                        }
-                    })
-                    .catch((e: any) => {
-                        clearTimeout(timeout);
-                        cleanup();
-                        reject(e);
-                    });
+    /** One proposal, one buy, then follow the contract. */
+    const placeOneTrade = useCallback(
+        async (contract_type: TDigitContractType, currency: string, amount: number) => {
+            const needs_barrier = ['DIGITOVER', 'DIGITUNDER', 'DIGITMATCH', 'DIGITDIFF'].includes(contract_type);
+
+            const proposal = await apiSend(
+                {
+                    proposal: 1,
+                    amount,
+                    basis: 'stake',
+                    contract_type,
+                    currency,
+                    duration: 1,
+                    duration_unit: 't',
+                    // Options API renamed proposal `symbol` -> `underlying_symbol`.
+                    underlying_symbol: selectedSymbolRef.current,
+                    ...(needs_barrier ? { barrier: String(clampDigit(predictionRef.current)) } : {}),
+                },
+                12000
+            );
+            if (proposal?.error) throw new Error(proposal.error.message || 'Proposal error');
+
+            const proposal_id = proposal?.proposal?.id;
+            if (!proposal_id) throw new Error('Missing proposal id');
+
+            const bought = await apiSend(
+                {
+                    buy: proposal_id,
+                    // ask_price may arrive as a string on the Options API.
+                    price: Number(proposal.proposal.ask_price ?? amount),
+                },
+                12000
+            );
+            if (bought?.error) throw new Error(bought.error.message || 'Buy error');
+
+            const contract_id = Number(bought?.buy?.contract_id);
+            if (!contract_id) throw new Error('Missing contract id');
+
+            ourContracts.current.add(contract_id);
+            journal?.pushMessage(
+                `${localize('Bought')} ${contract_type} ${localize('for')} ${Number(
+                    bought.buy.buy_price ?? amount
+                ).toFixed(2)} ${currency}`,
+                MessageTypes.NOTIFY,
+                'journal__text'
+            );
+
+            // Follow it so profit and settlement reach the run panel.
+            void apiSend({ proposal_open_contract: 1, contract_id, subscribe: 1 }, 12000).catch(() => {
+                /* the contract still settles; only live updates are missed */
             });
+
+            return contract_id;
         },
-        [apiSend]
+        [apiSend, journal]
     );
 
     const executeBulkTrade = useCallback(
@@ -227,76 +267,55 @@ const BulkTrader = () => {
             abortTradingRef.current = false;
             setIsTrading(true);
             setStatusIsError(false);
-            setStatusText(localize('Placing trades…'));
 
-            try {
-                const currency = (api_base.account_info as any)?.currency || 'USD';
-                const trades = Math.min(Math.max(numTrades, 1), 999);
-                const amount = Number(stake);
+            const currency = (api_base.account_info as any)?.currency || 'USD';
+            const trades = Math.min(Math.max(numTrades, 1), 100);
+            const amount = Number(stake);
 
-                for (let i = 0; i < trades; i++) {
-                    if (abortTradingRef.current) throw new Error('Trading cancelled');
+            setStatusText(
+                trades > 1
+                    ? localize('Placing {{count}} trades…', { count: trades })
+                    : localize('Placing trade…')
+            );
 
-                    const shouldAddBarrier = ['DIGITOVER', 'DIGITUNDER', 'DIGITMATCH', 'DIGITDIFF'].includes(contract_type);
-                    const proposalResponse = await apiSend(
-                        ({
-                            proposal: 1,
-                            amount,
-                            basis: 'stake',
-                            contract_type,
-                            currency,
-                            duration: 1,
-                            duration_unit: 't',
-                            // Options API renamed proposal `symbol` -> `underlying_symbol`.
-                            underlying_symbol: selectedSymbolRef.current,
-                            ...(shouldAddBarrier ? { barrier: String(clampDigit(predictionRef.current)) } : {}),
-                        } as Record<string, unknown>),
-                        12000
-                    );
+            // All at once: every trade is sent together instead of waiting for
+            // the one before it to settle.
+            const results = await Promise.allSettled(
+                Array.from({ length: trades }, () => placeOneTrade(contract_type, currency, amount))
+            );
 
-                    if (proposalResponse?.error) {
-                        throw new Error(proposalResponse.error.message || 'Proposal error');
-                    }
+            if (!isMountedRef.current) return;
 
-                    const proposalId = proposalResponse?.proposal?.id;
-                    const askPrice = proposalResponse?.proposal?.ask_price;
-                    if (!proposalId) throw new Error('Missing proposal id');
+            const placed = results.filter(result => result.status === 'fulfilled').length;
+            const failed = results.length - placed;
+            const first_error = results.find(
+                (result): result is PromiseRejectedResult => result.status === 'rejected'
+            );
+            const reason = first_error?.reason instanceof Error ? first_error.reason.message : '';
 
-                    const buyResponse = await apiSend(
-                        {
-                            buy: proposalId,
-                            // ask_price may arrive as a string on the Options API.
-                            price: Number(askPrice ?? amount),
-                        },
-                        12000
-                    );
-
-                    if (buyResponse?.error) {
-                        throw new Error(buyResponse.error.message || 'Buy error');
-                    }
-
-                    const contractId = buyResponse?.buy?.contract_id;
-                    if (!contractId) throw new Error('Missing contract id');
-
-                    await waitForContractToClose(Number(contractId), 60000);
-                    if (abortTradingRef.current) throw new Error('Trading cancelled');
-
-                    await new Promise(resolve => setTimeout(resolve, 150));
-                }
-
-                if (isMountedRef.current) setStatusText(null);
-            } catch (e: any) {
-                if (isMountedRef.current) {
-                    // Surface Deriv's reason instead of silently resetting.
-                    const has_reason = e?.message && e.message !== 'Trading cancelled';
-                    setStatusIsError(!!has_reason);
-                    setStatusText(has_reason ? `${localize('Trade failed')}: ${e.message}` : null);
-                }
-            } finally {
-                if (isMountedRef.current) setIsTrading(false);
+            if (placed > 0) {
+                journal?.pushMessage(
+                    localize('{{placed}} of {{total}} trades placed', { placed, total: trades }),
+                    failed ? MessageTypes.ERROR : MessageTypes.SUCCESS,
+                    'journal__text'
+                );
             }
+
+            setStatusIsError(placed === 0);
+            setStatusText(
+                placed === 0
+                    ? `${localize('Trade failed')}${reason ? `: ${reason}` : ''}`
+                    : failed > 0
+                      ? localize('{{placed}} placed, {{failed}} failed{{reason}}', {
+                            placed,
+                            failed,
+                            reason: reason ? `: ${reason}` : '',
+                        })
+                      : null
+            );
+            setIsTrading(false);
         },
-        [apiSend, isTrading, numTrades, stake, waitForContractToClose]
+        [isTrading, numTrades, stake, placeOneTrade, journal]
     );
 
     return (

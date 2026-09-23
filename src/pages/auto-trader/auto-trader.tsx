@@ -254,16 +254,17 @@ const NumberInput = ({
     />
 );
 
-// NoInfer keeps the inline `options` arrays from widening T to `string`, which
-// would stop a narrow setState (e.g. 'over' | 'under') from being accepted.
+// T comes from `value` alone: NoInfer on the other two stops the inline
+// `options` arrays and the setState handler from widening it to `string`,
+// which is what made narrow setters (e.g. 'over' | 'under') unassignable.
 function Choice<T extends string>({
     value,
     options,
     onChange,
 }: {
     value: T;
-    options: { value: NoInfer<T>; label: string }[];
-    onChange: (next: T) => void;
+    options: readonly { value: NoInfer<T>; label: string }[];
+    onChange: (next: NoInfer<T>) => void;
 }) {
     return (
         <select className='auto-card__input auto-card__input--select' value={value} onChange={e => onChange(e.target.value as T)}>
