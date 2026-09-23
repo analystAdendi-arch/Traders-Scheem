@@ -50,6 +50,15 @@ const ManualTrader = () => {
                     className='manual-trader__iframe'
                     src={DTRADER_URL}
                     allow='clipboard-read; clipboard-write; fullscreen; web-share'
+                    /**
+                     * The platform was pulling the whole site out of this tab.
+                     * Withholding allow-top-navigation stops it steering our
+                     * window, and leaving out allow-popups stops new tabs, so
+                     * it stays put here. The rest is what it needs to run:
+                     * scripts, its own storage and cookies, forms, dialogs and
+                     * statement downloads.
+                     */
+                    sandbox='allow-scripts allow-same-origin allow-forms allow-modals allow-downloads'
                     onLoad={() => setLoaded(true)}
                 />
 
