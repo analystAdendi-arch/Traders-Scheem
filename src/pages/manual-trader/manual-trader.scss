@@ -1,64 +1,460 @@
-@keyframes manual-trader-spin {
-    to {
-        transform: rotate(360deg);
+// Our own trading screen: positions, the site's chart, and the trade panel.
+.manual-trader {
+    --mt-surface: var(--general-main-1, #ffffff);
+    --mt-page: var(--general-section-1, #f1f5f9);
+    --mt-border: var(--general-border, #e2e8f0);
+    --mt-text: var(--text-general, #0f172a);
+    --mt-muted: var(--text-less-prominent, #64748b);
+    --mt-green: #16a34a;
+    --mt-red: #e11d48;
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    background: var(--mt-page);
+    color: var(--mt-text);
+    font-size: 1.3rem;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    /* ------------------------------------------------------- account strip */
+
+    &__bar {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+        padding: 0.8rem 1.2rem;
+        border-bottom: 1px solid var(--mt-border);
+        background: var(--mt-surface);
+    }
+
+    &__balance {
+        font-size: 1.5rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__notice,
+    &__error,
+    &__hint {
+        padding: 0.4rem 0.9rem;
+        border-radius: 0.6rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    &__notice {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+        cursor: pointer;
+    }
+
+    &__error {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    &__hint {
+        color: var(--mt-muted);
+    }
+
+    /* -------------------------------------------------------------- layout */
+
+    &__grid {
+        flex: 1 1 auto;
+        display: grid;
+        grid-template-columns: 24rem minmax(0, 1fr) 28rem;
+        gap: 0.8rem;
+        min-height: 0;
+        padding: 0.8rem;
+
+        @media (max-width: 1280px) {
+            grid-template-columns: 22rem minmax(0, 1fr);
+
+            .mt-panel--trade {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 900px) {
+            grid-template-columns: minmax(0, 1fr);
+            overflow-y: auto;
+        }
     }
 }
 
-// Deriv's platform fills the tab below the nav.
-.manual-trader-container {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
+/* --------------------------------------------------------------- panels */
+
+.mt-panel {
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
     min-height: 0;
-    background: #ffffff;
-    box-sizing: border-box;
+    border: 1px solid var(--mt-border);
+    border-radius: 0.8rem;
+    background: var(--mt-surface);
     overflow: hidden;
-    padding: 0;
-    margin: 0;
 
-    .manual-trader {
+    &__head {
+        flex: none;
         display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.2rem;
+        border-bottom: 1px solid var(--mt-border);
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+    &__collapse,
+    &__clear {
+        border: 0;
+        background: transparent;
+        color: var(--mt-muted);
+        cursor: pointer;
+    }
+
+    &__collapse {
+        font-size: 1.8rem;
+        line-height: 1;
+    }
+
+    &__clear {
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    &__body {
         flex: 1 1 auto;
+        display: flex;
         flex-direction: column;
-        width: 100%;
-        max-width: 100%;
-        min-height: 0;
-        background: #ffffff;
-        position: relative;
-        overflow: hidden;
+        gap: 1.2rem;
+        padding: 1.2rem;
+        overflow-y: auto;
+    }
 
-        &__iframe {
-            width: 100%;
-            height: 100%;
-            min-width: 0;
-            min-height: 0;
-            flex: 1 1 auto;
-            display: block;
-            border: none;
-            background: #ffffff;
+    &__subhead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.8rem;
+        border-top: 1px solid var(--mt-border);
+        color: var(--mt-muted);
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+}
+
+.mt-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3.2rem 1rem;
+    color: var(--mt-muted);
+    text-align: center;
+
+    p {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+}
+
+.mt-positions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mt-position {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.4rem 0.8rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--mt-border);
+    border-radius: 0.7rem;
+
+    &__type {
+        font-size: 1.2rem;
+        font-weight: 800;
+    }
+
+    &__profit {
+        font-weight: 800;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+
+        &--up {
+            color: var(--mt-green);
         }
 
-        &__loading {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #ffffff;
-            pointer-events: none;
-        }
-
-        &__spinner {
-            width: 4.8rem;
-            height: 4.8rem;
-            border-radius: 50%;
-            border: 3px solid #e2e8f0;
-            border-top-color: #22d3ee;
-            border-right-color: #a855f7;
-            animation: manual-trader-spin 1.1s linear infinite;
+        &--down {
+            color: var(--mt-red);
         }
     }
+
+    &__stake {
+        color: var(--mt-muted);
+        font-size: 1.1rem;
+    }
+
+    &__sell {
+        grid-column: 1 / -1;
+        margin-top: 0.4rem;
+        padding: 0.6rem;
+        border: 1px solid var(--mt-border);
+        border-radius: 0.5rem;
+        background: var(--mt-page);
+        color: var(--mt-text);
+        font-size: 1.15rem;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            border-color: var(--mt-muted);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+}
+
+/* ---------------------------------------------------------------- chart */
+
+// Wraps the shared SmartChart, which brings its own market selector.
+.mt-chart {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border: 1px solid var(--mt-border);
+    border-radius: 0.8rem;
+    background: var(--mt-surface);
+    overflow: hidden;
+
+    .dashboard__chart-wrapper {
+        flex: 1 1 auto;
+        min-height: 0;
+        height: 100%;
+    }
+}
+
+/* ---------------------------------------------------------- trade panel */
+
+.mt-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+
+    &__label {
+        color: var(--mt-muted);
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    &__control {
+        width: 100%;
+        min-height: 4rem;
+        padding: 0.9rem 1.2rem;
+        border: 1px solid var(--mt-border);
+        border-radius: 0.6rem;
+        background: var(--mt-surface);
+        color: var(--mt-text);
+        font-size: 1.35rem;
+        font-weight: 700;
+        line-height: 1.4;
+        cursor: pointer;
+    }
+
+    &__fixed {
+        margin: 0;
+        padding: 1rem 1.2rem;
+        border: 1px solid var(--mt-border);
+        border-radius: 0.6rem;
+        background: var(--mt-page);
+        color: var(--mt-muted);
+        font-weight: 700;
+    }
+}
+
+.mt-stepper {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) 4rem;
+    align-items: stretch;
+    border: 1px solid var(--mt-border);
+    border-radius: 0.6rem;
+    overflow: hidden;
+
+    &__btn {
+        border: 0;
+        background: var(--mt-page);
+        color: var(--mt-text);
+        font-size: 1.8rem;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover {
+            filter: brightness(0.96);
+        }
+    }
+
+    &__value {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border-inline: 1px solid var(--mt-border);
+        background: var(--mt-surface);
+    }
+
+    &__input {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        color: var(--mt-text);
+        font-size: 1.4rem;
+        font-weight: 800;
+        text-align: center;
+        appearance: textfield;
+        -moz-appearance: textfield;
+        outline: none;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+
+    &__suffix {
+        padding-inline-end: 0.8rem;
+        color: var(--mt-muted);
+        font-size: 1.1rem;
+        white-space: nowrap;
+    }
+}
+
+.mt-digits {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.mt-digit {
+    height: 3.4rem;
+    border: 1px solid var(--mt-border);
+    border-radius: 0.6rem;
+    background: var(--mt-surface);
+    color: var(--mt-text);
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    &--active {
+        border-color: var(--mt-green);
+        background: var(--mt-green);
+        color: #ffffff;
+    }
+}
+
+.mt-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--mt-border);
+    border-radius: 0.8rem;
+    background: var(--mt-page);
+
+    &__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.2rem;
+        color: var(--mt-muted);
+        font-size: 1.2rem;
+
+        strong {
+            color: var(--mt-text);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+}
+
+.mt-buys {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.mt-buy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 1.2rem 0.8rem;
+    border: 0;
+    border-radius: 0.8rem;
+    color: #ffffff;
+    cursor: pointer;
+    transition: filter 140ms ease;
+
+    &:hover:not(:disabled) {
+        filter: brightness(1.06);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    &--left {
+        background: var(--mt-green);
+    }
+
+    &--right {
+        background: var(--mt-red);
+    }
+
+    &__label {
+        font-size: 1.45rem;
+        font-weight: 800;
+    }
+
+    &__payout {
+        font-size: 1.05rem;
+        font-weight: 600;
+        opacity: 0.95;
+    }
+}
+
+.mt-longcode {
+    margin: 0;
+    color: var(--mt-muted);
+    font-size: 1.1rem;
+    line-height: 1.5;
 }

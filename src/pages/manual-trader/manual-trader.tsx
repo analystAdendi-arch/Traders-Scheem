@@ -1,58 +1,351 @@
-import { useEffect, useRef, useState } from 'react';
+/**
+ * Manual Trader: our own trading screen on the Deriv Options API, which is how
+ * Deriv tells partners to do it - their DTrader page is not embedded.
+ *
+ * Layout follows their suggested order: chart and symbol list in the middle
+ * (the same SmartChart the Charts tab uses, so the market selector and the
+ * price come from one place), open positions on the left, and the contract,
+ * amount, duration and buy controls on the right.
+ */
+import { useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { localize } from '@deriv-com/translations';
+
+import { useStore } from '@/hooks/useStore';
+import Chart from '@/pages/chart';
+import { FAMILIES, TSide, TTradeFamily, useManualTrader } from './use-manual-trader';
 import './manual-trader.scss';
 
-/**
- * Deriv's Derivatives Trader, embedded in the tab.
- *
- * app.deriv.com serves Deriv's marketing page rather than a platform, so the
- * platform URL is used directly. The sandbox is what keeps it here: without
- * allow-top-navigation the platform cannot redirect our tab to itself, which
- * is exactly what it does otherwise. allow-same-origin is required or it has
- * no storage of its own and will not boot.
- */
-/**
- * The app id travels with the URL: Deriv ties an embed to the partner app that
- * owns it, and without it the platform treats us as an unknown origin.
- */
-const DTRADER_URL = `https://dtrader.deriv.com/?app_id=${process.env.NEXT_PUBLIC_DERIV_APP_ID ?? ''}`;
-const SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-storage-access-by-user-activation';
+const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-const ManualTrader = () => {
-    const iframeRef = useRef<HTMLIFrameElement | null>(null);
-    const [loaded, setLoaded] = useState(false);
+/* ------------------------------------------------------------------ pieces */
 
-    // Close the platform's connection when leaving the tab.
-    useEffect(
-        () => () => {
-            try {
-                iframeRef.current?.setAttribute('src', 'about:blank');
-            } catch {
-                /* ignore */
-            }
-        },
-        []
-    );
+const Stepper = ({
+    value,
+    onChange,
+    step,
+    min,
+    max,
+    decimals = 2,
+    suffix,
+}: {
+    value: number;
+    onChange: (next: number) => void;
+    step: number;
+    min: number;
+    max: number;
+    decimals?: number;
+    suffix?: string;
+}) => (
+    <div className='mt-stepper'>
+        <button
+            type='button'
+            className='mt-stepper__btn'
+            aria-label={localize('Decrease')}
+            onClick={() => onChange(Math.max(min, Number((value - step).toFixed(decimals))))}
+        >
+            −
+        </button>
+        <span className='mt-stepper__value'>
+            <input
+                className='mt-stepper__input'
+                type='number'
+                value={value}
+                min={min}
+                max={max}
+                step={step}
+                onChange={event => {
+                    const next = Number(event.target.value);
+                    if (Number.isFinite(next)) onChange(next);
+                }}
+                onBlur={event => {
+                    const next = Number(event.target.value);
+                    onChange(Math.min(max, Math.max(min, Number.isFinite(next) ? next : min)));
+                }}
+            />
+            {suffix && <span className='mt-stepper__suffix'>{suffix}</span>}
+        </span>
+        <button
+            type='button'
+            className='mt-stepper__btn'
+            aria-label={localize('Increase')}
+            onClick={() => onChange(Math.min(max, Number((value + step).toFixed(decimals))))}
+        >
+            +
+        </button>
+    </div>
+);
+
+/* -------------------------------------------------------------------- page */
+
+const ManualTrader = observer(() => {
+    const { chart_store } = useStore();
+    const symbol = chart_store?.symbol;
+    const trader = useManualTrader(symbol);
+    const [positions_open, setPositionsOpen] = useState(true);
+
+    const renderBuy = (side: TSide) => {
+        const choice = side === 'left' ? trader.meta.left : trader.meta.right;
+        const quote = trader.quotes[side];
+        const busy = trader.busy_side === side;
+
+        return (
+            <button
+                type='button'
+                className={`mt-buy mt-buy--${side}`}
+                disabled={busy || !!trader.busy_side || !symbol}
+                onClick={() => void trader.buy(side)}
+                title={quote?.longcode || undefined}
+            >
+                <span className='mt-buy__label'>
+                    {choice.label}
+                    {trader.meta.needs_digit ? ` ${trader.digit}` : ''}
+                </span>
+                <span className='mt-buy__payout'>
+                    {busy
+                        ? localize('Buying…')
+                        : quote
+                          ? `${localize('Payout')} ${quote.payout.toFixed(2)} ${trader.currency}`
+                          : localize('Pricing…')}
+                </span>
+            </button>
+        );
+    };
 
     return (
-        <div className='manual-trader-container'>
-            <div className='manual-trader'>
-                <iframe
-                    ref={iframeRef}
-                    title='Deriv Derivatives Trader'
-                    className='manual-trader__iframe'
-                    src={DTRADER_URL}
-                    allow='clipboard-read; clipboard-write; fullscreen; web-share'
-                    sandbox={SANDBOX}
-                    onLoad={() => setLoaded(true)}
-                />
-                {!loaded && (
-                    <div className='manual-trader__loading' role='status' aria-live='polite'>
-                        <span className='manual-trader__spinner' aria-hidden='true' />
-                    </div>
+        <div className='manual-trader'>
+            {/* account + messages */}
+            <div className='manual-trader__bar'>
+                <span className='manual-trader__balance'>
+                    {trader.balance
+                        ? `${trader.balance.amount.toFixed(2)} ${trader.balance.currency}`
+                        : localize('Balance unavailable')}
+                </span>
+                {trader.notice && (
+                    <button type='button' className='manual-trader__notice' onClick={trader.dismissNotice}>
+                        {trader.notice}
+                    </button>
                 )}
+                {trader.error && <span className='manual-trader__error'>{trader.error}</span>}
+                {!trader.is_logged_in && (
+                    <span className='manual-trader__hint'>
+                        {localize('Prices are live. Log in with Deriv to trade.')}
+                    </span>
+                )}
+            </div>
+
+            <div className='manual-trader__grid'>
+                {/* open positions */}
+                <section className='mt-panel mt-panel--positions'>
+                    <header className='mt-panel__head'>
+                        <h2 className='mt-panel__title'>{localize('Open positions')}</h2>
+                        <button
+                            type='button'
+                            className='mt-panel__collapse'
+                            aria-expanded={positions_open}
+                            onClick={() => setPositionsOpen(open => !open)}
+                        >
+                            {positions_open ? '−' : '+'}
+                        </button>
+                    </header>
+
+                    {positions_open && (
+                        <div className='mt-panel__body'>
+                            {trader.open_positions.length === 0 ? (
+                                <div className='mt-empty'>
+                                    <svg width='40' height='40' viewBox='0 0 24 24' fill='none' aria-hidden='true'>
+                                        <rect
+                                            x='2.5'
+                                            y='7'
+                                            width='19'
+                                            height='13'
+                                            rx='2'
+                                            stroke='currentColor'
+                                            strokeWidth='1.6'
+                                        />
+                                        <path
+                                            d='M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7'
+                                            stroke='currentColor'
+                                            strokeWidth='1.6'
+                                        />
+                                    </svg>
+                                    <p>{localize('You have no open positions.')}</p>
+                                </div>
+                            ) : (
+                                <ul className='mt-positions'>
+                                    {trader.open_positions.map(position => (
+                                        <li key={position.contract_id} className='mt-position'>
+                                            <span className='mt-position__type'>{position.contract_type}</span>
+                                            <span
+                                                className={`mt-position__profit mt-position__profit--${
+                                                    position.profit >= 0 ? 'up' : 'down'
+                                                }`}
+                                            >
+                                                {position.profit >= 0 ? '+' : ''}
+                                                {position.profit.toFixed(2)}
+                                            </span>
+                                            <span className='mt-position__stake'>
+                                                {localize('Stake')} {position.buy_price.toFixed(2)}
+                                            </span>
+                                            {position.is_valid_to_sell && (
+                                                <button
+                                                    type='button'
+                                                    className='mt-position__sell'
+                                                    disabled={trader.selling === position.contract_id}
+                                                    onClick={() => void trader.sell(position.contract_id)}
+                                                >
+                                                    {trader.selling === position.contract_id
+                                                        ? localize('Selling…')
+                                                        : `${localize('Sell')} ${
+                                                              position.sell_price?.toFixed(2) ?? ''
+                                                          }`}
+                                                </button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+
+                            {trader.settled_positions.length > 0 && (
+                                <>
+                                    <div className='mt-panel__subhead'>
+                                        <span>{localize('Settled')}</span>
+                                        <button
+                                            type='button'
+                                            className='mt-panel__clear'
+                                            onClick={trader.clearSettled}
+                                        >
+                                            {localize('Clear')}
+                                        </button>
+                                    </div>
+                                    <ul className='mt-positions'>
+                                        {trader.settled_positions.map(position => (
+                                            <li key={position.contract_id} className='mt-position'>
+                                                <span className='mt-position__type'>{position.contract_type}</span>
+                                                <span
+                                                    className={`mt-position__profit mt-position__profit--${
+                                                        position.profit >= 0 ? 'up' : 'down'
+                                                    }`}
+                                                >
+                                                    {position.profit >= 0 ? '+' : ''}
+                                                    {position.profit.toFixed(2)}
+                                                </span>
+                                                <span className='mt-position__stake'>
+                                                    {localize('Stake')} {position.buy_price.toFixed(2)}
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+                        </div>
+                    )}
+                </section>
+
+                {/* the site's own chart carries the symbol list and live price */}
+                <section className='mt-chart'>
+                    <Chart show_digits_stats={trader.meta.needs_digit || trader.meta.tick_only} />
+                </section>
+
+                {/* contract, amount, duration, buy */}
+                <section className='mt-panel mt-panel--trade'>
+                    <div className='mt-panel__body'>
+                        <label className='mt-field'>
+                            <span className='mt-field__label'>{localize('Trade type')}</span>
+                            <select
+                                className='mt-field__control'
+                                value={trader.family}
+                                onChange={event => trader.setFamily(event.target.value as TTradeFamily)}
+                            >
+                                {trader.families.map(key => (
+                                    <option key={key} value={key}>
+                                        {FAMILIES[key].label}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+
+                        {trader.meta.needs_digit && (
+                            <div className='mt-field'>
+                                <span className='mt-field__label'>{localize('Digit')}</span>
+                                <div className='mt-digits'>
+                                    {DIGITS.map(value => (
+                                        <button
+                                            key={value}
+                                            type='button'
+                                            className={`mt-digit${value === trader.digit ? ' mt-digit--active' : ''}`}
+                                            aria-pressed={value === trader.digit}
+                                            onClick={() => trader.setDigit(value)}
+                                        >
+                                            {value}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className='mt-field'>
+                            <span className='mt-field__label'>{localize('Duration')}</span>
+                            {trader.meta.tick_only ? (
+                                <p className='mt-field__fixed'>{localize('1 tick')}</p>
+                            ) : (
+                                <Stepper
+                                    value={trader.duration}
+                                    onChange={trader.setDuration}
+                                    step={1}
+                                    min={1}
+                                    max={10}
+                                    decimals={0}
+                                    suffix={localize('ticks')}
+                                />
+                            )}
+                        </div>
+
+                        <div className='mt-field'>
+                            <span className='mt-field__label'>
+                                {localize('Stake')} ({trader.currency})
+                            </span>
+                            <Stepper
+                                value={trader.stake}
+                                onChange={trader.setStake}
+                                step={1}
+                                min={trader.min_stake}
+                                max={trader.max_stake}
+                            />
+                        </div>
+
+                        <div className='mt-summary'>
+                            <div className='mt-summary__row'>
+                                <span>{localize('Cost')}</span>
+                                <strong>
+                                    {trader.quotes.left
+                                        ? `${trader.quotes.left.ask_price.toFixed(2)} ${trader.currency}`
+                                        : '--'}
+                                </strong>
+                            </div>
+                            <div className='mt-summary__row'>
+                                <span>{localize('Payout')}</span>
+                                <strong>
+                                    {trader.quotes.left
+                                        ? `${trader.quotes.left.payout.toFixed(2)} ${trader.currency}`
+                                        : '--'}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div className='mt-buys'>
+                            {renderBuy('left')}
+                            {renderBuy('right')}
+                        </div>
+
+                        {trader.quotes.left?.longcode && (
+                            <p className='mt-longcode'>{trader.quotes.left.longcode}</p>
+                        )}
+                    </div>
+                </section>
             </div>
         </div>
     );
-};
+});
 
 export default ManualTrader;
