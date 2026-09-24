@@ -236,8 +236,9 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
                         aria-expanded={listOpen}
                         onClick={() => setListOpen(open => !open)}
                     >
+                        {/* Plural on Real, singular on Demo - as Deriv words it. */}
                         <span>
-                            {tabAccounts.length === 1 ? (
+                            {typeTab === 'demo' ? (
                                 <Localize i18n_default_text='Deriv account' />
                             ) : (
                                 <Localize i18n_default_text='Deriv accounts' />
