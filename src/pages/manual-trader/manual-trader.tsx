@@ -10,7 +10,11 @@ import './manual-trader.scss';
  * is exactly what it does otherwise. allow-same-origin is required or it has
  * no storage of its own and will not boot.
  */
-const DTRADER_URL = 'https://dtrader.deriv.com/';
+/**
+ * The app id travels with the URL: Deriv ties an embed to the partner app that
+ * owns it, and without it the platform treats us as an unknown origin.
+ */
+const DTRADER_URL = `https://dtrader.deriv.com/?app_id=${process.env.NEXT_PUBLIC_DERIV_APP_ID ?? ''}`;
 const SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-storage-access-by-user-activation';
 
 const ManualTrader = () => {
