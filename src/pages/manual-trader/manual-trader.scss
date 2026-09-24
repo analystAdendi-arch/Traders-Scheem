@@ -35,6 +35,18 @@
         background: var(--mt-surface);
     }
 
+    &__account {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.25;
+    }
+
+    &__account-type {
+        color: var(--mt-muted);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
     &__balance {
         font-size: 1.5rem;
         font-weight: 800;
@@ -405,18 +417,60 @@
     }
 }
 
-.mt-buys {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8rem;
+// "How to trade Rise/Fall?" line at the top of the panel.
+.mt-howto {
+    margin: 0;
+    color: var(--mt-muted);
+    font-size: 1.15rem;
+    font-weight: 600;
 }
 
+// The two sides as a segmented control, the armed one filled.
+.mt-sides {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    padding: 0.4rem;
+    border-radius: 0.8rem;
+    background: var(--mt-page);
+}
+
+.mt-side {
+    padding: 1rem 0.8rem;
+    border: 0;
+    border-radius: 0.6rem;
+    background: transparent;
+    color: var(--mt-muted);
+    font-size: 1.35rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--mt-text);
+    }
+
+    &--active {
+        background: var(--mt-surface);
+        box-shadow: 0 0.1rem 0.3rem rgba(15, 23, 42, 0.12);
+    }
+
+    &--left.mt-side--active {
+        color: var(--mt-green);
+    }
+
+    &--right.mt-side--active {
+        color: var(--mt-red);
+    }
+}
+
+// One full-width Buy, payout underneath, as DTrader has it.
 .mt-buy {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.2rem;
-    padding: 1.2rem 0.8rem;
+    width: 100%;
+    padding: 1.4rem 0.8rem;
     border: 0;
     border-radius: 0.8rem;
     color: #ffffff;
@@ -441,12 +495,12 @@
     }
 
     &__label {
-        font-size: 1.45rem;
+        font-size: 1.6rem;
         font-weight: 800;
     }
 
     &__payout {
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         font-weight: 600;
         opacity: 0.95;
     }

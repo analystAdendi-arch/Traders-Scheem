@@ -83,43 +83,23 @@ const ManualTrader = observer(() => {
     const symbol = chart_store?.symbol;
     const trader = useManualTrader(symbol);
     const [positions_open, setPositionsOpen] = useState(true);
-
-    const renderBuy = (side: TSide) => {
-        const choice = side === 'left' ? trader.meta.left : trader.meta.right;
-        const quote = trader.quotes[side];
-        const busy = trader.busy_side === side;
-
-        return (
-            <button
-                type='button'
-                className={`mt-buy mt-buy--${side}`}
-                disabled={busy || !!trader.busy_side || !symbol}
-                onClick={() => void trader.buy(side)}
-                title={quote?.longcode || undefined}
-            >
-                <span className='mt-buy__label'>
-                    {choice.label}
-                    {trader.meta.needs_digit ? ` ${trader.digit}` : ''}
-                </span>
-                <span className='mt-buy__payout'>
-                    {busy
-                        ? localize('Buying…')
-                        : quote
-                          ? `${localize('Payout')} ${quote.payout.toFixed(2)} ${trader.currency}`
-                          : localize('Pricing…')}
-                </span>
-            </button>
-        );
-    };
+    /** Which side the Buy button will take, as DTrader's Rise/Fall tabs do. */
+    const [side, setSide] = useState<TSide>('left');
+    const quote = trader.quotes[side];
 
     return (
         <div className='manual-trader'>
-            {/* account + messages */}
+            {/* account strip, as DTrader shows top-right */}
             <div className='manual-trader__bar'>
-                <span className='manual-trader__balance'>
-                    {trader.balance
-                        ? `${trader.balance.amount.toFixed(2)} ${trader.balance.currency}`
-                        : localize('Balance unavailable')}
+                <span className='manual-trader__account'>
+                    <span className='manual-trader__account-type'>
+                        {trader.is_demo ? localize('Demo account') : localize('Real account')}
+                    </span>
+                    <span className='manual-trader__balance'>
+                        {trader.balance
+                            ? `${trader.balance.amount.toFixed(2)} ${trader.balance.currency}`
+                            : localize('Balance unavailable')}
+                    </span>
                 </span>
                 {trader.notice && (
                     <button type='button' className='manual-trader__notice' onClick={trader.dismissNotice}>
@@ -247,9 +227,13 @@ const ManualTrader = observer(() => {
                     <Chart show_digits_stats={trader.meta.needs_digit || trader.meta.tick_only} />
                 </section>
 
-                {/* contract, amount, duration, buy */}
+                {/* contract, amount, duration, buy - laid out as DTrader does */}
                 <section className='mt-panel mt-panel--trade'>
                     <div className='mt-panel__body'>
+                        <p className='mt-howto'>
+                            {localize('How to trade {{type}}?', { type: trader.meta.label })}
+                        </p>
+
                         <label className='mt-field'>
                             <span className='mt-field__label'>{localize('Trade type')}</span>
                             <select
@@ -264,6 +248,27 @@ const ManualTrader = observer(() => {
                                 ))}
                             </select>
                         </label>
+
+                        {/* the two sides as tabs, one of which is armed for Buy */}
+                        <div className='mt-sides' role='tablist'>
+                            {(['left', 'right'] as TSide[]).map(option => {
+                                const choice = option === 'left' ? trader.meta.left : trader.meta.right;
+                                return (
+                                    <button
+                                        key={option}
+                                        type='button'
+                                        role='tab'
+                                        aria-selected={side === option}
+                                        className={`mt-side mt-side--${option}${
+                                            side === option ? ' mt-side--active' : ''
+                                        }`}
+                                        onClick={() => setSide(option)}
+                                    >
+                                        {choice.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
 
                         {trader.meta.needs_digit && (
                             <div className='mt-field'>
@@ -317,30 +322,33 @@ const ManualTrader = observer(() => {
                         <div className='mt-summary'>
                             <div className='mt-summary__row'>
                                 <span>{localize('Cost')}</span>
-                                <strong>
-                                    {trader.quotes.left
-                                        ? `${trader.quotes.left.ask_price.toFixed(2)} ${trader.currency}`
-                                        : '--'}
-                                </strong>
+                                <strong>{quote ? `${quote.ask_price.toFixed(2)} ${trader.currency}` : '--'}</strong>
                             </div>
                             <div className='mt-summary__row'>
                                 <span>{localize('Payout')}</span>
-                                <strong>
-                                    {trader.quotes.left
-                                        ? `${trader.quotes.left.payout.toFixed(2)} ${trader.currency}`
-                                        : '--'}
-                                </strong>
+                                <strong>{quote ? `${quote.payout.toFixed(2)} ${trader.currency}` : '--'}</strong>
                             </div>
                         </div>
 
-                        <div className='mt-buys'>
-                            {renderBuy('left')}
-                            {renderBuy('right')}
-                        </div>
+                        {/* One Buy for the armed side, payout underneath. */}
+                        <button
+                            type='button'
+                            className={`mt-buy mt-buy--${side}`}
+                            disabled={!!trader.busy_side || !symbol}
+                            onClick={() => void trader.buy(side)}
+                            title={quote?.longcode || undefined}
+                        >
+                            <span className='mt-buy__label'>
+                                {trader.busy_side ? localize('Buying…') : localize('Buy')}
+                            </span>
+                            <span className='mt-buy__payout'>
+                                {quote
+                                    ? `${localize('Payout')} ${quote.payout.toFixed(2)} ${trader.currency}`
+                                    : localize('Pricing…')}
+                            </span>
+                        </button>
 
-                        {trader.quotes.left?.longcode && (
-                            <p className='mt-longcode'>{trader.quotes.left.longcode}</p>
-                        )}
+                        {quote?.longcode && <p className='mt-longcode'>{quote.longcode}</p>}
                     </div>
                 </section>
             </div>

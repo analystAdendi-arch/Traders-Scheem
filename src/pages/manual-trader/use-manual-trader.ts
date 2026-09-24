@@ -153,7 +153,10 @@ export const useManualTrader = (symbol: string | undefined) => {
 
     const meta = FAMILIES[family];
     const currency = balance?.currency || (api_base.account_info as any)?.currency || 'USD';
-    const is_logged_in = Boolean((api_base.account_info as any)?.loginid);
+    const loginid = String((api_base.account_info as any)?.loginid ?? '');
+    const is_logged_in = Boolean(loginid);
+    // Deriv's virtual logins start VRT / VRTC / DOT.
+    const is_demo = /^(VRT|VRTC|DOT)/i.test(loginid);
     const effective_duration = meta.tick_only ? 1 : duration;
 
     useEffect(() => {
@@ -493,6 +496,7 @@ export const useManualTrader = (symbol: string | undefined) => {
         dismissNotice: () => setNotice(null),
         currency,
         is_logged_in,
+        is_demo,
         min_stake: MIN_STAKE,
         max_stake: MAX_STAKE,
     };
