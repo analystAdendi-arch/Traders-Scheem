@@ -85,10 +85,14 @@ export interface ExtendedBlocklyWorkspace extends BlocklyWorkspace {
     };
 }
 
-// Extend the Window interface to include Blockly types
+/**
+ * The single declaration of `window.Blockly`. It must stay optional and keep
+ * the index signature: the vendored bot-skeleton attaches far more than this,
+ * and a second, looser declaration elsewhere made the two conflict.
+ */
 declare global {
     interface Window {
-        Blockly: {
+        Blockly?: {
             derivWorkspace?: ExtendedBlocklyWorkspace;
             Events: BlocklyEvents;
             Xml: BlocklyXml;
@@ -97,6 +101,8 @@ declare global {
                 LIMIT: number;
             };
             WorkspaceSvg?: any;
+            /** Everything else the vendored library hangs off Blockly. */
+            [key: string]: any;
         };
     }
 }

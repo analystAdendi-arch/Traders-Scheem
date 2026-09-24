@@ -92,9 +92,8 @@ declare global {
     interface Window {
         __webpack_public_path__: string;
         Analytics: unknown;
-        // Blockly is attached to `window` by the vendored bot-skeleton; it has no
-        // upstream typings, so it is exposed loosely here.
-        Blockly?: any;
+        // Blockly is declared once, in types/blockly.types.ts - declaring it
+        // here as well made TypeScript reject the two as incompatible.
         DD_RUM: object | undefined;
         GrowthbookFeatures: { [key: string]: boolean };
         LC_API: {

@@ -33,7 +33,10 @@ export const setExecutionSpeed = (speed: TExecutionSpeed) => {
     listeners.forEach(listener => listener(speed));
 };
 
-export const subscribeExecutionSpeed = (listener: (speed: TExecutionSpeed) => void) => {
+/** Returns an unsubscribe function, safe to use straight as a React cleanup. */
+export const subscribeExecutionSpeed = (listener: (speed: TExecutionSpeed) => void): (() => void) => {
     listeners.add(listener);
-    return () => listeners.delete(listener);
+    return () => {
+        listeners.delete(listener);
+    };
 };
