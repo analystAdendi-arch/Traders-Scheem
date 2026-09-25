@@ -17,7 +17,9 @@
  * Until that URL is set, the tab falls back to the trade panel we built on the
  * Options API, so manual trading works either way.
  */
+import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { localize } from '@deriv-com/translations';
 
 import { useStore } from '@/hooks/useStore';
 import NativeTrader from './native-trader';
@@ -27,6 +29,7 @@ const DTRADER_URL = process.env.NEXT_PUBLIC_DTRADER_URL || '';
 
 const ManualTrader = observer(() => {
     const { chart_store, ui, client } = useStore();
+    const [frame_loaded, setFrameLoaded] = useState(false);
 
     if (!DTRADER_URL) return <NativeTrader />;
 
@@ -56,7 +59,15 @@ const ManualTrader = observer(() => {
                 className='manual-trader-frame__iframe'
                 src={src}
                 allow='clipboard-read; clipboard-write; fullscreen; web-share'
+                onLoad={() => setFrameLoaded(true)}
             />
+            {/* Our own spinner covers the gap before the platform paints. */}
+            {!frame_loaded && (
+                <div className='manual-trader-frame__loading' role='status' aria-live='polite'>
+                    <span className='manual-trader-frame__spinner' aria-hidden='true' />
+                    <span className='manual-trader-frame__loading-text'>{localize('Loading trader…')}</span>
+                </div>
+            )}
         </div>
     );
 });
