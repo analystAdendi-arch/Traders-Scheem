@@ -94,6 +94,14 @@ const server = http.createServer((req, res) => {
     const file = resolveFile(req.url || '/');
     if (file) return serve(req, res, file);
 
+    // /trader is its own single-page app (our DTrader build), so an unknown
+    // path under it belongs to that app's router, not the main site's.
+    const pathname = (req.url || '/').split('?')[0];
+    if (pathname === '/trader' || pathname.startsWith('/trader/')) {
+        const trader_index = path.join(ROOT, 'trader', 'index.html');
+        if (fs.existsSync(trader_index)) return serve(req, res, trader_index, 200);
+    }
+
     // Unknown path: hand the SPA its entry point so the router can take over.
     const index = path.join(ROOT, 'index.html');
     if (fs.existsSync(index)) return serve(req, res, index, 200);
