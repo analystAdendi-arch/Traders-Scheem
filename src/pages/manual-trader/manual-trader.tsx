@@ -33,6 +33,7 @@ const ManualTrader = observer(() => {
     // Same parameter set the platform reads, so the frame opens on the market
     // and trade type chosen here rather than its own defaults.
     const params = new URLSearchParams({
+        api_version: 'v2',
         chart_type: 'area',
         interval: '1t',
         lang: 'EN',
