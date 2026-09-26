@@ -12,10 +12,12 @@
  *                           -> initial platform state
  *
  * NEXT_PUBLIC_DTRADER_URL chooses which build to frame: a full URL for a hosted
- * one, or a path such as /trader for our own same-origin build. No access token
- * goes in this URL - a token in a query string is handed to whoever serves the
- * frame and kept in their logs. A same-origin build needs none, because it
- * shares our storage; a hosted one authorises through its own Deriv login.
+ * one, or a path such as /trader for our own same-origin build. The build
+ * authorises its socket from token1, so we pass it - but only to a build on our
+ * own origin, where the URL never leaves our domain. For one hosted elsewhere it
+ * is left out on purpose: a token in a query string is handed to whoever serves
+ * that origin and kept in their logs, so such a frame has to authorise through
+ * its own Deriv login instead.
  *
  * Until NEXT_PUBLIC_DTRADER_URL is set the tab falls back to the trade panel we
  * built on the Options API, so manual trading works either way.
@@ -87,7 +89,22 @@ const ManualTrader = observer(() => {
         // Who is framing it.
         params.set('embedBase', window.location.origin);
 
-        return `${traderEndpoint(DTRADER_URL)}?${params.toString()}`;
+        const endpoint = traderEndpoint(DTRADER_URL);
+        const is_first_party = endpoint.startsWith(`${window.location.origin}/`);
+
+        // The build authorises its socket from token1, and without it shows its
+        // own "session expired" screen. Only ever for a build on our own origin:
+        // the request never leaves our domain, and the page's referrer policy is
+        // origin-only, so the token cannot travel to anyone else. For a frame
+        // hosted elsewhere this is skipped on purpose - a token in a query
+        // string is handed to whoever serves that origin, and kept in their logs.
+        if (is_first_party && loginid) {
+            const token = client?.getToken?.();
+            if (token) params.set('token1', token);
+        }
+
+        return `${endpoint}?${params.toString()}`;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loginid, currency, account_type, symbol, theme]);
 
     // A same-origin build reads the session straight out of localStorage, so
