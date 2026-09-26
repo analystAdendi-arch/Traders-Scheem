@@ -104,7 +104,10 @@ export default defineConfig({
       { from: path.join(smartchartsDist, 'assets/*'), to: 'assets/[name][ext]' },
       { from: path.join(smartchartsDist, 'assets/fonts/*'), to: 'assets/fonts/[name][ext]' },
       { from: path.join(smartchartsDist, 'assets/shaders/*'), to: 'assets/shaders/[name][ext]' },
-      { from: path.join(__dirname, 'public') },
+      // public/ is not copied here: rsbuild copies it already (server.publicDir,
+      // copyOnBuild). Listing it again emitted every file twice, which rspack
+      // refuses once two emits disagree - the trader build's *.js.LICENSE.txt
+      // sidecars, which only a minified build produces.
     ],
   },
   html: { template: './index.html' },

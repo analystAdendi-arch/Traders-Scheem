@@ -16,6 +16,12 @@
     z-index: 1;
     pointer-events: none;
 
+    // A 64px fade over each end of the strip hides most of a tab on a phone,
+    // where the strip is swiped rather than hinted at.
+    @include mobile-or-tablet-screen {
+        display: none;
+    }
+
     &--left {
         left: 0;
         background: linear-gradient(-88.07deg, transparent 1.63%, var(--general-section-1) 50.02%);
@@ -38,6 +44,15 @@
 
     @include mobile-or-tablet-screen {
         height: calc(100vh - 6rem);
+    }
+
+    // See app.scss: dvh tracks the phone's browser chrome, vh does not.
+    @supports (height: 100dvh) {
+        height: calc(100dvh - 9rem);
+
+        @include mobile-or-tablet-screen {
+            height: calc(100dvh - 6rem);
+        }
     }
 
     &__container {
@@ -106,9 +121,18 @@
                     -ms-overflow-style: none;
                     scrollbar-width: none;
                     overscroll-behavior-x: contain;
+                    // Momentum swiping on iOS, which otherwise drags stiffly.
+                    -webkit-overflow-scrolling: touch;
 
                     &::-webkit-scrollbar {
                         display: none;
+                    }
+
+                    @include mobile-or-tablet-screen {
+                        // Room past the final tab (Copy Trader). Without it the
+                        // strip ends flush against the edge and the last label
+                        // reads as cut off even when scrolled fully across.
+                        padding-inline-end: 1.6rem;
                     }
                 }
 
@@ -295,6 +319,20 @@
     margin: 0;
     border-radius: 0;
     overflow: hidden;
+
+    // `overflow: hidden` clips the eleven-tab strip at the viewport edge on a
+    // phone, with nothing to scroll it back into view.
+    @include mobile-or-tablet-screen {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
 }
 
 .main__container .dc-tabs .dc-tabs__list.dc-tabs__list--main__tabs {

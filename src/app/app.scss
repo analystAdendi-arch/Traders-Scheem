@@ -8,6 +8,16 @@
     // 3.2rem taller than before: the 1.6rem page padding above and below is gone.
     --tab-content-height: calc(100vh - 13.4rem);
     --tab-content-height-mobile: calc(100vh - 12.6rem);
+
+    // On a phone 100vh is the viewport with the browser chrome hidden, so a
+    // panel sized from it runs underneath the address bar - and since the
+    // layout above it does not scroll, the bottom of the panel simply cannot be
+    // reached. dvh follows the chrome as it shows and hides. Kept behind
+    // @supports so browsers without dvh keep the vh values above.
+    @supports (height: 100dvh) {
+        --tab-content-height: calc(100dvh - 13.4rem);
+        --tab-content-height-mobile: calc(100dvh - 12.6rem);
+    }
     --zindex-drawer: 5;
     --zindex-modal: 6;
     --zindex-draggable-modal: 7;
