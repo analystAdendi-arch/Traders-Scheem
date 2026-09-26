@@ -64,6 +64,20 @@ export const syncTraderSession = (active_loginid: string) => {
     localStorage.setItem('config.account1', config_tokens.token1);
     localStorage.setItem('active_loginid', ordered[0]);
 
+    // The same login id under the name the shared storage-keys module uses
+    // (client.active_loginid, alongside client.account_list and config.app_id
+    // in that module), since parts of the build read it from there instead.
+    localStorage.setItem('client.active_loginid', ordered[0]);
+    localStorage.setItem(
+        'client.account_list',
+        JSON.stringify(ordered.map(loginid => ({ loginid, ...(accounts[loginid] as object) })))
+    );
+
+    // Which app the tokens belong to: the socket authorises against this, so a
+    // mismatch here fails the handshake even with a valid token.
+    const app_id = process.env.NEXT_PUBLIC_DERIV_APP_ID;
+    if (app_id) localStorage.setItem('config.app_id', app_id);
+
     return true;
 };
 
@@ -73,6 +87,9 @@ export const syncTraderSession = (active_loginid: string) => {
  */
 export const clearTraderSession = () => {
     localStorage.removeItem('client.accounts');
+    localStorage.removeItem('client.active_loginid');
+    localStorage.removeItem('client.account_list');
     localStorage.removeItem('config.tokens');
     localStorage.removeItem('config.account1');
+    localStorage.removeItem('config.app_id');
 };

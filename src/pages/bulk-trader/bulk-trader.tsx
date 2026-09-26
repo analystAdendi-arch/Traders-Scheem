@@ -78,11 +78,13 @@ const BulkTrader = () => {
 
     const tradeConfig = useMemo(() => {
         if (tradeType === 'over_under') {
+            // Over is the left, green side and Under the right, red one - the
+            // same way round as Even/Odd above it, and as every other platform.
             return {
-                leftLabel: localize('Under'),
-                rightLabel: localize('Over'),
-                leftContractType: 'DIGITUNDER' as const,
-                rightContractType: 'DIGITOVER' as const,
+                leftLabel: localize('Over'),
+                rightLabel: localize('Under'),
+                leftContractType: 'DIGITOVER' as const,
+                rightContractType: 'DIGITUNDER' as const,
                 requiresPrediction: true,
             };
         }
@@ -108,8 +110,9 @@ const BulkTrader = () => {
         const predictionDigit = clampDigit(prediction);
         if (tradeType === 'over_under') {
             if (ticksBuffer.length === 0) return { leftLabel: tradeConfig.leftLabel, rightLabel: tradeConfig.rightLabel, left: 50.0, right: 50.0 };
+            // computeOverUnder returns { a: over, b: under }, and Over is the left side.
             const pair: TPercentPair = computeOverUnder(predictionDigit);
-            return { leftLabel: tradeConfig.leftLabel, rightLabel: tradeConfig.rightLabel, left: pair.b, right: pair.a };
+            return { leftLabel: tradeConfig.leftLabel, rightLabel: tradeConfig.rightLabel, left: pair.a, right: pair.b };
         }
 
         if (tradeType === 'matches_differs') {
@@ -130,7 +133,10 @@ const BulkTrader = () => {
         for (let i = from; i < ticksBuffer.length; i++) {
             const tick = ticksBuffer[i];
             if (tradeType === 'over_under') {
-                history.push({ label: tick.digit < predictionDigit ? 'U' : 'O', isLeft: tick.digit < predictionDigit });
+                // Over is the left side, so a digit above the prediction is the
+                // one that gets the left colour.
+                const is_over = tick.digit > predictionDigit;
+                history.push({ label: is_over ? 'O' : 'U', isLeft: is_over });
             } else if (tradeType === 'matches_differs') {
                 history.push({ label: tick.digit === predictionDigit ? 'M' : 'D', isLeft: tick.digit === predictionDigit });
             } else {
@@ -202,9 +208,14 @@ const BulkTrader = () => {
         return () => subscription.unsubscribe();
     }, [transactions, journal]);
 
-    /** One proposal, one buy, then follow the contract. */
-    const placeOneTrade = useCallback(
-        async (contract_type: TDigitContractType, currency: string, amount: number) => {
+    /**
+     * Ask for one price. `passthrough` differs per trade so a run of identical
+     * requests cannot be answered with one shared proposal id - a proposal can
+     * only be bought once, so that would place a single contract instead of the
+     * number asked for.
+     */
+    const requestProposal = useCallback(
+        async (contract_type: TDigitContractType, currency: string, amount: number, trade_index: number) => {
             const needs_barrier = ['DIGITOVER', 'DIGITUNDER', 'DIGITMATCH', 'DIGITDIFF'].includes(contract_type);
 
             const proposal = await apiSend(
@@ -219,22 +230,25 @@ const BulkTrader = () => {
                     // Options API renamed proposal `symbol` -> `underlying_symbol`.
                     underlying_symbol: selectedSymbolRef.current,
                     ...(needs_barrier ? { barrier: String(clampDigit(predictionRef.current)) } : {}),
+                    passthrough: { trade: trade_index },
                 },
                 12000
             );
             if (proposal?.error) throw new Error(proposal.error.message || 'Proposal error');
 
-            const proposal_id = proposal?.proposal?.id;
-            if (!proposal_id) throw new Error('Missing proposal id');
+            const id = proposal?.proposal?.id;
+            if (!id) throw new Error('Missing proposal id');
 
-            const bought = await apiSend(
-                {
-                    buy: proposal_id,
-                    // ask_price may arrive as a string on the Options API.
-                    price: Number(proposal.proposal.ask_price ?? amount),
-                },
-                12000
-            );
+            // ask_price may arrive as a string on the Options API.
+            return { id: String(id), price: Number(proposal.proposal.ask_price ?? amount) };
+        },
+        [apiSend]
+    );
+
+    /** Buy one priced proposal and follow the contract it opens. */
+    const buyProposal = useCallback(
+        async (proposal: { id: string; price: number }, contract_type: TDigitContractType, currency: string) => {
+            const bought = await apiSend({ buy: proposal.id, price: proposal.price }, 12000);
             if (bought?.error) throw new Error(bought.error.message || 'Buy error');
 
             const contract_id = Number(bought?.buy?.contract_id);
@@ -243,7 +257,7 @@ const BulkTrader = () => {
             ourContracts.current.add(contract_id);
             journal?.pushMessage(
                 `${localize('Bought')} ${contract_type} ${localize('for')} ${Number(
-                    bought.buy.buy_price ?? amount
+                    bought.buy.buy_price ?? proposal.price
                 ).toFixed(2)} ${currency}`,
                 MessageTypes.NOTIFY,
                 'journal__text'
@@ -278,16 +292,39 @@ const BulkTrader = () => {
                     : localize('Placing trade…')
             );
 
-            // All at once: every trade is sent together instead of waiting for
-            // the one before it to settle.
-            const results = await Promise.allSettled(
-                Array.from({ length: trades }, () => placeOneTrade(contract_type, currency, amount))
+            // Two phases, so the buys all leave together. Pricing every trade
+            // first and buying afterwards is what makes this a bulk purchase:
+            // one proposal per trade in parallel, then every buy dispatched in
+            // the same breath. Buying inside each proposal's own turn would
+            // stagger the purchases by however long each price took to arrive.
+            const priced = await Promise.allSettled(
+                Array.from({ length: trades }, (_, index) =>
+                    requestProposal(contract_type, currency, amount, index + 1)
+                )
             );
 
             if (!isMountedRef.current) return;
 
-            const placed = results.filter(result => result.status === 'fulfilled').length;
-            const failed = results.length - placed;
+            // A proposal id buys one contract, so a repeated id has to be dropped
+            // rather than bought twice.
+            const seen_ids = new Set<string>();
+            const buyable = priced
+                .filter(
+                    (result): result is PromiseFulfilledResult<{ id: string; price: number }> =>
+                        result.status === 'fulfilled'
+                )
+                .map(result => result.value)
+                .filter(proposal => !seen_ids.has(proposal.id) && seen_ids.add(proposal.id));
+
+            const bought = await Promise.allSettled(
+                buyable.map(proposal => buyProposal(proposal, contract_type, currency))
+            );
+
+            if (!isMountedRef.current) return;
+
+            const results = [...priced.filter(result => result.status === 'rejected'), ...bought];
+            const placed = bought.filter(result => result.status === 'fulfilled').length;
+            const failed = trades - placed;
             const first_error = results.find(
                 (result): result is PromiseRejectedResult => result.status === 'rejected'
             );
@@ -315,7 +352,7 @@ const BulkTrader = () => {
             );
             setIsTrading(false);
         },
-        [isTrading, numTrades, stake, placeOneTrade, journal]
+        [isTrading, numTrades, stake, requestProposal, buyProposal, journal]
     );
 
     return (
