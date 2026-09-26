@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { clearAuthInfo } from '@/external/deriv-core';
 import { observer as globalObserver } from '@/external/bot-skeleton/utils/observer';
+import { clearTraderSession } from '@/pages/manual-trader/trader-session';
 import { ErrorLogger } from '@/utils/error-logger';
 
 /**
@@ -21,6 +22,7 @@ export const useInvalidTokenHandler = (): { unregisterHandler: () => void } => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('accountsList');
             localStorage.removeItem('clientAccounts');
+            clearTraderSession();
 
             // Clear sessionStorage completely to remove any stale auth data
             sessionStorage.clear();

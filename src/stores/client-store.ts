@@ -273,6 +273,11 @@ export default class ClientStore {
             localStorage.removeItem('clientAccounts');
             localStorage.removeItem('account_type');
 
+            // The Manual Trader frame boots from its own copy of the session, so
+            // that has to go too.
+            const { clearTraderSession } = await import('@/pages/manual-trader/trader-session');
+            clearTraderSession();
+
             // Clear sessionStorage
             sessionStorage.clear();
 
