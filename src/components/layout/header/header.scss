@@ -21,8 +21,11 @@
         }
     }
 
-    // Telegram call button beside the logo.
+    // Telegram call button beside the logo. It rings: the handset rocks in
+    // bursts with a rest between them, and two rings travel outwards the way an
+    // incoming call is drawn.
     &__telegram {
+        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -35,18 +38,119 @@
             transform 140ms ease,
             background 140ms ease;
 
-        svg path {
-            fill: #229ed9 !important;
+        // The two travelling rings. Pointer events off so only the link is hit.
+        &::before,
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid #229ed9;
+            opacity: 0;
+            pointer-events: none;
+            animation: app-header-telegram-ring 2s ease-out infinite;
+        }
+
+        // Second ring follows the first, so they read as a repeating pulse.
+        &::after {
+            animation-delay: 0.45s;
+        }
+
+        svg {
+            position: relative;
+            // Rocks about its middle rather than a corner.
+            transform-origin: 50% 50%;
+            animation: app-header-telegram-shake 2s ease-in-out infinite;
+
+            path {
+                fill: #229ed9 !important;
+            }
         }
 
         &:hover {
-            transform: scale(1.08) rotate(-8deg);
             background: rgba(34, 158, 217, 0.12);
+
+            svg {
+                // Hold still under the cursor, so the icon stays readable.
+                animation-play-state: paused;
+            }
         }
 
         &:focus-visible {
             outline: 2px solid #229ed9;
             outline-offset: 2px;
+        }
+    }
+}
+
+@keyframes app-header-telegram-ring {
+    0% {
+        transform: scale(0.7);
+        opacity: 0.5;
+    }
+
+    70% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+// Two quick bursts of rocking, then a rest - the cadence of a ringing phone.
+@keyframes app-header-telegram-shake {
+    0%,
+    54%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    58% {
+        transform: rotate(-16deg);
+    }
+
+    62% {
+        transform: rotate(13deg);
+    }
+
+    66% {
+        transform: rotate(-11deg);
+    }
+
+    70% {
+        transform: rotate(9deg);
+    }
+
+    74% {
+        transform: rotate(-7deg);
+    }
+
+    78% {
+        transform: rotate(5deg);
+    }
+
+    82% {
+        transform: rotate(-3deg);
+    }
+
+    86% {
+        transform: rotate(0deg);
+    }
+}
+
+// Anyone who asks for less motion gets a still handset.
+@media (prefers-reduced-motion: reduce) {
+    .app-header__telegram {
+        &::before,
+        &::after {
+            animation: none;
+        }
+
+        svg {
+            animation: none;
         }
     }
 }

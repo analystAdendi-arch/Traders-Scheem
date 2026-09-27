@@ -208,56 +208,33 @@ const BulkTrader = () => {
         return () => subscription.unsubscribe();
     }, [transactions, journal]);
 
-    /**
-     * Ask for one price. `passthrough` differs per trade so a run of identical
-     * requests cannot be answered with one shared proposal id - a proposal can
-     * only be bought once, so that would place a single contract instead of the
-     * number asked for.
-     */
-    const requestProposal = useCallback(
-        async (contract_type: TDigitContractType, currency: string, amount: number, trade_index: number) => {
-            const needs_barrier = ['DIGITOVER', 'DIGITUNDER', 'DIGITMATCH', 'DIGITDIFF'].includes(contract_type);
+    /** The contract to buy, as the API describes it. */
+    const buildParameters = useCallback((contract_type: TDigitContractType, currency: string, amount: number) => {
+        const needs_barrier = ['DIGITOVER', 'DIGITUNDER', 'DIGITMATCH', 'DIGITDIFF'].includes(contract_type);
 
-            const proposal = await apiSend(
-                {
-                    proposal: 1,
-                    amount,
-                    basis: 'stake',
-                    contract_type,
-                    currency,
-                    duration: 1,
-                    duration_unit: 't',
-                    // Options API renamed proposal `symbol` -> `underlying_symbol`.
-                    underlying_symbol: selectedSymbolRef.current,
-                    ...(needs_barrier ? { barrier: String(clampDigit(predictionRef.current)) } : {}),
-                    passthrough: { trade: trade_index },
-                },
-                12000
-            );
-            if (proposal?.error) throw new Error(proposal.error.message || 'Proposal error');
+        return {
+            amount,
+            basis: 'stake',
+            contract_type,
+            currency,
+            duration: 1,
+            duration_unit: 't',
+            // Options API renamed proposal `symbol` -> `underlying_symbol`.
+            underlying_symbol: selectedSymbolRef.current,
+            ...(needs_barrier ? { barrier: String(clampDigit(predictionRef.current)) } : {}),
+        };
+    }, []);
 
-            const id = proposal?.proposal?.id;
-            if (!id) throw new Error('Missing proposal id');
-
-            // ask_price may arrive as a string on the Options API.
-            return { id: String(id), price: Number(proposal.proposal.ask_price ?? amount) };
-        },
-        [apiSend]
-    );
-
-    /** Buy one priced proposal and follow the contract it opens. */
-    const buyProposal = useCallback(
-        async (proposal: { id: string; price: number }, contract_type: TDigitContractType, currency: string) => {
-            const bought = await apiSend({ buy: proposal.id, price: proposal.price }, 12000);
-            if (bought?.error) throw new Error(bought.error.message || 'Buy error');
-
+    /** Record a bought contract: journal line, and follow it for settlement. */
+    const registerBought = useCallback(
+        (bought: any, contract_type: TDigitContractType, currency: string, amount: number) => {
             const contract_id = Number(bought?.buy?.contract_id);
             if (!contract_id) throw new Error('Missing contract id');
 
             ourContracts.current.add(contract_id);
             journal?.pushMessage(
                 `${localize('Bought')} ${contract_type} ${localize('for')} ${Number(
-                    bought.buy.buy_price ?? proposal.price
+                    bought.buy.buy_price ?? amount
                 ).toFixed(2)} ${currency}`,
                 MessageTypes.NOTIFY,
                 'journal__text'
@@ -273,6 +250,69 @@ const BulkTrader = () => {
         [apiSend, journal]
     );
 
+    /**
+     * Buy one contract outright, describing it with `parameters` instead of
+     * quoting first. This is what makes a bulk purchase possible: a proposal id
+     * can only be bought once and identical proposal requests come back sharing
+     * one id, so quoting first put a hard ceiling of one contract on a run.
+     * Nothing here is shared between trades, so any number can be in flight at
+     * the same instant.
+     */
+    const buyOutright = useCallback(
+        async (contract_type: TDigitContractType, currency: string, amount: number) => {
+            const bought = await apiSend(
+                {
+                    buy: 1,
+                    // The most we are willing to pay, which for a stake basis is the stake.
+                    price: amount,
+                    parameters: buildParameters(contract_type, currency, amount),
+                },
+                15000
+            );
+            if (bought?.error) throw new Error(bought.error.message || 'Buy error');
+
+            return registerBought(bought, contract_type, currency, amount);
+        },
+        [apiSend, buildParameters, registerBought]
+    );
+
+    /**
+     * Ask for one price. Used only by the fallback below, where each trade is
+     * quoted and bought in turn so every proposal id is fresh.
+     */
+    const requestProposal = useCallback(
+        async (contract_type: TDigitContractType, currency: string, amount: number) => {
+            const proposal = await apiSend(
+                { proposal: 1, ...buildParameters(contract_type, currency, amount) },
+                12000
+            );
+            if (proposal?.error) throw new Error(proposal.error.message || 'Proposal error');
+
+            const id = proposal?.proposal?.id;
+            if (!id) throw new Error('Missing proposal id');
+
+            // ask_price may arrive as a string on the Options API.
+            return { id: String(id), price: Number(proposal.proposal.ask_price ?? amount) };
+        },
+        [apiSend, buildParameters]
+    );
+
+    /**
+     * Quote and buy one contract, in turn. The fallback for an endpoint that
+     * will not take contract parameters on `buy`: slower, because each trade
+     * waits for its own price, but every proposal id is used exactly once.
+     */
+    const quoteAndBuy = useCallback(
+        async (contract_type: TDigitContractType, currency: string, amount: number) => {
+            const proposal = await requestProposal(contract_type, currency, amount);
+            const bought = await apiSend({ buy: proposal.id, price: proposal.price }, 12000);
+            if (bought?.error) throw new Error(bought.error.message || 'Buy error');
+
+            return registerBought(bought, contract_type, currency, proposal.price);
+        },
+        [apiSend, requestProposal, registerBought]
+    );
+
     const executeBulkTrade = useCallback(
         async (contract_type: TDigitContractType) => {
             if (isTrading) return;
@@ -283,7 +323,9 @@ const BulkTrader = () => {
             setStatusIsError(false);
 
             const currency = (api_base.account_info as any)?.currency || 'USD';
-            const trades = Math.min(Math.max(numTrades, 1), 100);
+            // Whole contracts only, and never more than a hundred in one go.
+            const requested = Math.trunc(Number(numTrades));
+            const trades = Math.min(Math.max(Number.isFinite(requested) ? requested : 1, 1), 100);
             const amount = Number(stake);
 
             setStatusText(
@@ -292,38 +334,35 @@ const BulkTrader = () => {
                     : localize('Placing trade…')
             );
 
-            // Two phases, so the buys all leave together. Pricing every trade
-            // first and buying afterwards is what makes this a bulk purchase:
-            // one proposal per trade in parallel, then every buy dispatched in
-            // the same breath. Buying inside each proposal's own turn would
-            // stagger the purchases by however long each price took to arrive.
-            const priced = await Promise.allSettled(
-                Array.from({ length: trades }, (_, index) =>
-                    requestProposal(contract_type, currency, amount, index + 1)
-                )
+            // Every trade at once: the requests are built in one pass, so all of
+            // them are on the socket before the first reply arrives. Each buy
+            // carries its own contract parameters and shares nothing with the
+            // others, so N buys open N contracts.
+            let results = await Promise.allSettled(
+                Array.from({ length: trades }, () => buyOutright(contract_type, currency, amount))
             );
 
             if (!isMountedRef.current) return;
 
-            // A proposal id buys one contract, so a repeated id has to be dropped
-            // rather than bought twice.
-            const seen_ids = new Set<string>();
-            const buyable = priced
-                .filter(
-                    (result): result is PromiseFulfilledResult<{ id: string; price: number }> =>
-                        result.status === 'fulfilled'
-                )
-                .map(result => result.value)
-                .filter(proposal => !seen_ids.has(proposal.id) && seen_ids.add(proposal.id));
-
-            const bought = await Promise.allSettled(
-                buyable.map(proposal => buyProposal(proposal, contract_type, currency))
-            );
+            // If the endpoint will not buy from parameters, nothing gets placed
+            // and every result carries the same complaint. Fall back to quoting
+            // each trade and buying it in turn, which is slower but places them.
+            if (results.every(result => result.status === 'rejected')) {
+                const fallback: PromiseSettledResult<number>[] = [];
+                for (let i = 0; i < trades; i++) {
+                    if (abortTradingRef.current || !isMountedRef.current) break;
+                    try {
+                        fallback.push({ status: 'fulfilled', value: await quoteAndBuy(contract_type, currency, amount) });
+                    } catch (error) {
+                        fallback.push({ status: 'rejected', reason: error });
+                    }
+                }
+                if (fallback.some(result => result.status === 'fulfilled')) results = fallback;
+            }
 
             if (!isMountedRef.current) return;
 
-            const results = [...priced.filter(result => result.status === 'rejected'), ...bought];
-            const placed = bought.filter(result => result.status === 'fulfilled').length;
+            const placed = results.filter(result => result.status === 'fulfilled').length;
             const failed = trades - placed;
             const first_error = results.find(
                 (result): result is PromiseRejectedResult => result.status === 'rejected'
@@ -352,7 +391,7 @@ const BulkTrader = () => {
             );
             setIsTrading(false);
         },
-        [isTrading, numTrades, stake, requestProposal, buyProposal, journal]
+        [isTrading, numTrades, stake, buyOutright, quoteAndBuy, journal]
     );
 
     return (

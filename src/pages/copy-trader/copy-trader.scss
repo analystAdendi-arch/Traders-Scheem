@@ -1031,3 +1031,78 @@
 .copy-trader__log-detail {
     color: #475569;
 }
+
+/* ---- MOBILE: nothing may be wider than the screen ----
+ *
+ * Three things pushed this page sideways on a phone: the button row beside the
+ * token field could not shrink (flex: 0 0 auto over three buttons), every
+ * button was white-space: nowrap so a label like "Start Demo to Real
+ * Copytrading" set its own minimum width, and the scrolling shell allowed the
+ * overflow it caused to be scrolled to instead of preventing it.
+ */
+@include mobile-or-tablet-screen {
+    .copy-trader {
+        max-width: 100%;
+    }
+
+    .copy-trader__shell {
+        /* Vertical scrolling only: sideways scroll is the bug, not a feature. */
+        overflow-x: hidden;
+    }
+
+    .copy-trader__panel {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Labels wrap onto a second line rather than widening their container. */
+    .copy-trader__btn {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        min-width: 0;
+        text-align: center;
+
+        &--add {
+            min-width: 0;
+        }
+    }
+
+    /* Token field on its own row, the three buttons sharing the row beneath. */
+    .copy-trader__input-group {
+        flex-wrap: wrap;
+    }
+
+    .copy-trader__input-group-field {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    .copy-trader__input-group-actions {
+        flex: 1 1 100%;
+        border-left: none;
+        border-top: 1.5px solid var(--ct-border-soft);
+
+        .copy-trader__btn {
+            /* Equal thirds, each free to shrink with the viewport. */
+            flex: 1 1 0;
+            padding: 0.55rem 0.4rem;
+        }
+    }
+
+    /* Full-width call to action, its text centred and wrapping. */
+    .copy-trader__cta {
+        width: 100%;
+        justify-content: center;
+        white-space: normal;
+        padding: 0.8rem 1rem;
+        text-align: center;
+    }
+
+    .copy-trader__account-actions {
+        flex-wrap: wrap;
+    }
+
+    .copy-trader__active-count {
+        justify-content: flex-start;
+    }
+}
