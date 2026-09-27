@@ -1,4 +1,4 @@
-// @ts-nocheck — vendored bot code with known upstream type gaps; see AGENTS.md
+﻿// @ts-nocheck â€” vendored bot code with known upstream type gaps; see AGENTS.md
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -142,7 +142,7 @@ const AppWrapper = observer(() => {
         };
     };
 
-    // App Builder embeds the bot at /bot/preview — open the bot builder there by
+    // App Builder embeds the bot at /bot/preview â€” open the bot builder there by
     // default (instead of the dashboard) when no explicit #tab hash is present.
     const is_preview_mode = window.location.pathname.includes('/preview');
     let tab_value: number | string = active_tab;
@@ -488,6 +488,25 @@ const AppWrapper = observer(() => {
                             <div
                                 label={
                                     <>
+                                        <NavIcon name='auto-trader' />
+                                        <Localize i18n_default_text='Auto Trader' />
+                                    </>
+                                }
+                                id='id-auto-trader'
+                            >
+                                <div className='main__tab-panel'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading auto trader...')} />
+                                        }
+                                    >
+                                        <AutoTrader />
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
                                         <NavIcon name='analysis-tool' />
                                         <Localize i18n_default_text='Analysis Tool' />
                                     </>
@@ -524,25 +543,6 @@ const AppWrapper = observer(() => {
                             <div
                                 label={
                                     <>
-                                        <NavIcon name='auto-trader' />
-                                        <Localize i18n_default_text='Auto Trader' />
-                                    </>
-                                }
-                                id='id-auto-trader'
-                            >
-                                <div className='main__tab-panel'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading auto trader...')} />
-                                        }
-                                    >
-                                        <AutoTrader />
-                                    </Suspense>
-                                </div>
-                            </div>
-                            <div
-                                label={
-                                    <>
                                         <NavIcon name='manual-trader' />
                                         <Localize i18n_default_text='Manual Trader' />
                                     </>
@@ -556,25 +556,6 @@ const AppWrapper = observer(() => {
                                         }
                                     >
                                         <ManualTrader />
-                                    </Suspense>
-                                </div>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <NavIcon name='trading-view' />
-                                        <Localize i18n_default_text='Trading View' />
-                                    </>
-                                }
-                                id='id-trading-view'
-                            >
-                                <div className='main__tab-panel'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading trading view...')} />
-                                        }
-                                    >
-                                        <TradingView />
                                     </Suspense>
                                 </div>
                             </div>
@@ -613,6 +594,25 @@ const AppWrapper = observer(() => {
                                         }
                                     >
                                         <CopyTrader />
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <NavIcon name='trading-view' />
+                                        <Localize i18n_default_text='Trading View' />
+                                    </>
+                                }
+                                id='id-trading-view'
+                            >
+                                <div className='main__tab-panel'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading trading view...')} />
+                                        }
+                                    >
+                                        <TradingView />
                                     </Suspense>
                                 </div>
                             </div>
