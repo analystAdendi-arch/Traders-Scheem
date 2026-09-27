@@ -7,16 +7,27 @@ import { DBOT_TABS } from '@/constants/bot-contents';
 import { load, save_types } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
-import { getFreeBots, getTradeTypeLabel, type TFreeBot, type TTradeType, TRADE_TYPE_ICONS } from './free-bot-list';
+import {
+    getCategoryLabel,
+    getFreeBots,
+    getTradeTypeLabel,
+    type TBotCategory,
+    type TFreeBot,
+    type TTradeType,
+    TRADE_TYPE_ICONS,
+} from './free-bot-list';
 import './free-bots.scss';
 
 type TFilter = 'all' | TTradeType;
+
+const CATEGORIES: TBotCategory[] = ['automated', 'normal'];
 
 const FreeBots = observer(() => {
     const { dashboard } = useStore();
     const { setActiveTab } = dashboard;
     const [loading_bot_id, setLoadingBotId] = React.useState<string | null>(null);
     const [filter, setFilter] = React.useState<TFilter>('all');
+    const [category, setCategory] = React.useState<TBotCategory>('automated');
     const is_mounted = React.useRef(true);
 
     React.useEffect(() => {
@@ -72,7 +83,10 @@ const FreeBots = observer(() => {
         [setActiveTab]
     );
 
-    const bots = getFreeBots();
+    const all_bots = getFreeBots();
+    // Category first, so the trade-type filters below only ever offer types that
+    // exist in the chosen category - no filter that leads to an empty grid.
+    const bots = all_bots.filter(bot => bot.category === category);
     const types = Array.from(new Set(bots.map(bot => bot.trade_type)));
     const visible = filter === 'all' ? bots : bots.filter(bot => bot.trade_type === filter);
 
@@ -86,6 +100,30 @@ const FreeBots = observer(() => {
                     <p className='free-bots__subtitle'>
                         {localize('Load a ready-made strategy into Bot Builder and start trading in seconds.')}
                     </p>
+                </div>
+
+                <div className='free-bots__categories' role='tablist' aria-label={localize('Bot category')}>
+                    {CATEGORIES.map(value => (
+                        <button
+                            key={value}
+                            type='button'
+                            role='tab'
+                            aria-selected={category === value}
+                            className={`free-bots__category${category === value ? ' free-bots__category--active' : ''}`}
+                            onClick={() => {
+                                setCategory(value);
+                                // The previous trade type may not exist in this
+                                // category, which would show an empty grid.
+                                setFilter('all');
+                            }}
+                        >
+                            <span aria-hidden='true'>{value === 'automated' ? '⚡' : '🤖'}</span>
+                            {getCategoryLabel(value)}
+                            <span className='free-bots__category-count'>
+                                {all_bots.filter(bot => bot.category === value).length}
+                            </span>
+                        </button>
+                    ))}
                 </div>
 
                 <div className='free-bots__filters' role='tablist'>
@@ -119,6 +157,11 @@ const FreeBots = observer(() => {
                                     </span>
                                     <h3 className='free-bots__card-title'>{bot.title}</h3>
                                     <span className='free-bots__badge'>{getTradeTypeLabel(bot.trade_type)}</span>
+                                    {bot.category === 'automated' && (
+                                        <span className='free-bots__badge free-bots__badge--auto'>
+                                            {localize('AUTO')}
+                                        </span>
+                                    )}
                                 </div>
                                 <p className='free-bots__card-desc'>{bot.description}</p>
                                 <span className='free-bots__card-market'>📈 {bot.market}</span>

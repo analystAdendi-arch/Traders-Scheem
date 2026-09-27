@@ -43,6 +43,49 @@
 
     /* --------------------------------------------------------- filters */
 
+    // Automated / Normal: the primary choice, above the trade-type filters.
+    &__categories {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    &__category {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        padding: 1.2rem 1.6rem;
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 1.2rem;
+        background: rgba(10, 18, 48, 0.7);
+        color: #cbd5e1;
+        font-size: 1.4rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+            background 140ms ease,
+            border-color 140ms ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        &--active {
+            border-color: #22d3ee;
+            background: linear-gradient(180deg, rgba(43, 89, 195, 0.55) 0%, rgba(30, 64, 175, 0.55) 100%);
+            color: #ffffff;
+        }
+    }
+
+    &__category-count {
+        padding: 0.1rem 0.6rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        font-size: 1.1rem;
+    }
+
     &__filters {
         display: flex;
         flex-wrap: wrap;
@@ -202,6 +245,13 @@
         text-transform: uppercase;
         white-space: nowrap;
         color: #e2e8f0;
+
+        // Marks a bot that runs its own stake and recovery, as in the reference.
+        &--auto {
+            border-color: rgba(34, 211, 238, 0.6);
+            background: rgba(34, 211, 238, 0.14);
+            color: #67e8f9;
+        }
     }
 
     &__card-desc {

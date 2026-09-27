@@ -1,20 +1,34 @@
-import { localize } from '@deriv-com/translations';
+﻿import { localize } from '@deriv-com/translations';
 import { AccumulatorIcon, EvenOddIcon, MatchesDiffersIcon, OverUnderIcon, RiseFallIcon } from './bot-icons';
 
 export type TTradeType = 'accumulator' | 'callput' | 'evenodd' | 'matchesdiffers' | 'overunder';
+
+/**
+ * How much a strategy does on its own.
+ *
+ * `automated` strategies manage their own stake and recovery and are meant to
+ * be started and left alone; `normal` ones expect the trader to set a
+ * prediction, entry point or stake ladder first. Both load into Bot Builder the
+ * same way - the split is what the trader is signing up for.
+ */
+export type TBotCategory = 'automated' | 'normal';
 
 export type TFreeBot = {
     /** Stable key, also used as the strategy id when the bot is loaded. */
     id: string;
     /** File name under `public/bots/`. */
     file: string;
-    /** Bot name as published — a proper noun, so it is not translated. */
+    /** Bot name as published â€” a proper noun, so it is not translated. */
     title: string;
     description: string;
     /** Display name of the symbol the strategy ships with. */
     market: string;
     trade_type: TTradeType;
+    category: TBotCategory;
 };
+
+export const getCategoryLabel = (category: TBotCategory): string =>
+    category === 'automated' ? localize('Automated') : localize('Normal');
 
 export const TRADE_TYPE_ICONS = {
     accumulator: AccumulatorIcon,
@@ -56,6 +70,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Fast Rise/Fall entries driven by short-term momentum shifts.'),
         market: localize('Volatility 100 (1s) Index'),
         trade_type: 'callput',
+        category: 'automated',
     },
     {
         id: 'candle-mine',
@@ -64,6 +79,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Reads completed candles before committing to an Even/Odd entry.'),
         market: localize('Volatility 100 Index'),
         trade_type: 'evenodd',
+        category: 'normal',
     },
     {
         id: 'accumulators-pro-bot',
@@ -72,6 +88,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Compounds a growing payout and exits before the barrier breaks.'),
         market: localize('Volatility 10 (1s) Index'),
         trade_type: 'accumulator',
+        category: 'automated',
     },
     {
         id: 'ai-with-entry-point',
@@ -80,6 +97,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Waits for a configurable entry point before opening Over/Under trades.'),
         market: localize('Volatility 10 (1s) Index'),
         trade_type: 'overunder',
+        category: 'normal',
     },
     {
         id: 'alex-speed-bot-expro2',
@@ -88,6 +106,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('High-frequency Digit Under strategy with staged stake recovery.'),
         market: localize('Volatility 50 (1s) Index'),
         trade_type: 'overunder',
+        category: 'automated',
     },
     {
         id: 'alpha-ai-two-predictions',
@@ -96,6 +115,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Runs two digit predictions in parallel and trades the stronger one.'),
         market: localize('Volatility 100 (1s) Index'),
         trade_type: 'overunder',
+        category: 'automated',
     },
     {
         id: 'auto-c4-volt-ai-premium',
@@ -104,6 +124,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Premium Over/Under robot with automatic stake and recovery handling.'),
         market: localize('Volatility 10 (1s) Index'),
         trade_type: 'overunder',
+        category: 'automated',
     },
     {
         id: 'binary-flipper-ai-robot-plus',
@@ -112,6 +133,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Flips between Over and Under as the digit distribution moves.'),
         market: localize('Volatility 10 (1s) Index'),
         trade_type: 'overunder',
+        category: 'automated',
     },
     {
         id: 'binarytool-differ-v2',
@@ -120,6 +142,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Digit Differs strategy built around a rolling prediction variable.'),
         market: localize('Volatility 100 Index'),
         trade_type: 'matchesdiffers',
+        category: 'normal',
     },
     {
         id: 'binarytool-even-odd-ai-bot',
@@ -128,6 +151,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Tracks parity streaks and trades the side that is due.'),
         market: localize('Volatility 100 Index'),
         trade_type: 'evenodd',
+        category: 'normal',
     },
     {
         id: 'binarytool-even-odd-thunder-ai-pro',
@@ -136,6 +160,7 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Aggressive Even/Odd variant with a wider recovery ladder.'),
         market: localize('Volatility 100 Index'),
         trade_type: 'evenodd',
+        category: 'automated',
     },
     {
         id: 'binarytool-wizard-ai-bot',
@@ -144,5 +169,6 @@ export const getFreeBots = (): TFreeBot[] => [
         description: localize('Combines digit analysis with staged money management.'),
         market: localize('Volatility 100 Index'),
         trade_type: 'overunder',
+        category: 'automated',
     },
 ];
