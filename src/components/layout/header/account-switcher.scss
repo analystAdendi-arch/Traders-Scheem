@@ -845,6 +845,10 @@
     inset-inline-end: 0;
     z-index: 200;
     width: 32rem;
+    // The menu hangs from the end of its trigger, so on a narrow phone a fixed
+    // 32rem can reach past the other edge. Never wider than the screen, less a
+    // small gutter either side.
+    max-width: calc(100vw - 1.6rem);
     padding-bottom: 0.4rem;
     border: 1px solid var(--general-section-1);
     border-top: 0;

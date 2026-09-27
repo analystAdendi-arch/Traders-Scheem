@@ -145,25 +145,16 @@ const AppHeader = observer(() => {
         (position: 'left' | 'right' = 'right') => {
             // Show account switcher and logout when user is fully authenticated
             if (activeLoginid && !is_account_regenerating) {
-                if (position === 'left' && !isDesktop) {
-                    // For mobile left section - only account switcher
+                if (position === 'right') {
+                    // Balance and account switcher sit at the end of the header on
+                    // every size. On a phone that used to be the left, with the
+                    // Transfer button holding this side; without it the balance
+                    // would float mid-header and leave the end empty.
                     return (
                         <div className='auth-actions'>
                             <div className='account-info'>
                                 <AccountSwitcher activeAccount={activeAccount} />
                             </div>
-                        </div>
-                    );
-                } else if (position === 'right') {
-                    // Desktop keeps the account switcher here; mobile shows it on
-                    // the left instead, so this section is empty there.
-                    return (
-                        <div className='auth-actions'>
-                            {isDesktop && (
-                                <div className='account-info'>
-                                    <AccountSwitcher activeAccount={activeAccount} />
-                                </div>
-                            )}
                         </div>
                     );
                 }
@@ -245,11 +236,9 @@ const AppHeader = observer(() => {
                     <MobileMenu onLogout={handleLogout} />
                     <AppLogo />
                     <TelegramCallButton />
-                    {isDesktop ? <MenuItems /> : renderAccountSection('left')}
+                    {isDesktop && <MenuItems />}
                 </Wrapper>
-                <Wrapper variant='right'>
-                    {renderAccountSection('right')}
-                </Wrapper>
+                <Wrapper variant='right'>{renderAccountSection('right')}</Wrapper>
             </Header>
         </>
     );
