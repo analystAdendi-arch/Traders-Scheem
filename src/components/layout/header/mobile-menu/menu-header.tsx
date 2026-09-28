@@ -17,11 +17,11 @@ const MenuHeader = ({ hideLanguageSetting, openLanguageSetting }: TMenuHeader) =
 
     return (
         <div className='mobile-menu__header'>
-            {/* [AI] Show a plain "Settings" title instead of the logo + app name mark */}
+            {/* It is the ≡ menu, not a settings page - the drawer holds the theme
+                choice and logout. */}
             <Text size={isDesktop ? 'sm' : 'md'} weight='bold'>
-                {localize('Settings')}
+                {localize('Menu')}
             </Text>
-            {/* [/AI] */}
 
             {!hideLanguageSetting && (
                 <button

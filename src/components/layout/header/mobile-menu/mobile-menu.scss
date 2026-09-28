@@ -45,7 +45,76 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+        gap: 0.8rem;
+        padding: 1.2rem 1.6rem;
+    }
 
+    // Theme choice and logout, drawn here rather than by the shared menu
+    // components so the drawer cannot come up empty.
+    &__group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid var(--general-section-1);
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    &__group-title {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-general);
+    }
+
+    &__theme {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+    }
+
+    &__theme-option {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 1.1rem 0.8rem;
+        border: 1px solid var(--general-section-1);
+        border-radius: 0.8rem;
+        background: var(--general-main-1);
+        color: var(--text-general);
+        font-size: 1.4rem;
+        font-weight: 600;
+        cursor: pointer;
+
+        &--active {
+            border-color: var(--brand-secondary, #22d3ee);
+            background: var(--general-section-1);
+            font-weight: 800;
+        }
+    }
+
+    &__logout {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1.2rem 0.4rem;
+        border: 0;
+        background: transparent;
+        color: var(--text-general);
+        font-size: 1.4rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: start;
+    }
+
+    &__content-legacy {
         &__platform {
             display: flex;
             justify-content: center;

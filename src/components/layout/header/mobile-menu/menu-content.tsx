@@ -1,9 +1,8 @@
-import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import useThemeSwitcher from '@/hooks/useThemeSwitcher';
 import { useStore } from '@/hooks/useStore';
-import { LegacyChevronRight1pxIcon } from '@deriv/quill-icons/Legacy';
-import { MenuItem, Text, useDevice } from '@deriv-com/ui';
-import useMobileMenuConfig from './use-mobile-menu-config';
+import { LegacyLogout1pxIcon, LegacyTheme1pxIcon } from '@deriv/quill-icons/Legacy';
+import { useTranslations } from '@deriv-com/translations';
 
 type TMenuContentProps = {
     enableThemeToggle?: boolean;
@@ -11,110 +10,64 @@ type TMenuContentProps = {
     onLogout?: () => void;
 };
 
-const MenuContent = observer(({ enableThemeToggle = true, onOpenSubmenu, onLogout }: TMenuContentProps) => {
-    const { isDesktop } = useDevice();
-    const { client } = useStore();
-    const textSize = isDesktop ? 'sm' : 'md';
-    // Pass enableThemeToggle to control theme toggle visibility
-    const { config } = useMobileMenuConfig(client, onLogout, enableThemeToggle);
+/**
+ * The phone menu behind the ≡ button: pick a theme, and log out.
+ *
+ * Written as plain markup rather than the shared MenuItem/ToggleSwitch pair,
+ * which rendered nothing inside this drawer - the panel opened with only its
+ * title and an empty body. Our own elements, with our own styles, cannot
+ * disappear the same way, and a two-button theme choice reads more clearly on a
+ * phone than a switch whose label has to explain which way is on.
+ */
+const MenuContent = observer(({ enableThemeToggle = true, onLogout }: TMenuContentProps) => {
+    const { localize } = useTranslations();
+    const { client } = useStore() ?? {};
+    const { is_dark_mode_on, setTheme } = useThemeSwitcher();
 
     return (
         <div className='mobile-menu__content'>
-            <div className='mobile-menu__content__items'>
-                {config.map((item, index) => {
-                    const removeBorderBottom = item.find(({ removeBorderBottom }) => removeBorderBottom);
-                    const isLastSection = index === config.length - 1;
+            {enableThemeToggle && (
+                <section className='mobile-menu__group'>
+                    <h3 className='mobile-menu__group-title'>
+                        <LegacyTheme1pxIcon iconSize='xs' />
+                        {localize('Theme')}
+                    </h3>
 
-                    return (
-                        <div
-                            className={clsx('mobile-menu__content__items--padding', {
-                                'mobile-menu__content__items--bottom-border': !removeBorderBottom && !isLastSection,
-                            })}
-                            data-testid='dt_menu_item'
-                            key={index}
+                    <div className='mobile-menu__theme' role='group' aria-label={localize('Theme')}>
+                        <button
+                            type='button'
+                            aria-pressed={!is_dark_mode_on}
+                            className={`mobile-menu__theme-option${
+                                !is_dark_mode_on ? ' mobile-menu__theme-option--active' : ''
+                            }`}
+                            onClick={() => setTheme('light')}
                         >
-                            {item.map(
-                                (
-                                    {
-                                        LeftComponent,
-                                        RightComponent,
-                                        as,
-                                        href,
-                                        label,
-                                        onClick,
-                                        submenu,
-                                        target,
-                                        isActive,
-                                    },
-                                    itemIndex
-                                ) => {
-                                    const is_deriv_logo = label === 'Deriv.com';
-                                    if (as === 'a') {
-                                        return (
-                                            <MenuItem
-                                                as='a'
-                                                className={clsx('mobile-menu__content__items__item', {
-                                                    'mobile-menu__content__items__icons': !is_deriv_logo,
-                                                    'mobile-menu__content__items__item--active': isActive,
-                                                })}
-                                                disableHover
-                                                href={href}
-                                                key={`${index}-${itemIndex}-${label}`}
-                                                leftComponent={
-                                                    <LeftComponent
-                                                        className='mobile-menu__content__items--right-margin'
-                                                        height={16}
-                                                        width={16}
-                                                    />
-                                                }
-                                                target={target}
-                                            >
-                                                <Text size={textSize}>{label}</Text>
-                                            </MenuItem>
-                                        );
-                                    }
-                                    return (
-                                        <MenuItem
-                                            as='button'
-                                            className={clsx('mobile-menu__content__items__item', {
-                                                'mobile-menu__content__items__icons': !is_deriv_logo,
-                                                'mobile-menu__content__items__item--active': isActive,
-                                            })}
-                                            disableHover
-                                            key={`${index}-${itemIndex}-${label}`}
-                                            leftComponent={
-                                                <LeftComponent
-                                                    className='mobile-menu__content__items--right-margin'
-                                                    iconSize='xs'
-                                                />
-                                            }
-                                            onClick={() => {
-                                                if (submenu && onOpenSubmenu) {
-                                                    onOpenSubmenu(submenu);
-                                                } else if (onClick) {
-                                                    onClick();
-                                                }
-                                            }}
-                                            rightComponent={
-                                                submenu ? (
-                                                    <LegacyChevronRight1pxIcon
-                                                        className='mobile-menu__content__items--chevron'
-                                                        iconSize='xs'
-                                                    />
-                                                ) : (
-                                                    RightComponent
-                                                )
-                                            }
-                                        >
-                                            <Text size={textSize}>{label}</Text>
-                                        </MenuItem>
-                                    );
-                                }
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
+                            <span aria-hidden='true'>☀️</span>
+                            {localize('Light')}
+                        </button>
+                        <button
+                            type='button'
+                            aria-pressed={is_dark_mode_on}
+                            className={`mobile-menu__theme-option${
+                                is_dark_mode_on ? ' mobile-menu__theme-option--active' : ''
+                            }`}
+                            onClick={() => setTheme('dark')}
+                        >
+                            <span aria-hidden='true'>🌙</span>
+                            {localize('Dark')}
+                        </button>
+                    </div>
+                </section>
+            )}
+
+            {client?.is_logged_in && onLogout && (
+                <section className='mobile-menu__group'>
+                    <button type='button' className='mobile-menu__logout' onClick={onLogout}>
+                        <LegacyLogout1pxIcon iconSize='xs' />
+                        {localize('Log out')}
+                    </button>
+                </section>
+            )}
         </div>
     );
 });
