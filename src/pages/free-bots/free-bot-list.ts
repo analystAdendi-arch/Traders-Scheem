@@ -27,8 +27,13 @@ export type TFreeBot = {
     category: TBotCategory;
 };
 
-export const getCategoryLabel = (category: TBotCategory): string =>
-    category === 'automated' ? localize('Automated') : localize('Normal');
+/** The category pills: every bot, or one of the two categories. */
+export type TCategoryChoice = 'all' | TBotCategory;
+
+export const getCategoryLabel = (category: TCategoryChoice): string => {
+    if (category === 'all') return localize('All bots');
+    return category === 'automated' ? localize('Automated') : localize('Normal');
+};
 
 export const TRADE_TYPE_ICONS = {
     accumulator: AccumulatorIcon,

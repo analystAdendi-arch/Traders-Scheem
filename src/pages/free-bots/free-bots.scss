@@ -43,10 +43,12 @@
 
     /* --------------------------------------------------------- filters */
 
-    // Automated / Normal: the primary choice, above the trade-type filters.
+    // All bots / Automated / Normal: the primary choice, above the trade-type
+    // filters. auto-fit rather than three fixed columns, so the pills drop onto
+    // a second row on a narrow phone instead of squeezing their labels.
     &__categories {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
         gap: 0.8rem;
         margin-bottom: 1.2rem;
     }

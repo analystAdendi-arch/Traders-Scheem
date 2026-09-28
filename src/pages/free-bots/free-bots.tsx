@@ -11,7 +11,7 @@ import {
     getCategoryLabel,
     getFreeBots,
     getTradeTypeLabel,
-    type TBotCategory,
+    type TCategoryChoice,
     type TFreeBot,
     type TTradeType,
     TRADE_TYPE_ICONS,
@@ -20,14 +20,20 @@ import './free-bots.scss';
 
 type TFilter = 'all' | TTradeType;
 
-const CATEGORIES: TBotCategory[] = ['automated', 'normal'];
+const CATEGORIES: TCategoryChoice[] = ['all', 'automated', 'normal'];
+
+const CATEGORY_ICONS: Record<TCategoryChoice, string> = {
+    all: '🗂️',
+    automated: '⚡',
+    normal: '🤖',
+};
 
 const FreeBots = observer(() => {
     const { dashboard } = useStore();
     const { setActiveTab } = dashboard;
     const [loading_bot_id, setLoadingBotId] = React.useState<string | null>(null);
     const [filter, setFilter] = React.useState<TFilter>('all');
-    const [category, setCategory] = React.useState<TBotCategory>('automated');
+    const [category, setCategory] = React.useState<TCategoryChoice>('all');
     const is_mounted = React.useRef(true);
 
     React.useEffect(() => {
@@ -86,7 +92,7 @@ const FreeBots = observer(() => {
     const all_bots = getFreeBots();
     // Category first, so the trade-type filters below only ever offer types that
     // exist in the chosen category - no filter that leads to an empty grid.
-    const bots = all_bots.filter(bot => bot.category === category);
+    const bots = category === 'all' ? all_bots : all_bots.filter(bot => bot.category === category);
     const types = Array.from(new Set(bots.map(bot => bot.trade_type)));
     const visible = filter === 'all' ? bots : bots.filter(bot => bot.trade_type === filter);
 
@@ -117,10 +123,12 @@ const FreeBots = observer(() => {
                                 setFilter('all');
                             }}
                         >
-                            <span aria-hidden='true'>{value === 'automated' ? '⚡' : '🤖'}</span>
+                            <span aria-hidden='true'>{CATEGORY_ICONS[value]}</span>
                             {getCategoryLabel(value)}
                             <span className='free-bots__category-count'>
-                                {all_bots.filter(bot => bot.category === value).length}
+                                {value === 'all'
+                                    ? all_bots.length
+                                    : all_bots.filter(bot => bot.category === value).length}
                             </span>
                         </button>
                     ))}
