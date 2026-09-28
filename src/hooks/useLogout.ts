@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { clearAuthInfo } from '@/external/deriv-core';
 import { useStore } from '@/hooks/useStore';
-import { clearTraderSession } from '@/pages/manual-trader/trader-session';
 import { ErrorLogger } from '@/utils/error-logger';
 
 /**
@@ -32,7 +31,6 @@ export const useLogout = () => {
                 localStorage.removeItem('accountsList');
                 localStorage.removeItem('clientAccounts');
                 localStorage.removeItem('account_type');
-                clearTraderSession();
             } catch (storageError) {
                 ErrorLogger.error('Logout', 'Failed to clear auth storage', storageError);
                 // Last resort: if targeted clearing fails, clear all storage
