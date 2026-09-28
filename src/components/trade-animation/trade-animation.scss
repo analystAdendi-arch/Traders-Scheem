@@ -323,3 +323,50 @@
         width: 31.2rem !important;
     }
 }
+
+/* ---- The Run bar has to fit a phone ----
+ *
+ * Its parts each set a floor: a 10rem run button with 2rem of padding either
+ * side, a 27rem container, and a speed toggle at flex: 1 0 auto, which cannot
+ * shrink. Together that is wider than a phone, so the switch sat off the right
+ * edge. Here everything may shrink, and the caption above the speed is dropped
+ * - the bar states the speed itself.
+ */
+@media (max-width: #{$min-desktop-width - 1px}) {
+    .animation__wrapper {
+        max-width: calc(100vw - 2rem);
+    }
+
+    .animation__run-button,
+    .animation__stop-button {
+        min-width: 0;
+        padding: 0 1.2rem !important;
+        font-size: 1.4rem;
+    }
+
+    .animation__container {
+        min-width: 0;
+        gap: 0.8rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .animation__speed {
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 0.8rem;
+        padding-inline-start: 0.8rem;
+    }
+
+    .animation__speed .animation__label {
+        display: none;
+    }
+
+    .animation__speed-text strong {
+        white-space: nowrap;
+        font-size: 1.3rem;
+    }
+
+    .animation__switch {
+        flex: 0 0 auto;
+    }
+}
