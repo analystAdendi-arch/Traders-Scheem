@@ -34,6 +34,11 @@
 }
 
 .main {
+    // The run panel is positioned against this, so it lies over the page rather
+    // than taking a column of its own. Without a positioned ancestor here it
+    // anchored further up the tree and the tab content ended up narrower than
+    // the page, which pushed wide content (the digit strip) off the edge.
+    position: relative;
     display: flex;
     overflow: hidden;
     width: 100%;

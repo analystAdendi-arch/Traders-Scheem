@@ -282,6 +282,15 @@ const RunPanel = observer(() => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Bulk Trader is a full-width screen of its own, so arrive with the drawer
+    // shut - just the chevron on the edge - and let it be opened over the page.
+    React.useEffect(() => {
+        if (active_tab === BULK_TRADER) {
+            toggleDrawer(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [active_tab]);
+
     const content = (
         <DrawerContent
             active_index={active_index}
