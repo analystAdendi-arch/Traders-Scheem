@@ -496,6 +496,14 @@
         gap: 2rem;
         padding: 0;
         text-align: start;
+
+        @include mobile-or-tablet-screen {
+            // A 19rem minimum leaves room for a single column on a phone, so the
+            // quick actions arrived one per screen. Two fixed columns instead,
+            // which fits them all in view.
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.2rem;
+        }
     }
 
     // Saved bots keep the app's light styling, set in a white panel.
@@ -520,6 +528,39 @@
     min-height: 17.6rem;
     text-align: start;
     color: #e2e8f0;
+
+    // Two to a row on a phone, so everything shrinks to suit.
+    @include mobile-or-tablet-screen {
+        gap: 0.6rem;
+        padding: 1.2rem;
+        min-height: 0;
+        border-radius: 1.1rem;
+
+        .db-card__icon {
+            width: 3.4rem;
+            height: 3.4rem;
+            border-radius: 0.8rem;
+        }
+
+        .db-card__arrow {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .db-card__title {
+            font-size: 1.4rem;
+        }
+
+        .db-card__description {
+            font-size: 1.1rem;
+            // Keeps a long line from setting the column's width.
+            overflow-wrap: anywhere;
+        }
+
+        .db-card__open {
+            font-size: 1.2rem;
+        }
+    }
     background: rgba(15, 23, 52, 0.62);
     border: 1px solid rgba(148, 163, 184, 0.22);
     border-top: 3px solid var(--db-accent);
