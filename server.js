@@ -65,6 +65,48 @@ const resolveFile = urlPath => {
     }
 };
 
+/**
+ * Gzipped bodies, kept after the first request.
+ *
+ * Compressing on every request meant this host re-gzipped the same few
+ * megabytes for every visitor and every reload - the entry bundle and its
+ * stylesheet are megabytes each, six of them are fetched for the first paint,
+ * and they all competed for one CPU. That, not the download, was what left the
+ * page sitting on its loading screen.
+ *
+ * Built assets carry a content hash, so a cached body can never go stale: a
+ * changed file arrives under a new name. HTML is left out of the cache, since
+ * its name does not change between deploys.
+ */
+const gzip_cache = new Map();
+let gzip_cache_bytes = 0;
+const GZIP_CACHE_BUDGET = 192 * 1024 * 1024;
+const GZIP_CACHE_MAX_FILE = 32 * 1024 * 1024;
+
+const gzipOnce = (file, immutable, done) => {
+    const hit = gzip_cache.get(file);
+    if (hit) return done(null, hit);
+
+    fs.readFile(file, (read_error, raw) => {
+        if (read_error) return done(read_error);
+
+        // Level 5 rather than the default 6: within a percent or two of the
+        // same size on these bundles, and quicker to produce for the first
+        // visitor who pays for it.
+        zlib.gzip(raw, { level: 5 }, (zip_error, body) => {
+            if (zip_error) return done(zip_error);
+
+            const cacheable =
+                immutable && body.length <= GZIP_CACHE_MAX_FILE && gzip_cache_bytes + body.length <= GZIP_CACHE_BUDGET;
+            if (cacheable) {
+                gzip_cache.set(file, body);
+                gzip_cache_bytes += body.length;
+            }
+            done(null, body);
+        });
+    });
+};
+
 const serve = (req, res, file, status = 200) => {
     const ext = path.extname(file).toLowerCase();
     const type = TYPES[ext] || 'application/octet-stream';
@@ -75,11 +117,30 @@ const serve = (req, res, file, status = 200) => {
 
     const accepts_gzip = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
     const headers = { 'Content-Type': type, 'Cache-Control': cache };
+    const compressing = accepts_gzip && COMPRESSIBLE.test(type);
 
-    if (accepts_gzip && COMPRESSIBLE.test(type)) {
-        res.writeHead(status, { ...headers, 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' });
-        fs.createReadStream(file).pipe(zlib.createGzip()).pipe(res);
-        return;
+    // A HEAD carries no body, so do no body work for it. This used to read and
+    // compress the whole file before answering.
+    if (req.method === 'HEAD') {
+        const head = compressing ? { ...headers, 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' } : headers;
+        res.writeHead(status, head);
+        return res.end();
+    }
+
+    if (compressing) {
+        return gzipOnce(file, immutable, (error, body) => {
+            if (error) {
+                res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+                return res.end('Read error');
+            }
+            res.writeHead(status, {
+                ...headers,
+                'Content-Encoding': 'gzip',
+                Vary: 'Accept-Encoding',
+                'Content-Length': body.length,
+            });
+            res.end(body);
+        });
     }
 
     res.writeHead(status, { ...headers, 'Content-Length': fs.statSync(file).size });
@@ -94,14 +155,6 @@ const server = http.createServer((req, res) => {
     const file = resolveFile(req.url || '/');
     if (file) return serve(req, res, file);
 
-    // /trader is its own single-page app (our DTrader build), so an unknown
-    // path under it belongs to that app's router, not the main site's.
-    const pathname = (req.url || '/').split('?')[0];
-    if (pathname === '/trader' || pathname.startsWith('/trader/')) {
-        const trader_index = path.join(ROOT, 'trader', 'index.html');
-        if (fs.existsSync(trader_index)) return serve(req, res, trader_index, 200);
-    }
-
     // Unknown path: hand the SPA its entry point so the router can take over.
     const index = path.join(ROOT, 'index.html');
     if (fs.existsSync(index)) return serve(req, res, index, 200);
@@ -114,4 +167,52 @@ if (!fs.existsSync(ROOT)) {
     process.exit(1);
 }
 
-server.listen(PORT, '0.0.0.0', () => console.log(`Serving dist/ on http://0.0.0.0:${PORT}`));
+/**
+ * Compress the entry bundles before anyone asks for them.
+ *
+ * Without this the first visitor after a deploy still waits for the entry
+ * bundle and its stylesheet to be gzipped, several megabytes of it. The
+ * container is idle at boot, so that is the moment to pay for it. One file at a
+ * time, so it never competes with a real request for the CPU.
+ */
+const warmCache = () => {
+    const roots = [path.join(ROOT, 'static', 'js'), path.join(ROOT, 'static', 'css')];
+    const files = [];
+
+    for (const dir of roots) {
+        let entries = [];
+        try {
+            entries = fs.readdirSync(dir, { withFileTypes: true });
+        } catch {
+            continue; // a build without that folder is fine
+        }
+        for (const entry of entries) {
+            if (!entry.isFile()) continue;
+            const file = path.join(dir, entry.name);
+            const ext = path.extname(entry.name).toLowerCase();
+            if (!COMPRESSIBLE.test(TYPES[ext] || '')) continue;
+            // Only the ones big enough to be worth pre-compressing, and only
+            // hashed names, which is all the cache keeps anyway.
+            if (!/[.-][0-9a-f]{8,}\./.test(entry.name)) continue;
+            if (fs.statSync(file).size < 128 * 1024) continue;
+            files.push(file);
+        }
+    }
+
+    // Biggest first: those are the ones a visitor would otherwise wait on.
+    files.sort((a, b) => fs.statSync(b).size - fs.statSync(a).size);
+
+    const next = index => {
+        if (index >= files.length) {
+            console.log(`Pre-compressed ${files.length} assets (${(gzip_cache_bytes / 1048576).toFixed(1)} MB held)`);
+            return;
+        }
+        gzipOnce(files[index], true, () => next(index + 1));
+    };
+    next(0);
+};
+
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Serving dist/ on http://0.0.0.0:${PORT}`);
+    warmCache();
+});
