@@ -1,75 +1,243 @@
-.manual-trader-container {
+// Trade panel, laid out as the bossiousfx Smart Trader is (MIT, deriv.com).
+.manual-trader {
     width: 100%;
     height: 100%;
-    max-width: 100%;
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
-    flex-grow: 1;
-    min-height: 0;
-    background: transparent;
+    background: var(--general-main-1);
+    overflow-y: auto;
+    overflow-x: hidden;
     box-sizing: border-box;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
 
-    .manual-trader {
+    * {
+        box-sizing: border-box;
+    }
+
+    &__container {
         display: flex;
-        flex: 1 1 auto;
         flex-direction: column;
+        gap: 1.6rem;
+        padding: 2rem;
         width: 100%;
-        height: 100%;
-        max-width: 100%;
-        min-height: 0;
-        background: #ffffff;
-        position: relative;
-        overflow: hidden;
 
-        &__iframe {
-            width: 100%;
-            height: 100%;
-            min-width: 0;
-            min-height: 0;
-            flex: 1 1 auto;
-            display: block;
-            border: 0;
-            background: #ffffff;
-        }
-
-        // Covers the frame until the platform paints, so the tab never looks
-        // broken on the way in.
-        &__loading {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1.6rem;
-            background: #ffffff;
-            z-index: 1;
-        }
-
-        &__spinner {
-            width: 5.6rem;
-            height: 5.6rem;
-            border-radius: 50%;
-            border: 4px solid rgba(34, 211, 238, 0.25);
-            border-top-color: #22d3ee;
-            border-right-color: #7c3aed;
-            animation: manual-trader-spin 900ms linear infinite;
-        }
-
-        &__loading-text {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #475569;
+        @media (max-width: 767px) {
+            padding: 1.2rem 1rem 8rem;
+            gap: 1.2rem;
         }
     }
-}
 
-@keyframes manual-trader-spin {
-    to {
-        transform: rotate(360deg);
+    &__topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.8rem 1.2rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.8rem;
+        background: var(--general-main-2);
+    }
+
+    &__title {
+        font-weight: 700;
+        letter-spacing: 0.12rem;
+        text-transform: uppercase;
+        color: #3b82f6;
+    }
+
+    &__balance {
+        padding: 0.4rem 0.8rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.6rem;
+        background: var(--general-main-1);
+        color: var(--text-prominent);
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    &__card {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        width: 100%;
+        max-width: 98rem;
+        margin: 0 auto;
+        padding: 1.6rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 1.2rem;
+        background: linear-gradient(180deg, var(--general-main-2), var(--general-main-1));
+        box-shadow: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.18);
+
+        @media (max-width: 767px) {
+            padding: 1.2rem;
+        }
+    }
+
+    &__row {
+        display: grid;
+        gap: 1.2rem;
+
+        &--two {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        // Fits however many fields the trade type needs, and wraps on a phone.
+        &--compact {
+            grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+        }
+
+        @media (max-width: 640px) {
+            &--two {
+                grid-template-columns: 1fr;
+            }
+        }
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        min-width: 0;
+
+        label {
+            font-size: 1.2rem;
+            color: var(--text-less-prominent);
+        }
+
+        select,
+        input {
+            width: 100%;
+            height: 3.8rem;
+            padding: 0 1rem;
+            border: 1px solid var(--border-normal);
+            border-radius: 0.6rem;
+            background: var(--general-main-1);
+            color: var(--text-prominent);
+            font-size: 1.4rem;
+
+            &:disabled {
+                opacity: 0.7;
+            }
+        }
+    }
+
+    // Ten columns that shrink, so the strip never pushes the page sideways.
+    &__digits {
+        display: grid;
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+        gap: 0.8rem;
+
+        @media (max-width: 640px) {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+    }
+
+    &__digits-empty {
+        grid-column: 1 / -1;
+        padding: 1.2rem 0;
+        text-align: center;
+        font-size: 1.2rem;
+        color: var(--text-less-prominent);
+    }
+
+    &__digit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 1;
+        max-height: 5.4rem;
+        border: 2px solid var(--border-normal);
+        border-radius: 1rem;
+        background: var(--general-main-1);
+        color: var(--text-prominent);
+        font-size: 1.6rem;
+        font-weight: 800;
+        transition:
+            background 200ms ease,
+            border-color 200ms ease;
+
+        &.is-current {
+            background: #fff6cc;
+            border-color: #fbbf24;
+            color: #1f2937;
+        }
+
+        &.is-green {
+            background: #dbfde9;
+            border-color: #16a34a;
+            color: #065f46;
+        }
+
+        &.is-red {
+            background: #ffe4e6;
+            border-color: #f43f5e;
+            color: #7f1d1d;
+        }
+
+        &.is-neutral {
+            background: #eef2ff;
+            border-color: #6366f1;
+            color: #1e3a8a;
+        }
+    }
+
+    &__footer-bar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.8rem;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.8rem;
+        background: var(--general-main-1);
+    }
+
+    &__footer-item {
+        font-size: 1.2rem;
+        color: var(--text-less-prominent);
+    }
+
+    &__cta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+
+        @media (max-width: 480px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__cta-once,
+    &__cta-auto,
+    &__cta-stop {
+        height: 4.4rem;
+        border: 0;
+        border-radius: 0.8rem;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.4rem;
+        letter-spacing: 0.04rem;
+        text-transform: uppercase;
+        cursor: pointer;
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    &__cta-once {
+        background: linear-gradient(90deg, #16a34a, #22c55e);
+    }
+
+    &__cta-auto {
+        background: linear-gradient(90deg, #6366f1, #9333ea);
+    }
+
+    &__cta-stop {
+        background: linear-gradient(90deg, #b91c1c, #ef4444);
+    }
+
+    &__status {
+        padding-top: 0.4rem;
     }
 }
