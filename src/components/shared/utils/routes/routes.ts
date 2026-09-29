@@ -103,7 +103,12 @@ export const standalone_routes = {
     root: `${getDerivDomain('derivHome')}/dashboard/home`,
     smarttrader: getDerivDomain('smartTrader'),
     statement: `${getDerivDomain('derivDtrader')}/reports/statement`,
-    trade: `${getDerivDomain('derivDtrader')}/dtrader`,
+    // No /dtrader suffix: that path is a leftover from when the platform lived
+    // at app.deriv.com/dtrader. The trade screen is the root of the platform
+    // now, and dtrader.deriv.com/dtrader renders its own 404 page. (app.deriv.com
+    // itself redirects to the deriv.com marketing site, so it is not the
+    // destination either.)
+    trade: getDerivDomain('derivDtrader'),
     traders_hub: `${getDerivDomain('derivHome')}/dashboard/home`,
     traders_hub_lowcode: getDerivDomain('derivHub'),
     recent_transactions: `${getDerivDomain('derivHub')}/tradershub/redirect?action=redirect_to&redirect_to=wallet`,
