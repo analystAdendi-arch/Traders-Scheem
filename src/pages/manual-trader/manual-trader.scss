@@ -4,7 +4,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: var(--general-main-1);
+    background: var(--ts-scene-light, #ffffff);
     overflow-y: auto;
     overflow-x: hidden;
     box-sizing: border-box;
@@ -41,7 +41,7 @@
         font-weight: 700;
         letter-spacing: 0.12rem;
         text-transform: uppercase;
-        color: #3b82f6;
+        color: #0ea5e9;
     }
 
     &__balance {
@@ -157,7 +157,7 @@
 
         &.is-current {
             background: #fff6cc;
-            border-color: #fbbf24;
+            border-color: #f0c040;
             color: #1f2937;
         }
 
@@ -175,8 +175,8 @@
 
         &.is-neutral {
             background: #eef2ff;
-            border-color: #6366f1;
-            color: #1e3a8a;
+            border-color: #7c3aed;
+            color: #0c4a6e;
         }
     }
 
@@ -226,15 +226,15 @@
     }
 
     &__cta-once {
-        background: linear-gradient(90deg, #16a34a, #22c55e);
+        background: var(--brand-gradient);
     }
 
     &__cta-auto {
-        background: linear-gradient(90deg, #6366f1, #9333ea);
+        background: linear-gradient(90deg, #7c3aed, #9333ea);
     }
 
     &__cta-stop {
-        background: linear-gradient(90deg, #b91c1c, #ef4444);
+        background: linear-gradient(90deg, #9f1239, #e11d48);
     }
 
     &__status {

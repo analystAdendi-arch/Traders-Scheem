@@ -64,12 +64,12 @@ export const guide_content = (): TGuideContent[] => [
 
 export const faq_content = (): TFaqContent[] => [
     {
-        title: localize('What is Deriv Bot?'),
+        title: localize('What is Traders Scheeme?'),
         description: [
             {
                 type: 'text',
                 content: localize(
-                    "Deriv Bot is a web-based strategy builder for trading digital options. It’s a platform where you can build your own automated trading bot using drag-and-drop 'blocks'."
+                    "Traders Scheeme is a web-based strategy builder for trading digital options. It’s a platform where you can build your own automated trading bot using drag-and-drop 'blocks'."
                 ),
             },
         ],
@@ -150,7 +150,7 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-3',
     },
     {
-        title: localize('Do you offer pre-built trading bots on Deriv Bot?'),
+        title: localize('Do you offer pre-built trading bots on Traders Scheeme?'),
         description: [
             {
                 type: 'text',
@@ -164,7 +164,7 @@ export const faq_content = (): TFaqContent[] => [
         description: [
             {
                 type: 'text',
-                content: `${localize('A quick strategy is a ready-made strategy that you can use in Deriv Bot. There are 3 quick strategies you can choose from:')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind.`,
+                content: `${localize('A quick strategy is a ready-made strategy that you can use in Traders Scheeme. There are 3 quick strategies you can choose from:')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind.`,
             },
             {
                 type: 'text',
@@ -216,7 +216,7 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-6',
     },
     {
-        title: localize('How do I import my own trading bot into Deriv Bot?'),
+        title: localize('How do I import my own trading bot into Traders Scheeme?'),
         description: [
             {
                 type: 'text',
@@ -307,12 +307,12 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-9',
     },
     {
-        title: localize('How do I control my losses with Deriv Bot?'),
+        title: localize('How do I control my losses with Traders Scheeme?'),
         description: [
             {
                 type: 'text',
                 content: localize(
-                    'There are several ways to control your losses with Deriv Bot. Here’s a simple example of how you can implement loss control in your strategy:'
+                    'There are several ways to control your losses with Traders Scheeme. Here’s a simple example of how you can implement loss control in your strategy:'
                 ),
             },
             {
@@ -386,7 +386,7 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-10',
     },
     {
-        title: localize('Can I run Deriv Bot on multiple tabs in my web browser?'),
+        title: localize('Can I run Traders Scheeme on multiple tabs in my web browser?'),
         description: [
             {
                 type: 'text',
@@ -398,11 +398,11 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-11',
     },
     {
-        title: localize('Can I trade cryptocurrencies on Deriv Bot?'),
+        title: localize('Can I trade cryptocurrencies on Traders Scheeme?'),
         description: [
             {
                 type: 'text',
-                content: localize("No, we don't offer cryptocurrencies on Deriv Bot."),
+                content: localize("No, we don't offer cryptocurrencies on Traders Scheeme."),
             },
         ],
         search_id: 'faq-12',
@@ -413,14 +413,14 @@ export const faq_content = (): TFaqContent[] => [
             {
                 type: 'text',
                 content: localize(
-                    "No, we don't. However, you'll find quick strategies on Deriv Bot that'll help you build your own trading bot for free."
+                    "No, we don't. However, you'll find quick strategies on Traders Scheeme that'll help you build your own trading bot for free."
                 ),
             },
         ],
         search_id: 'faq-13',
     },
     {
-        title: localize('In which countries is Deriv Bot available?'),
+        title: localize('In which countries is Traders Scheeme available?'),
         description: [
             {
                 type: 'text',
@@ -432,11 +432,11 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-14',
     },
     {
-        title: localize('If I close my web browser, will Deriv Bot continue to run?'),
+        title: localize('If I close my web browser, will Traders Scheeme continue to run?'),
         description: [
             {
                 type: 'text',
-                content: localize('No, Deriv Bot will stop running when your web browser is closed.'),
+                content: localize('No, Traders Scheeme will stop running when your web browser is closed.'),
             },
         ],
         search_id: 'faq-15',
@@ -446,7 +446,7 @@ export const faq_content = (): TFaqContent[] => [
         description: [
             {
                 type: 'text',
-                content: `${localize('Three of the most commonly used strategies in automated trading are')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind — ${localize('you can find them all ready-made and waiting for you in Deriv Bot.')}`,
+                content: `${localize('Three of the most commonly used strategies in automated trading are')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind — ${localize('you can find them all ready-made and waiting for you in Traders Scheeme.')}`,
             },
         ],
         search_id: 'faq-16',
@@ -457,7 +457,7 @@ export const faq_content = (): TFaqContent[] => [
             {
                 type: 'text',
                 content: localize(
-                    '<a href="https://www.youtube.com/watch?v=QdI5zCkO4Gk&t=203s" target="_blank">Watch this video</a> to learn how to build a trading bot on Deriv Bot. Also, <a href="https://deriv.com/academy/blog/posts/how-to-build-a-basic-trading-bot-with-dbot/" target="_blank">check out this blog post</a> on building a trading bot.'
+                    '<a href="https://www.youtube.com/watch?v=QdI5zCkO4Gk&t=203s" target="_blank">Watch this video</a> to learn how to build a trading bot on Traders Scheeme. Also, <a href="https://deriv.com/academy/blog/posts/how-to-build-a-basic-trading-bot-with-dbot/" target="_blank">check out this blog post</a> on building a trading bot.'
                 ),
             },
         ],

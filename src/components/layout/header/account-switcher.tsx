@@ -23,7 +23,7 @@ const CurrencyMark = ({ currency, is_demo, size = 24 }: { currency?: string; is_
     if (is_demo) {
         return (
             <svg {...common} className='acc-mark'>
-                <circle cx='12' cy='12' r='11' fill='#ff444f' />
+                <circle cx='12' cy='12' r='11' fill='#e11d48' />
                 <text x='12' y='16.5' textAnchor='middle' fontSize='12' fontWeight='800' fill='#fff' fontFamily='Arial'>
                     D
                 </text>
@@ -81,7 +81,7 @@ const CurrencyMark = ({ currency, is_demo, size = 24 }: { currency?: string; is_
 
     return (
         <svg {...common} className='acc-mark'>
-            <circle cx='12' cy='12' r='11' fill='#14b8a6' />
+            <circle cx='12' cy='12' r='11' fill='#0ea5e9' />
             <text x='12' y='16' textAnchor='middle' fontSize='8' fontWeight='800' fill='#ffffff' fontFamily='Arial'>
                 {code.slice(0, 3) || '$'}
             </text>

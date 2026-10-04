@@ -787,7 +787,7 @@
     }
 }
 
-/* ----------------------------------------------- VolaTrades account switcher */
+/* -------------------------------------------- Traders Scheeme account switcher */
 
 // Anchor for the dropdown panel.
 .acc-info__wrapper {
@@ -820,7 +820,7 @@
     }
 
     &__balance {
-        color: #14b8a6;
+        color: #0ea5e9;
         font-size: 1.6rem;
         font-weight: 800;
         white-space: nowrap;
@@ -879,7 +879,7 @@
         }
 
         &--active {
-            border-bottom-color: #ff444f;
+            border-bottom-color: #e11d48;
             color: var(--text-prominent);
             font-weight: 700;
         }
@@ -970,7 +970,7 @@
     &__hub {
         display: block;
         padding: 1.2rem 1.6rem;
-        color: #ff444f;
+        color: #e11d48;
         font-size: 1.3rem;
         font-weight: 600;
         line-height: 1.4;

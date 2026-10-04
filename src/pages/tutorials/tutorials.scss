@@ -228,7 +228,7 @@
 
 .tutorials-wrapper {
     width: 100%;
-    background: var(--general-main-1);
+    background: var(--ts-scene-light, #ffffff);
 
     @include tablet-screen {
         display: flex;

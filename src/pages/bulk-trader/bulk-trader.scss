@@ -3,7 +3,7 @@
 // Compact single-screen layout (1rem = 10px in this app).
 .bulk-trader {
     --bulk-green: #4db6ac;
-    --bulk-red: #ef4444;
+    --bulk-red: #e11d48;
     --bulk-coral: #ff6b5a;
     --bulk-surface: #ffffff;
     --bulk-border: #cbd5e1;
@@ -14,7 +14,7 @@
 
     width: 100%;
     height: 100%;
-    background: var(--bulk-surface);
+    background: var(--ts-scene-light, #ffffff);
     // Fixed light-page text: this tab keeps its light look in both themes.
     color: #1e293b;
     display: flex;
@@ -172,7 +172,7 @@
         font-variant-numeric: tabular-nums;
 
         &--error {
-            color: #ef4444;
+            color: #e11d48;
             font-size: 1.3rem;
             font-weight: 600;
             line-height: 1.3;
@@ -226,15 +226,15 @@
         }
 
         &.blue {
-            --ring-color: #2563eb;
+            --ring-color: #0284c7;
         }
 
         &.orange {
-            --ring-color: #f59e0b;
+            --ring-color: #d4a017;
         }
 
         &.red {
-            --ring-color: #ef4444;
+            --ring-color: #e11d48;
         }
 
         &.white {
@@ -268,7 +268,7 @@
     }
 
     &__circle--hit::after {
-        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+        box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.3);
     }
 
     &__circle-digit,
@@ -425,7 +425,7 @@
         color: var(--bulk-label);
 
         &--error {
-            color: #dc2626;
+            color: #be123c;
         }
     }
 }

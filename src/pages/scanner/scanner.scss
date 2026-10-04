@@ -1,14 +1,14 @@
 .signal-scanner {
-    --ss-cyan: #00e5ff;
-    --ss-green: #22ff55;
-    --ss-red: #ff2020;
+    --ss-cyan: #38bdf8;
+    --ss-green: #22c55e;
+    --ss-red: #e11d48;
 
     position: relative;
     width: 100%;
     height: 100%;
     min-height: 52rem;
     overflow: hidden;
-    background: #000;
+    background: var(--ts-scene-dark, #0f0a2e);
     font-size: 1.2rem;
 
     * {

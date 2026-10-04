@@ -94,7 +94,7 @@
         cursor: pointer;
 
         &--active {
-            border-color: var(--brand-secondary, #22d3ee);
+            border-color: var(--brand-secondary, #38bdf8);
             background: var(--general-section-1);
             font-weight: 800;
         }
@@ -177,7 +177,7 @@
             &__icons {
                 g > path,
                 path {
-                    fill: var(--text-prominent);
+                    fill: var(--brand-purple);
                 }
             }
         }
@@ -237,7 +237,7 @@
     .deriv-drawer__header__close-btn {
         button > svg > path,
         svg > path {
-            fill: var(--text-prominent);
+            fill: var(--brand-purple);
         }
     }
 }

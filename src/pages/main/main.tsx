@@ -1,4 +1,4 @@
-﻿// @ts-nocheck â€” vendored bot code with known upstream type gaps; see AGENTS.md
+// @ts-nocheck â€” vendored bot code with known upstream type gaps; see AGENTS.md
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -39,6 +39,7 @@ import RunPanel from '../../components/run-panel';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
 import RunStrategy from '../dashboard/run-strategy';
+import SceneFx from '@/components/scene-fx/SceneFx';
 import './main.scss';
 
 const ChartWrapper = lazy(() => import('../chart/chart-wrapper'));
@@ -457,6 +458,7 @@ const AppWrapper = observer(() => {
                                 id='id-tutorials'
                             >
                                 <div className='tutorials-wrapper'>
+                                    <SceneFx />
                                     <Suspense
                                         fallback={
                                             <ChunkLoader message={localize('Please wait, loading tutorials...')} />

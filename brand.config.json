@@ -1,5 +1,5 @@
 {
-    "brand_name": "VolaTrades",
+    "brand_name": "Traders Scheeme",
     "brand_domain": "volatrades.com",
     "brand_hostname": {
         "staging": "staging.volatrades.com/dashboard",
@@ -7,16 +7,30 @@
     },
     "domain_name": "VolaTrades.com",
     "colors": {
-        "primary": "#3B82F6",
-        "secondary": "#64748b",
-        "tertiary": "#8b5cf6",
+        "primary": "#0284C7",
+        "secondary": "#7C3AED",
+        "tertiary": "#D4A017",
         "success": "#10b981",
-        "danger": "#ef4444",
-        "warning": "#f59e0b",
-        "info": "#0ea5e9",
+        "danger": "#E11D48",
+        "warning": "#D4A017",
+        "info": "#38BDF8",
         "neutral": "#6b7280",
-        "black": "#0f172a",
+        "black": "#0B1426",
         "white": "#ffffff",
+        "palette": {
+            "sky": "#38BDF8",
+            "sky_deep": "#0284C7",
+            "sky_soft": "#E0F2FE",
+            "gold": "#F0C040",
+            "gold_deep": "#B8860B",
+            "gold_soft": "#FDF6DC",
+            "red": "#E11D48",
+            "red_soft": "#FFE4E6",
+            "purple": "#7C3AED",
+            "purple_deep": "#5B21B6",
+            "purple_soft": "#EDE9FE",
+            "navy": "#0B1426"
+        },
         "grey": {
             "50": "#f8fafc",
             "100": "#f1f5f9",
@@ -79,7 +93,7 @@
         "css_variable_prefix": "--brand"
     },
     "platform": {
-        "name": "VolaTrades",
+        "name": "Traders Scheeme",
         "footer": {
             "enable_language_settings": false,
             "enable_theme_toggle": true

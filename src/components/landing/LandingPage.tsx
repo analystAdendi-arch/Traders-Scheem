@@ -1,8 +1,10 @@
-import { type CSSProperties, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { generateOAuthURL } from '@/components/shared';
 import { TAB_IDS } from '@/constants/bot-contents';
+import WhatsAppIcon from '@/components/shared_ui/whatsapp-icon/WhatsAppIcon';
 import { getFreeBots } from '@/pages/free-bots/free-bot-list';
+import TradingBackdrop from '@/components/trading-backdrop/TradingBackdrop';
 import { getAppName, LOGO_CANDIDATES } from '@/utils/branding';
 
 import {
@@ -14,16 +16,16 @@ import {
     HOW_IT_WORKS,
     MASTER_PARTNER_URL,
     REVIEWS,
-    TELEGRAM_URL,
+    WHATSAPP_NUMBER,
+    WHATSAPP_URL,
     type THighlight,
     WHY_CHOOSE,
 } from './content';
 import { subscribePublicFeed, TFeedState, TICKER_SYMBOLS } from './public-feed';
+import { BrandName, OrbitEmblem } from './SplashScreen';
 import './landing-page.scss';
 
 const ROTATE_MS = 5000;
-/** Served from public/ (not bundled). */
-const BG_IMAGE = '/landing-bg-source.webp';
 const CARD_TONES: THighlight['tone'][] = ['teal', 'violet', 'sky', 'emerald', 'sky', 'violet'];
 
 type TCard = {
@@ -64,7 +66,7 @@ const TopTicker = ({ feed }: { feed: TFeedState }) => {
     );
 };
 
-// "VolaTrades" -> ["Vola", "Trades"]: split at the first inner capital.
+// "Traders Scheeme" -> ["Traders ", "Scheeme"]: split at the first inner capital.
 const splitName = (name: string): [string, string] => {
     for (let i = 1; i < name.length; i++) if (/[A-Z]/.test(name[i])) return [name.slice(0, i), name.slice(i)];
     return [name, ''];
@@ -123,30 +125,40 @@ const Icon = ({ name }: { name: string }) => {
     }
 };
 
-/** The logo file if it is there, else the two-tone name. */
+/** The logo emblem (when the file is there) beside the two-tone name. */
 const Wordmark = () => {
     const [logo_failed, setLogoFailed] = useState(false);
     const name = getAppName();
     const [first, second] = splitName(name);
 
-    if (!logo_failed) {
-        return (
-            <img
-                className='te-landing__logo'
-                src={LOGO_CANDIDATES[0]}
-                alt={name}
-                onError={() => setLogoFailed(true)}
-            />
-        );
-    }
-
     return (
-        <span className='te-landing__wordmark'>
-            <span className='te-landing__wordmark-a'>{first}</span>
-            <span className='te-landing__wordmark-b'>{second}</span>
+        <span className='te-landing__brand'>
+            {!logo_failed && (
+                <img
+                    className='te-landing__logo'
+                    src={LOGO_CANDIDATES[0]}
+                    alt=''
+                    onError={() => setLogoFailed(true)}
+                />
+            )}
+            <span className='te-landing__wordmark' aria-label={name}>
+                <span className='te-landing__wordmark-a'>{first}</span>
+                <span className='te-landing__wordmark-b'>{second}</span>
+            </span>
         </span>
     );
 };
+
+/** Orbiting emblem over the app name, the first thing on the page. */
+const HeroBrand = () => (
+    <div className='te-landing__hero-brand'>
+        <OrbitEmblem size='md' />
+        <h1 className='te-landing__hero-name'>
+            <BrandName />
+        </h1>
+        <span className='te-landing__hero-tag'>AI-powered trading on Deriv</span>
+    </div>
+);
 
 /* ------------------------------------------------------------------ page */
 
@@ -219,11 +231,7 @@ const LandingPage = () => {
 
     return (
         <div className='te-landing'>
-            <div
-                className='te-landing__bg'
-                aria-hidden='true'
-                style={{ '--te-bg-image': `url(${BG_IMAGE})` } as CSSProperties}
-            />
+            <TradingBackdrop />
 
             <header className='te-landing__top'>
                 <Wordmark />
@@ -246,8 +254,9 @@ const LandingPage = () => {
             <main className='te-landing__main'>
                 {/* hero */}
                 <section className='te-landing__hero'>
+                    <HeroBrand />
                     <p className='te-landing__greeting'>{greeting()}</p>
-                    <h1 className='te-landing__headline'>
+                    <h2 className='te-landing__headline'>
                         {typed.startsWith('Welcome to ') ? (
                             <>
                                 Welcome to{' '}
@@ -257,7 +266,7 @@ const LandingPage = () => {
                             typed
                         )}
                         <span className='te-landing__caret' aria-hidden='true' />
-                    </h1>
+                    </h2>
                     <p className='te-landing__lead'>{HEADLINES[index].text}</p>
 
                     {/* Two copies scroll right-to-left in a seamless loop. */}
@@ -372,10 +381,10 @@ const LandingPage = () => {
                 <section className='te-landing__community'>
                     <span className='te-landing__chip'>COMMUNITY</span>
                     <h2 className='te-landing__h2'>Join the {getAppName()} Community</h2>
-                    <p className='te-landing__muted'>Get updates, new bots and help from the team on Telegram.</p>
+                    <p className='te-landing__muted'>Get updates, new bots and help from the team on WhatsApp.</p>
                     <div className='te-landing__pills'>
-                        <a className='te-landing__pill' href={TELEGRAM_URL} target='_blank' rel='noopener noreferrer'>
-                            ✈ Join us on Telegram
+                        <a className='te-landing__pill te-landing__pill--whatsapp' href={WHATSAPP_URL} target='_blank' rel='noopener noreferrer'>
+                            <WhatsAppIcon size={18} /> Chat on WhatsApp · {WHATSAPP_NUMBER}
                         </a>
                         <span className='te-landing__pill'>🔒 Official Deriv login</span>
                         <span className='te-landing__pill'>⚡ Live Deriv data</span>
@@ -458,8 +467,8 @@ const LandingPage = () => {
                 <span>
                     © {new Date().getFullYear()} {getAppName()} · Built on the Deriv API
                 </span>
-                <a href={TELEGRAM_URL} target='_blank' rel='noopener noreferrer'>
-                    Telegram
+                <a className='te-landing__footer-wa' href={WHATSAPP_URL} target='_blank' rel='noopener noreferrer'>
+                    <WhatsAppIcon size={16} /> {WHATSAPP_NUMBER}
                 </a>
             </footer>
         </div>

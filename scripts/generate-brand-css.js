@@ -39,6 +39,24 @@ const updateBrandColorsInThemes = () => {
         `    --brand-neutral: ${colors.neutral};`,
     ];
 
+    // Named palette swatches, e.g. palette.sky_deep -> --brand-sky-deep
+    if (colors.palette) {
+        brandColorLines.push('');
+        brandColorLines.push('    /* Brand palette - dynamically generated from brand.config.json */');
+        Object.entries(colors.palette).forEach(([name, value]) => {
+            brandColorLines.push(`    --brand-${name.replace(/_/g, '-')}: ${value};`);
+        });
+        brandColorLines.push(
+            '    --brand-gradient: linear-gradient(135deg, var(--brand-sky-deep) 0%, var(--brand-purple) 100%);'
+        );
+        brandColorLines.push(
+            '    --brand-gradient-gold: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-gold-deep) 100%);'
+        );
+        brandColorLines.push(
+            '    --brand-gradient-nav: linear-gradient(90deg, #0f0a2e 0%, #2e1065 50%, #0c4a6e 100%);'
+        );
+    }
+
     // Generate typography variables if available
     if (typography && typography.font_family) {
         brandColorLines.push('');

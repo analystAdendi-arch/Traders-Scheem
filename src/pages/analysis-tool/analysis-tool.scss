@@ -1,5 +1,6 @@
 .analysis-tool {
-    --at-surface: var(--general-main-1, #ffffff);
+    --at-surface: color-mix(in srgb, var(--general-main-1, #ffffff) 84%, transparent);
+    --at-solid: var(--general-main-1, #ffffff);
     --at-page: var(--general-section-1, #f5f7fa);
     --at-border: var(--general-border, #e3e8ef);
     --at-text: var(--text-general, #0f172a);
@@ -10,7 +11,7 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    background: var(--at-page);
+    background: var(--ts-scene-light, #ffffff);
     color: var(--at-text);
     font-size: 1.2rem;
 
@@ -28,6 +29,9 @@
         flex-wrap: wrap;
         padding: 1rem 1.6rem 0.6rem;
         background: var(--at-surface);
+        backdrop-filter: blur(8px);
+        border-bottom: 2px solid transparent;
+        border-image: linear-gradient(90deg, var(--brand-sky), var(--brand-purple), var(--brand-gold)) 1;
     }
 
     &__toolbar-left {
@@ -66,7 +70,7 @@
         max-height: 40rem;
         overflow-y: auto;
         padding: 0.8rem;
-        background: var(--at-surface);
+        background: var(--at-solid);
         border: 1px solid var(--at-border);
         border-radius: 10px;
         box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
@@ -168,7 +172,7 @@
         font-variant-numeric: tabular-nums;
 
         &--pending {
-            color: #ef4444;
+            color: #e11d48;
         }
 
         &--up {
@@ -176,7 +180,7 @@
         }
 
         &--down {
-            color: #dc2626;
+            color: #be123c;
         }
 
         &--flat {
@@ -187,10 +191,10 @@
     &__error {
         margin: 1.2rem 1.6rem 0;
         padding: 1rem 1.2rem;
-        border: 1px solid rgba(220, 38, 38, 0.32);
+        border: 1px solid rgba(190, 18, 60, 0.32);
         border-radius: 8px;
-        background: rgba(220, 38, 38, 0.08);
-        color: #b91c1c;
+        background: rgba(190, 18, 60, 0.08);
+        color: #9f1239;
     }
 
     /* ------------------------------------------------------ digit circles */
@@ -244,21 +248,21 @@
         }
 
         &--second {
-            border-color: #3b82f6;
-            background: radial-gradient(circle at 50% 35%, #1e3a8a 0%, #0b1a44 100%);
-            box-shadow: 0 0 1.2rem rgba(59, 130, 246, 0.45);
+            border-color: #0ea5e9;
+            background: radial-gradient(circle at 50% 35%, #0c4a6e 0%, #0b1a44 100%);
+            box-shadow: 0 0 1.2rem rgba(14, 165, 233, 0.45);
         }
 
         &--third {
-            border-color: #f59e0b;
+            border-color: #d4a017;
             background: radial-gradient(circle at 50% 35%, #92400e 0%, #451a03 100%);
-            box-shadow: 0 0 1.2rem rgba(245, 158, 11, 0.5);
+            box-shadow: 0 0 1.2rem rgba(212, 160, 23, 0.5);
         }
 
         &--cold {
-            border-color: #ef4444;
+            border-color: #e11d48;
             background: radial-gradient(circle at 50% 35%, #7f1d1d 0%, #3b0a0a 100%);
-            box-shadow: 0 0 1.2rem rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 1.2rem rgba(225, 29, 72, 0.5);
         }
 
         &--current {
@@ -273,7 +277,7 @@
         width: 0;
         height: 0;
         border-inline: 0.6rem solid transparent;
-        border-bottom: 0.7rem solid #f97316;
+        border-bottom: 0.7rem solid #d4a017;
     }
 
     // Light-blue "Circles" header bar.
@@ -381,13 +385,13 @@
         }
 
         &--under {
-            background: rgba(245, 158, 11, 0.18);
-            color: #b45309;
+            background: rgba(212, 160, 23, 0.18);
+            color: #8a6508;
         }
 
         &--match {
-            background: rgba(239, 68, 68, 0.14);
-            color: #b91c1c;
+            background: rgba(225, 29, 72, 0.14);
+            color: #9f1239;
         }
 
         &--differ {
@@ -406,8 +410,8 @@
         }
 
         &--fall {
-            background: rgba(220, 38, 38, 0.14);
-            color: #b91c1c;
+            background: rgba(190, 18, 60, 0.14);
+            color: #9f1239;
         }
 
         &--flat {
@@ -455,15 +459,15 @@
         }
 
         &--active.analysis-tool__chip--over {
-            border-color: #f97316;
-            color: #f97316;
-            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+            border-color: #d4a017;
+            color: #d4a017;
+            box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.2);
         }
 
         &--active.analysis-tool__chip--match {
-            border-color: #ef4444;
-            color: #ef4444;
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+            border-color: #e11d48;
+            color: #e11d48;
+            box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.2);
         }
     }
 
@@ -514,20 +518,20 @@
 
     &__meter-label--under,
     &__meter-value--under {
-        color: #b45309;
+        color: #8a6508;
     }
 
     &__meter-fill--under {
-        background: linear-gradient(90deg, #3f2d05 0%, #f59e0b 100%);
+        background: linear-gradient(90deg, #3f2d05 0%, #d4a017 100%);
     }
 
     &__meter-label--match,
     &__meter-value--match {
-        color: #dc2626;
+        color: #be123c;
     }
 
     &__meter-fill--match {
-        background: linear-gradient(90deg, #fecdd3 0%, #f87171 100%);
+        background: linear-gradient(90deg, #fecdd3 0%, #fb7185 100%);
     }
 
     &__meter-label--differ,
@@ -541,20 +545,20 @@
 
     &__meter-label--even,
     &__meter-value--even {
-        color: #ef4444;
+        color: #e11d48;
     }
 
     &__meter-fill--even {
-        background: linear-gradient(90deg, #fde2e2 0%, #ef4444 100%);
+        background: linear-gradient(90deg, #fde2e2 0%, #e11d48 100%);
     }
 
     &__meter-label--odd,
     &__meter-value--odd {
-        color: #991b1b;
+        color: #881337;
     }
 
     &__meter-fill--odd {
-        background: linear-gradient(90deg, #450a0a 0%, #dc2626 100%);
+        background: linear-gradient(90deg, #450a0a 0%, #be123c 100%);
     }
 
     &__meter-label--rise,
@@ -568,11 +572,11 @@
 
     &__meter-label--fall,
     &__meter-value--fall {
-        color: #dc2626;
+        color: #be123c;
     }
 
     &__meter-fill--fall {
-        background: linear-gradient(90deg, #450a0a 0%, #f87171 100%);
+        background: linear-gradient(90deg, #450a0a 0%, #fb7185 100%);
     }
 
     /* ------------------------------------------------------------ details */

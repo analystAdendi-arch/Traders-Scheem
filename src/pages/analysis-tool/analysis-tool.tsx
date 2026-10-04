@@ -14,6 +14,7 @@ import {
     TAnalysisSymbol,
 } from '@/utils/analysis';
 
+import SceneFx from '@/components/scene-fx/SceneFx';
 import './analysis-tool.scss';
 
 const DEFAULT_TICKS = 1000;
@@ -317,6 +318,7 @@ const AnalysisTool = observer(() => {
 
     return (
         <div className='analysis-tool'>
+            <SceneFx />
             <div className='analysis-tool__mode'>{localize('Circles')}</div>
             <div className='analysis-tool__toolbar'>
                 <div className='analysis-tool__toolbar-left'>

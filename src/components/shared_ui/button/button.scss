@@ -1,7 +1,7 @@
 @use 'components/shared/styles/mixins' as *;
 
 :root {
-    --button-primary-default: #ff444f;
+    --button-primary-default: #e11d48;
     --text-colored-background: #fff;
     --button-primary-hover: #eb3e48;
     --button-secondary-default: #6e6e6e;
@@ -90,7 +90,8 @@
     }
 
     &--primary {
-        background: var(--button-primary-default);
+        // Brand gradient: light blue into purple.
+        background: var(--brand-gradient, var(--button-primary-default));
         color: var(--text-colored-background);
 
         &:hover:not([disabled]) {

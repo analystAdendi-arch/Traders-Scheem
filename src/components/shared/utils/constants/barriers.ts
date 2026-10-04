@@ -33,10 +33,10 @@ export const DEFAULT_SHADES = {
 };
 
 export const BARRIER_COLORS = {
-    GREEN: '#4bb4b3',
-    RED: '#ec3f3f',
-    ORANGE: '#ff6444',
-    BLUE: '#377cfc',
+    GREEN: '#38bdf8',
+    RED: '#e11d48',
+    ORANGE: '#e11d48',
+    BLUE: '#0ea5e9',
 };
 
 export const BARRIER_LINE_STYLES = {

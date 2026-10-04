@@ -417,13 +417,13 @@
 .db-hero {
     --db-ink: #050b1f;
     --db-ink-2: #0b1437;
-    --db-glass: rgba(15, 23, 52, 0.62);
+    --db-glass: rgba(24, 14, 58, 0.55);
     --db-glass-border: rgba(148, 163, 184, 0.22);
     --db-text: #e2e8f0;
     --db-muted: #94a3b8;
 
     // The painted backdrop comes from <TradingBackdrop />; this is its base colour.
-    background: #06122a !important;
+    background: #0f0a2e !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     justify-content: center;
@@ -452,7 +452,7 @@
     }
 
     &__greeting-word {
-        background: linear-gradient(90deg, #67e8f9, #22d3ee);
+        background: linear-gradient(90deg, var(--brand-sky), var(--brand-gold));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -519,7 +519,7 @@
 /* ----------------------------------------------------------------- cards */
 
 .db-card {
-    --db-accent: #fb923c;
+    --db-accent: #f0c040;
 
     display: flex;
     flex-direction: column;
@@ -561,7 +561,8 @@
             font-size: 1.2rem;
         }
     }
-    background: rgba(15, 23, 52, 0.62);
+    background: rgba(24, 14, 58, 0.55);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(148, 163, 184, 0.22);
     border-top: 3px solid var(--db-accent);
     border-radius: 1.4rem;
@@ -584,7 +585,7 @@
     }
 
     &--green {
-        --db-accent: #34d399;
+        --db-accent: #ffffff;
     }
 
     &--purple {
@@ -592,11 +593,11 @@
     }
 
     &--yellow {
-        --db-accent: #facc15;
+        --db-accent: #f0c040;
     }
 
     &--cyan {
-        --db-accent: #22d3ee;
+        --db-accent: #38bdf8;
     }
 
     &__top {

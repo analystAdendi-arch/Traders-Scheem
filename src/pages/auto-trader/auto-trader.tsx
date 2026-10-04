@@ -8,6 +8,7 @@ import { isDemoAccount } from '@/utils/account-helpers';
 import { formatQuote, getScannableSymbols, riseFallSplit, TAnalysisSymbol } from '@/utils/analysis';
 
 import { TAutoContract, useAutoTrader } from './use-auto-trader';
+import SceneFx from '@/components/scene-fx/SceneFx';
 import './auto-trader.scss';
 
 const WINDOW_TICKS = 1000;
@@ -59,20 +60,20 @@ const Icon = ({ kind }: { kind: 'evenodd' | 'overunder' | 'risefall' | 'matchdif
     if (kind === 'evenodd') {
         return (
             <svg width='40' height='22' viewBox='0 0 40 22' aria-hidden='true'>
-                <rect x='1' y='1' width='8' height='8' rx='1.5' fill='#f87171' />
+                <rect x='1' y='1' width='8' height='8' rx='1.5' fill='#fb7185' />
                 <rect x='11' y='1' width='8' height='8' rx='1.5' fill='#94a3b8' />
                 <rect x='1' y='11' width='8' height='8' rx='1.5' fill='#94a3b8' />
-                <rect x='11' y='11' width='8' height='8' rx='1.5' fill='#f87171' />
-                <path d='M30 3 38 19H22z' fill='#f87171' opacity='0.85' />
+                <rect x='11' y='11' width='8' height='8' rx='1.5' fill='#fb7185' />
+                <path d='M30 3 38 19H22z' fill='#fb7185' opacity='0.85' />
             </svg>
         );
     }
     if (kind === 'overunder') {
         return (
             <svg width='44' height='22' viewBox='0 0 44 22' aria-hidden='true'>
-                <path d='M2 18 16 4m0 0H9m7 0v7' stroke='#ef4444' strokeWidth='2.4' fill='none' strokeLinecap='round' />
+                <path d='M2 18 16 4m0 0H9m7 0v7' stroke='#e11d48' strokeWidth='2.4' fill='none' strokeLinecap='round' />
                 <path d='M2 21h16' stroke='#94a3b8' strokeWidth='2' />
-                <path d='M26 4l14 14m0 0h-7m7 0v-7' stroke='#ef4444' strokeWidth='2.4' fill='none' strokeLinecap='round' />
+                <path d='M26 4l14 14m0 0h-7m7 0v-7' stroke='#e11d48' strokeWidth='2.4' fill='none' strokeLinecap='round' />
                 <path d='M26 1h16' stroke='#94a3b8' strokeWidth='2' />
             </svg>
         );
@@ -80,14 +81,14 @@ const Icon = ({ kind }: { kind: 'evenodd' | 'overunder' | 'risefall' | 'matchdif
     if (kind === 'risefall') {
         return (
             <svg width='44' height='22' viewBox='0 0 44 22' aria-hidden='true'>
-                <path d='M3 19 17 5m0 0h-8m8 0v8' stroke='#ef4444' strokeWidth='2.4' fill='none' strokeLinecap='round' />
-                <path d='M27 3l14 14m0 0h-8m8 0v-8' stroke='#ef4444' strokeWidth='2.4' fill='none' strokeLinecap='round' />
+                <path d='M3 19 17 5m0 0h-8m8 0v8' stroke='#e11d48' strokeWidth='2.4' fill='none' strokeLinecap='round' />
+                <path d='M27 3l14 14m0 0h-8m8 0v-8' stroke='#e11d48' strokeWidth='2.4' fill='none' strokeLinecap='round' />
             </svg>
         );
     }
     return (
         <svg width='44' height='22' viewBox='0 0 44 22' aria-hidden='true'>
-            <g stroke='#ef4444' strokeWidth='2.2' strokeLinecap='round'>
+            <g stroke='#e11d48' strokeWidth='2.2' strokeLinecap='round'>
                 <path d='M10 2v6M10 14v6M2 11h6M12 11h6M4 5l4 4M12 13l4 4M16 5l-4 4M8 13l-4 4' />
                 <path d='M32 2v6M32 14v6M24 11h6M34 11h6M26 5l4 4M34 13l4 4M38 5l-4 4M30 13l-4 4' />
             </g>
@@ -840,6 +841,7 @@ const AutoTrader = observer(() => {
 
     return (
         <div className='auto-trader'>
+            <SceneFx />
             {!can_trade && (
                 <div className='auto-trader__notice'>
                     {localize('Log in with your Deriv account to start auto trading. Market data is shown live either way.')}

@@ -16,7 +16,7 @@
         padding: 0.8rem 1.2rem;
         border: 0;
         border-radius: 0.6rem;
-        background: #facc15;
+        background: #f0c040;
         color: #1f2937;
         font-size: 1.1rem;
         font-weight: 700;
@@ -24,7 +24,7 @@
         box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.25);
 
         &:hover {
-            background: #fbbf24;
+            background: #f0c040;
         }
 
         span {
@@ -35,7 +35,7 @@
     &__popover {
         width: min(36rem, calc(100vw - 2.4rem));
         padding: 1.4rem 1.6rem;
-        border: 1px solid #fde68a;
+        border: 1px solid #f9e7a6;
         border-radius: 1rem;
         background: #fffbeb;
         color: #422006;

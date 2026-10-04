@@ -142,7 +142,7 @@
         background: conic-gradient(
             from 0deg,
             rgba(168, 85, 247, 0) 0deg,
-            rgba(34, 211, 238, 0.9) 110deg,
+            rgba(56, 189, 248, 0.9) 110deg,
             rgba(236, 72, 153, 0.9) 220deg,
             rgba(168, 85, 247, 0) 360deg
         );
@@ -204,7 +204,7 @@
         left: 0;
         right: 0;
         height: 0.25rem;
-        background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.95), transparent);
+        background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.95), transparent);
         animation: ai-scanner-scan 2.2s ease-in-out infinite;
         pointer-events: none;
     }

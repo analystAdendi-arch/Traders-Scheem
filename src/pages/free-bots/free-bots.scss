@@ -6,7 +6,7 @@
     box-sizing: border-box;
     width: 100%;
     min-height: 100%;
-    background: #06122a;
+    background: #0f0a2e;
     color: #e2e8f0;
 
     * {
@@ -75,8 +75,8 @@
         }
 
         &--active {
-            border-color: #22d3ee;
-            background: linear-gradient(180deg, rgba(43, 89, 195, 0.55) 0%, rgba(30, 64, 175, 0.55) 100%);
+            border-color: #38bdf8;
+            background: linear-gradient(180deg, rgba(2, 132, 199, 0.55) 0%, rgba(7, 89, 133, 0.55) 100%);
             color: #ffffff;
         }
     }
@@ -155,7 +155,7 @@
     }
 
     &__card {
-        --accent: #f97316;
+        --accent: #d4a017;
 
         display: flex;
         flex-direction: column;
@@ -181,11 +181,11 @@
         }
 
         &--evenodd {
-            --accent: #f97316;
+            --accent: #d4a017;
         }
 
         &--overunder {
-            --accent: #22d3ee;
+            --accent: #38bdf8;
         }
 
         &--matchesdiffers {
@@ -193,7 +193,7 @@
         }
 
         &--callput {
-            --accent: #34d399;
+            --accent: #f0c040;
         }
 
         &--accumulator {
@@ -250,9 +250,9 @@
 
         // Marks a bot that runs its own stake and recovery, as in the reference.
         &--auto {
-            border-color: rgba(34, 211, 238, 0.6);
-            background: rgba(34, 211, 238, 0.14);
-            color: #67e8f9;
+            border-color: rgba(56, 189, 248, 0.6);
+            background: rgba(56, 189, 248, 0.14);
+            color: #7dd3fc;
         }
     }
 

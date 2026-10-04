@@ -6,6 +6,18 @@
     // otherwise paint over the logo and the auth buttons.
     position: relative;
     z-index: 3;
+    background: var(--general-main-1);
+
+    // Brand strip under the header: light blue -> purple -> gold.
+    &::after {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        bottom: 0;
+        height: 0.3rem;
+        background: linear-gradient(90deg, var(--brand-sky) 0%, var(--brand-purple) 55%, var(--brand-gold) 100%);
+        pointer-events: none;
+    }
 
     &__account-settings {
         padding-inline-end: 1.2rem;
@@ -17,23 +29,27 @@
     &__menu {
         svg > path,
         svg > g > path {
-            fill: var(--text-prominent);
+            fill: var(--brand-purple);
         }
     }
 
-    // Telegram call button beside the logo. It rings: the handset rocks in
-    // bursts with a rest between them, and two rings travel outwards the way an
-    // incoming call is drawn.
-    &__telegram {
+    // WhatsApp button beside the logo: a light-blue -> purple coin with a gold
+    // rim. It rings: the glyph rocks in bursts with a rest between them, and two
+    // gold rings travel outwards the way an incoming call is drawn.
+    &__whatsapp {
         position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 4.2rem;
-        height: 4.2rem;
-        margin-inline-start: 0.4rem;
+        width: 3.8rem;
+        height: 3.8rem;
+        margin-inline-start: 0.6rem;
         border-radius: 50%;
-        color: #229ed9;
+        color: #ffffff;
+        background: var(--brand-gradient);
+        box-shadow:
+            0 0 0 0.2rem var(--brand-gold),
+            0 0.4rem 1.2rem rgba(124, 58, 237, 0.35);
         transition:
             transform 140ms ease,
             background 140ms ease;
@@ -45,10 +61,10 @@
             position: absolute;
             inset: 0;
             border-radius: 50%;
-            border: 2px solid #229ed9;
+            border: 2px solid var(--brand-gold);
             opacity: 0;
             pointer-events: none;
-            animation: app-header-telegram-ring 2s ease-out infinite;
+            animation: app-header-whatsapp-ring 2s ease-out infinite;
         }
 
         // Second ring follows the first, so they read as a repeating pulse.
@@ -60,15 +76,15 @@
             position: relative;
             // Rocks about its middle rather than a corner.
             transform-origin: 50% 50%;
-            animation: app-header-telegram-shake 2s ease-in-out infinite;
+            animation: app-header-whatsapp-shake 2s ease-in-out infinite;
 
             path {
-                fill: #229ed9 !important;
+                fill: #ffffff !important;
             }
         }
 
         &:hover {
-            background: rgba(34, 158, 217, 0.12);
+            filter: brightness(1.1);
 
             svg {
                 // Hold still under the cursor, so the icon stays readable.
@@ -77,13 +93,13 @@
         }
 
         &:focus-visible {
-            outline: 2px solid #229ed9;
+            outline: 2px solid var(--brand-gold);
             outline-offset: 2px;
         }
     }
 }
 
-@keyframes app-header-telegram-ring {
+@keyframes app-header-whatsapp-ring {
     0% {
         transform: scale(0.7);
         opacity: 0.5;
@@ -101,7 +117,7 @@
 }
 
 // Two quick bursts of rocking, then a rest - the cadence of a ringing phone.
-@keyframes app-header-telegram-shake {
+@keyframes app-header-whatsapp-shake {
     0%,
     54%,
     100% {
@@ -143,7 +159,7 @@
 
 // Anyone who asks for less motion gets a still handset.
 @media (prefers-reduced-motion: reduce) {
-    .app-header__telegram {
+    .app-header__whatsapp {
         &::before,
         &::after {
             animation: none;
@@ -397,9 +413,44 @@
     align-items: center;
 
     button {
-        font-weight: 400;
+        font-weight: 700;
         margin-inline-end: 1.6rem;
-        border-radius: 16px;
+        border-radius: 999px;
+        padding-inline: 1.8rem;
+        transition:
+            transform 140ms ease,
+            box-shadow 140ms ease,
+            background 140ms ease;
+
+        &:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        // Log in: light-blue outline.
+        &.dc-btn--tertiary {
+            background: transparent;
+            box-shadow: inset 0 0 0 0.15rem var(--brand-sky-deep);
+
+            .dc-btn__text,
+            span {
+                color: var(--brand-sky-deep);
+            }
+
+            &:hover:not(:disabled) {
+                background: var(--brand-sky-soft);
+            }
+        }
+
+        // Sign up: gold.
+        &.dc-btn--primary__light {
+            background: var(--brand-gradient-gold);
+            box-shadow: 0 0.4rem 1.2rem rgba(184, 134, 11, 0.3);
+
+            .dc-btn__text,
+            span {
+                color: var(--brand-navy);
+            }
+        }
 
         // Login / Sign up are disabled until the OAuth app id is configured.
         // Keep them visually unchanged when disabled (no faded/0.32 opacity).

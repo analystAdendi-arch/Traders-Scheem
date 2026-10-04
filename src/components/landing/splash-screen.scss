@@ -1,63 +1,157 @@
+/* ------------------------------------------------ shared brand pieces */
+
+// Logo emblem inside two counter-rotating orbits (splash and landing hero).
+.te-orbit {
+    --size: 16rem;
+
+    position: relative;
+    width: var(--size);
+    height: var(--size);
+    margin: 0 auto;
+
+    &--md {
+        --size: 11rem;
+    }
+
+    &__ring {
+        position: absolute;
+        border-radius: 50%;
+        animation: te-orbit-spin 14s linear infinite;
+
+        // The planet riding on each ring.
+        i {
+            position: absolute;
+            top: -0.5rem;
+            left: 50%;
+            width: 1rem;
+            height: 1rem;
+            margin-left: -0.5rem;
+            border-radius: 50%;
+        }
+
+        &--outer {
+            inset: 0;
+            border: 1px dashed rgba(240, 192, 64, 0.65);
+            box-shadow:
+                0 0 2.4rem rgba(124, 58, 237, 0.35),
+                inset 0 0 2.4rem rgba(56, 189, 248, 0.15);
+
+            i {
+                background: var(--brand-gold, #f0c040);
+                box-shadow: 0 0 1.2rem 0.3rem rgba(240, 192, 64, 0.7);
+            }
+        }
+
+        &--inner {
+            inset: 14%;
+            border: 1.5px solid transparent;
+            background:
+                linear-gradient(#0f0a2e, #0f0a2e) padding-box,
+                conic-gradient(from 0deg, var(--brand-sky, #38bdf8), var(--brand-purple, #7c3aed), transparent 70%)
+                    border-box;
+            animation-duration: 8s;
+            animation-direction: reverse;
+
+            i {
+                width: 0.8rem;
+                height: 0.8rem;
+                margin-left: -0.4rem;
+                top: -0.4rem;
+                background: var(--brand-sky, #38bdf8);
+                box-shadow: 0 0 1rem 0.3rem rgba(56, 189, 248, 0.7);
+            }
+        }
+    }
+
+    &__core {
+        position: absolute;
+        inset: 24%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 28%;
+        background: #0b1426;
+        box-shadow:
+            0 0 0 0.2rem rgba(240, 192, 64, 0.8),
+            0 0 3.2rem rgba(56, 189, 248, 0.45);
+        animation: te-orbit-float 4s ease-in-out infinite;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__initials {
+        font-size: calc(var(--size) * 0.18);
+        font-weight: 900;
+        color: #ffffff;
+    }
+}
+
+// "Traders" in white-to-sky, "Scheeme" in gold.
+.te-brand-name {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 0.28em;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+
+    &__a {
+        background: linear-gradient(180deg, #ffffff 30%, #bae6fd 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    &__b {
+        background: linear-gradient(100deg, #fdf6dc 0%, var(--brand-gold, #f0c040) 40%, #b8860b 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 0 1.2rem rgba(240, 192, 64, 0.35));
+    }
+}
+
+/* ------------------------------------------------------------- splash */
+
 .te-splash {
     position: fixed;
     inset: 0;
     z-index: 100050;
     display: flex;
-    align-items: center;
+    // `safe` keeps the card's top on screen when it is taller than the window.
+    align-items: safe center;
     justify-content: center;
     padding: 1.6rem 1.6rem 6rem;
-    background: #050a18;
+    background: #0f0a2e;
     color: #e2e8f0;
     font-family: var(--brand-font-primary, sans-serif);
-
-    &__bg {
-        position: absolute;
-        inset: 0;
-        background:
-            radial-gradient(40rem 30rem at 20% 70%, rgba(16, 185, 129, 0.12), transparent 60%),
-            radial-gradient(40rem 30rem at 80% 30%, rgba(244, 63, 94, 0.1), transparent 60%),
-            repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.05) 0 1px, transparent 1px 8rem),
-            repeating-linear-gradient(0deg, rgba(148, 163, 184, 0.05) 0 1px, transparent 1px 8rem);
-        filter: blur(0.5px);
-    }
+    overflow-x: hidden;
+    overflow-y: auto;
 
     &__card {
         position: relative;
+        z-index: 1;
         width: min(52rem, 100%);
         padding: 3.2rem 3.2rem 2.4rem;
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        border-radius: 2.4rem;
-        background: rgba(12, 18, 32, 0.88);
-        box-shadow: 0 2.4rem 6rem rgba(0, 0, 0, 0.55);
+        border: 1px solid rgba(240, 192, 64, 0.3);
+        border-radius: 2.8rem;
+        background: linear-gradient(160deg, rgba(46, 16, 101, 0.55) 0%, rgba(15, 10, 46, 0.75) 60%, rgba(12, 74, 110, 0.45) 100%);
+        box-shadow:
+            0 2.4rem 6rem rgba(0, 0, 0, 0.55),
+            inset 0 1px 0 rgba(255, 255, 255, 0.12);
         text-align: center;
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(14px);
     }
 
-    &__logo {
-        margin: 0;
-        font-size: 4rem;
-        font-weight: 900;
-        letter-spacing: -0.02em;
-        line-height: 1;
-    }
-
-    // Round brand logo, when a logo file is supplied.
-    &__logo-img {
-        width: auto;
-        height: 14rem;
-        border-radius: 50%;
-        object-fit: contain;
-        filter: drop-shadow(0 0 2.4rem rgba(16, 217, 160, 0.35));
-    }
-
-    &__logo-a {
-        color: #10d9a0;
-        text-shadow: 0 0 2.4rem rgba(16, 217, 160, 0.55);
-    }
-
-    &__logo-b {
-        color: #ff4d6a;
-        text-shadow: 0 0 2.4rem rgba(255, 77, 106, 0.6);
+    &__title {
+        margin: 2.4rem 0 0;
+        font-size: clamp(3.4rem, 7vw, 4.8rem);
     }
 
     &__hub {
@@ -65,11 +159,11 @@
         align-items: center;
         justify-content: center;
         gap: 1.4rem;
-        margin-top: 1rem;
+        margin-top: 1.2rem;
         font-size: 1.15rem;
         font-weight: 700;
-        letter-spacing: 0.6em;
-        color: #64748b;
+        letter-spacing: 0.5em;
+        color: #a78bfa;
     }
 
     &__live {
@@ -77,9 +171,9 @@
         align-items: center;
         gap: 0.5rem;
         padding: 0.2rem 0.9rem;
-        border: 1px solid rgba(16, 217, 160, 0.45);
+        border: 1px solid rgba(56, 189, 248, 0.5);
         border-radius: 999px;
-        color: #10d9a0;
+        color: #38bdf8;
         letter-spacing: 0.12em;
         font-size: 1rem;
 
@@ -87,27 +181,15 @@
             width: 0.6rem;
             height: 0.6rem;
             border-radius: 50%;
-            background: #10d9a0;
+            background: #38bdf8;
             animation: te-pulse 1.2s ease-in-out infinite;
         }
     }
 
-    &__divider {
-        margin: 2.4rem 0;
-        border-top: 1px solid rgba(148, 163, 184, 0.16);
-    }
-
-    &__welcome {
-        margin: 0;
-        font-size: 2rem;
-        font-weight: 800;
-        color: #ffffff;
-    }
-
     &__sub {
-        margin: 0.8rem 0 2.4rem;
-        font-size: 1.35rem;
-        color: #64748b;
+        margin: 1.6rem 0 2.4rem;
+        font-size: 1.4rem;
+        color: #cbd5e1;
     }
 
     &__progress {
@@ -118,23 +200,26 @@
 
     &__bar {
         flex: 1;
-        height: 0.6rem;
+        height: 0.7rem;
         border-radius: 999px;
-        background: #1e293b;
+        background: rgba(255, 255, 255, 0.08);
         overflow: hidden;
     }
 
     &__fill {
+        position: relative;
         height: 100%;
         border-radius: 999px;
-        background: linear-gradient(90deg, #10d9a0 0%, #22d3ee 100%);
+        background: linear-gradient(90deg, var(--brand-sky) 0%, var(--brand-purple) 60%, var(--brand-gold) 100%);
+        box-shadow: 0 0 1.2rem rgba(240, 192, 64, 0.5);
         transition: width 120ms linear;
     }
 
     &__pct {
         min-width: 3.6rem;
         font-size: 1.2rem;
-        color: #94a3b8;
+        font-weight: 700;
+        color: #f0c040;
         text-align: end;
         font-variant-numeric: tabular-nums;
     }
@@ -145,15 +230,16 @@
         gap: 1rem;
         margin-top: 2rem;
         font-size: 1.35rem;
-        color: #94a3b8;
+        color: #cbd5e1;
         text-align: start;
     }
 
     &__spinner {
         width: 1.8rem;
         height: 1.8rem;
-        border: 2px solid rgba(16, 217, 160, 0.25);
-        border-top-color: #10d9a0;
+        border: 2px solid rgba(167, 139, 250, 0.25);
+        border-top-color: #f0c040;
+        border-right-color: #38bdf8;
         border-radius: 50%;
         animation: te-spin 0.8s linear infinite;
     }
@@ -168,12 +254,12 @@
             width: 0.8rem;
             height: 0.8rem;
             border-radius: 999px;
-            background: #334155;
+            background: rgba(167, 139, 250, 0.3);
             transition: all 200ms ease;
 
             &.active {
                 width: 3rem;
-                background: #10d9a0;
+                background: linear-gradient(90deg, var(--brand-sky), var(--brand-gold));
             }
         }
     }
@@ -185,31 +271,50 @@
     }
 
     &__feature {
+        --tone: #38bdf8;
+
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.8rem;
+        gap: 1.2rem;
         font-size: 1.15rem;
-        color: #94a3b8;
+        font-weight: 600;
+        color: #e2e8f0;
+
+        &--purple {
+            --tone: #a78bfa;
+        }
+
+        &--gold {
+            --tone: #f0c040;
+        }
     }
 
+    // Diamond-shaped icon tile in the feature's tone.
     &__feature-icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 6.4rem;
-        height: 6.4rem;
-        border: 1px solid rgba(148, 163, 184, 0.2);
-        border-radius: 50%;
-        background: #111a2e;
-        font-size: 2.2rem;
+        width: 5.6rem;
+        height: 5.6rem;
+        margin-top: 0.6rem;
+        border: 1px solid color-mix(in srgb, var(--tone) 60%, transparent);
+        border-radius: 1.6rem;
+        background: color-mix(in srgb, var(--tone) 14%, rgba(15, 10, 46, 0.8));
+        box-shadow: 0 0 2rem color-mix(in srgb, var(--tone) 30%, transparent);
+        color: var(--tone);
+        transform: rotate(45deg);
+
+        svg {
+            transform: rotate(-45deg);
+        }
     }
 
     &__tagline {
         margin: 2.4rem 0 0;
         font-size: 1.25rem;
         font-style: italic;
-        color: #64748b;
+        color: #94a3b8;
     }
 }
 
@@ -221,8 +326,8 @@
     bottom: 0;
     z-index: 100051;
     overflow: hidden;
-    border-top: 1px solid rgba(148, 163, 184, 0.14);
-    background: rgba(5, 10, 24, 0.95);
+    border-top: 1px solid rgba(240, 192, 64, 0.25);
+    background: rgba(15, 10, 46, 0.92);
     font-family: 'Courier New', Courier, monospace;
 
     &__track {
@@ -241,7 +346,7 @@
     }
 
     &__label {
-        color: #94a3b8;
+        color: #a78bfa;
     }
 
     &__price {
@@ -249,17 +354,34 @@
     }
 
     &__change--up {
-        color: #10d9a0;
+        color: #22c55e;
     }
 
     &__change--down {
-        color: #ff4d6a;
+        color: #fb7185;
     }
 }
 
 @keyframes te-spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes te-orbit-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes te-orbit-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-0.4rem);
     }
 }
 
@@ -287,11 +409,52 @@
         padding: 2.4rem 1.6rem 2rem;
     }
 
-    .te-splash__logo {
-        font-size: 3rem;
+    .te-orbit {
+        --size: 12rem;
     }
 
     .te-splash__hub {
         letter-spacing: 0.3em;
+    }
+
+    .te-splash__feature-icon {
+        width: 4.6rem;
+        height: 4.6rem;
+    }
+}
+
+// Short windows (landscape phones, small laptops): tighten the card so it fits.
+@media (max-height: 760px) {
+    .te-splash {
+        .te-orbit {
+            --size: 11rem;
+        }
+
+        &__card {
+            padding-top: 2.4rem;
+        }
+
+        &__title {
+            margin-top: 1.4rem;
+        }
+
+        &__sub {
+            margin: 1rem 0 1.6rem;
+        }
+
+        &__dots {
+            margin: 1.6rem 0;
+        }
+
+        &__tagline {
+            margin-top: 1.6rem;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .te-orbit__ring,
+    .te-orbit__core {
+        animation: none;
     }
 }

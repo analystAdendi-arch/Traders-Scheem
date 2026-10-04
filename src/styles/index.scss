@@ -8,6 +8,41 @@ body {
     background: var(--general-main-1);
 }
 
+/* --------------------------------------------- Traders Scheeme brand touches */
+
+// Text selection and keyboard focus in brand colours.
+::selection {
+    background: color-mix(in srgb, var(--brand-sky) 35%, transparent);
+}
+
+:focus-visible {
+    outline-color: var(--brand-sky-deep);
+}
+
+// Thin scrollbars tinted light blue -> purple.
+* {
+    scrollbar-color: color-mix(in srgb, var(--brand-purple) 45%, transparent) transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--brand-sky), var(--brand-purple));
+    border-radius: 999px;
+}
+
+// The Deriv UI loading bars: light blue, purple and gold instead of grey-teal.
+.derivs-loader__element {
+    background: var(--brand-sky) !important;
+
+    &:nth-child(2),
+    &:nth-child(4) {
+        background: var(--brand-purple) !important;
+    }
+
+    &:nth-child(3) {
+        background: var(--brand-gold) !important;
+    }
+}
+
 .icon-general-fill-path {
     path {
         fill: var(--text-general);

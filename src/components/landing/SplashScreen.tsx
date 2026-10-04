@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+import TradingBackdrop from '@/components/trading-backdrop/TradingBackdrop';
 import { getAppName, LOGO_CANDIDATES } from '@/utils/branding';
 
 import { subscribePublicFeed, TFeedState, TICKER_SYMBOLS } from './public-feed';
@@ -10,11 +11,56 @@ const MAX_MS = 8000;
 
 const STEPS = ['Connecting to Deriv markets...', 'Loading live market data...', 'Preparing your workspace...'];
 
-// "VolaTrades" -> ["Vola", "Trades"]: split at the first inner capital.
+// "Traders Scheeme" -> ["Traders", "Scheeme"]: split at the first inner capital.
 const splitName = (name: string): [string, string] => {
-    for (let i = 1; i < name.length; i++) if (/[A-Z]/.test(name[i])) return [name.slice(0, i), name.slice(i)];
+    for (let i = 1; i < name.length; i++) {
+        if (/[A-Z]/.test(name[i])) return [name.slice(0, i).trim(), name.slice(i)];
+    }
     return [name, ''];
 };
+
+/** Line icons for the feature row, stroked in brand colours from the stylesheet. */
+const FeatureIcon = ({ name }: { name: 'chart' | 'bot' | 'copy' }) => {
+    const common = {
+        width: 26,
+        height: 26,
+        viewBox: '0 0 24 24',
+        fill: 'none',
+        stroke: 'currentColor',
+        strokeWidth: 1.8,
+        strokeLinecap: 'round' as const,
+        strokeLinejoin: 'round' as const,
+        'aria-hidden': true,
+    };
+    if (name === 'chart') {
+        return (
+            <svg {...common}>
+                <path d='M3 20h18M6 16l4-5 3 3 5-7' />
+                <path d='M15 7h3v3' />
+            </svg>
+        );
+    }
+    if (name === 'bot') {
+        return (
+            <svg {...common}>
+                <rect x='4' y='8' width='16' height='12' rx='3' />
+                <path d='M12 8V4.5M9 13h.01M15 13h.01M9.5 17h5' />
+            </svg>
+        );
+    }
+    return (
+        <svg {...common}>
+            <rect x='8' y='8' width='12' height='12' rx='2' />
+            <path d='M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2' />
+        </svg>
+    );
+};
+
+const FEATURES = [
+    { icon: 'chart', label: 'Advanced Charts', tone: 'sky' },
+    { icon: 'bot', label: 'Trading Bots', tone: 'purple' },
+    { icon: 'copy', label: 'Copy Trading', tone: 'gold' },
+] as const;
 
 export const Ticker = ({ feed }: { feed: TFeedState }) => {
     const items = TICKER_SYMBOLS.filter(({ symbol }) => feed.quotes[symbol]);
@@ -42,6 +88,43 @@ export const Ticker = ({ feed }: { feed: TFeedState }) => {
     );
 };
 
+/** The logo emblem inside two counter-rotating orbits; initials if the file is missing. */
+export const OrbitEmblem = ({ size = 'lg' }: { size?: 'lg' | 'md' }) => {
+    const [logo_failed, setLogoFailed] = useState(false);
+    const [first, second] = splitName(getAppName());
+    return (
+        <div className={`te-orbit te-orbit--${size}`} aria-hidden='true'>
+            <span className='te-orbit__ring te-orbit__ring--outer'>
+                <i />
+            </span>
+            <span className='te-orbit__ring te-orbit__ring--inner'>
+                <i />
+            </span>
+            <span className='te-orbit__core'>
+                {logo_failed ? (
+                    <span className='te-orbit__initials'>
+                        {first.charAt(0)}
+                        {second.charAt(0)}
+                    </span>
+                ) : (
+                    <img src={LOGO_CANDIDATES[0]} alt='' onError={() => setLogoFailed(true)} />
+                )}
+            </span>
+        </div>
+    );
+};
+
+/** "Traders Scheeme" as a two-tone gradient title. */
+export const BrandName = ({ className = '' }: { className?: string }) => {
+    const [first, second] = splitName(getAppName());
+    return (
+        <span className={`te-brand-name ${className}`} aria-label={getAppName()}>
+            <span className='te-brand-name__a'>{first}</span>
+            {second && <span className='te-brand-name__b'>{second}</span>}
+        </span>
+    );
+};
+
 /**
  * Boot splash. Progress follows real milestones (public Deriv socket open,
  * market list received) with a short minimum so it never flashes.
@@ -51,7 +134,6 @@ const SplashScreen = ({ onDone, hold = false }: { onDone: () => void; hold?: boo
     const [feed, setFeed] = useState<TFeedState>({ connected: false, markets: null, quotes: {} });
     const [elapsed, setElapsed] = useState(0);
     const [progress, setProgress] = useState(0);
-    const [logo_failed, setLogoFailed] = useState(false);
     const started = useRef(Date.now());
     const finished = useRef(false);
 
@@ -79,37 +161,24 @@ const SplashScreen = ({ onDone, hold = false }: { onDone: () => void; hold?: boo
         return undefined;
     }, [progress, onDone]);
 
-    const [first, second] = splitName(getAppName());
     const status = hold && ready ? 'Signing you in securely...' : STEPS[step];
-
 
     return (
         <div className='te-splash' role='status' aria-live='polite'>
-            <div className='te-splash__bg' aria-hidden='true' />
+            <TradingBackdrop />
             <div className='te-splash__card'>
-                {logo_failed ? (
-                    <h1 className='te-splash__logo'>
-                        <span className='te-splash__logo-a'>{first.toUpperCase()}</span>
-                        <span className='te-splash__logo-b'>{second.toUpperCase()}</span>
-                    </h1>
-                ) : (
-                    <img
-                        className='te-splash__logo-img'
-                        src={LOGO_CANDIDATES[0]}
-                        alt={getAppName()}
-                        onError={() => setLogoFailed(true)}
-                    />
-                )}
+                <OrbitEmblem />
+
+                <h1 className='te-splash__title'>
+                    <BrandName />
+                </h1>
                 <div className='te-splash__hub'>
-                    <span>TRADING HUB</span>
+                    <span>AI TRADING HUB</span>
                     <span className='te-splash__live'>
                         <i /> LIVE
                     </span>
                 </div>
 
-                <div className='te-splash__divider' />
-
-                <h2 className='te-splash__welcome'>Welcome to {getAppName()}</h2>
                 <p className='te-splash__sub'>Empowering your trading journey.</p>
 
                 <div className='te-splash__progress'>
@@ -131,13 +200,11 @@ const SplashScreen = ({ onDone, hold = false }: { onDone: () => void; hold?: boo
                 </div>
 
                 <div className='te-splash__features'>
-                    {[
-                        ['📊', 'Advanced Charts'],
-                        ['🤖', 'Trading Bots'],
-                        ['🔁', 'Copy Trading'],
-                    ].map(([icon, label]) => (
-                        <div key={label} className='te-splash__feature'>
-                            <span className='te-splash__feature-icon'>{icon}</span>
+                    {FEATURES.map(({ icon, label, tone }) => (
+                        <div key={label} className={`te-splash__feature te-splash__feature--${tone}`}>
+                            <span className='te-splash__feature-icon'>
+                                <FeatureIcon name={icon} />
+                            </span>
                             <span>{label}</span>
                         </div>
                     ))}

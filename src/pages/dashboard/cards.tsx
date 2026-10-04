@@ -38,8 +38,8 @@ const Glyph = ({ children }: { children: React.ReactNode }) => (
 
 const FolderGlyph = () => (
     <Glyph>
-        <path d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z' fill='#fbbf24' />
-        <path d='M3 10h18v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7z' fill='#f59e0b' />
+        <path d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z' fill='#f0c040' />
+        <path d='M3 10h18v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7z' fill='#d4a017' />
     </Glyph>
 );
 
@@ -57,20 +57,20 @@ const PuzzleGlyph = () => (
     <Glyph>
         <path
             d='M10 3a2 2 0 0 1 2 2v1h3a1 1 0 0 1 1 1v3h1a2 2 0 1 1 0 4h-1v3a1 1 0 0 1-1 1h-3v-1a2 2 0 1 0-4 0v1H5a1 1 0 0 1-1-1v-3h1a2 2 0 1 0 0-4H4V7a1 1 0 0 1 1-1h3V5a2 2 0 0 1 2-2z'
-            fill='#86efac'
+            fill='#bae6fd'
         />
     </Glyph>
 );
 
 const BoltGlyph = () => (
     <Glyph>
-        <path d='M13 2 4 14h7l-1 8 9-12h-7l1-8z' fill='#fb923c' />
+        <path d='M13 2 4 14h7l-1 8 9-12h-7l1-8z' fill='#f0c040' />
     </Glyph>
 );
 
 const CloudGlyph = () => (
     <Glyph>
-        <path d='M7 18a5 5 0 1 1 1.2-9.85A6 6 0 0 1 20 10a4 4 0 0 1-1 7.9V18H7z' fill='#67e8f9' />
+        <path d='M7 18a5 5 0 1 1 1.2-9.85A6 6 0 0 1 20 10a4 4 0 0 1-1 7.9V18H7z' fill='#7dd3fc' />
     </Glyph>
 );
 

@@ -2,22 +2,33 @@
 <html lang="en" dir="auto" class="light">
     <head>
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/webp" href="<%= assetPrefix %>/logo.webp" />
+        <link rel="icon" type="image/png" href="<%= assetPrefix %>/logo.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-        <meta name="title" content="VolaTrades | Trading Bots and Analysis Tools on Deriv" />
+        <meta name="title" content="Traders Scheeme | Trading Bots and Analysis Tools on Deriv" />
         <meta
             name="description"
-            content="Scan markets, analyse live digit stats and run trading bots on your Deriv account with VolaTrades."
+            content="Scan markets, analyse live digit stats and run trading bots on your Deriv account with Traders Scheeme."
         />
-        <meta property="og:title" content="VolaTrades" />
+        <meta property="og:title" content="Traders Scheeme" />
+        <meta name="theme-color" content="#0B1426" />
         <meta
             property="og:description"
-            content="Scan markets, analyse live digit stats and run trading bots on your Deriv account with VolaTrades."
+            content="Scan markets, analyse live digit stats and run trading bots on your Deriv account with Traders Scheeme."
         />
-        <title>VolaTrades | Trading Bots and Analysis Tools on Deriv</title>
+        <title>Traders Scheeme | Trading Bots and Analysis Tools on Deriv</title>
         <style>
             :root {
                 font-size: 62.5%;
+                /* Traders Scheeme scenes (public/backgrounds, made by scripts/generate-backgrounds.js).
+                   Declared here rather than in Sass so the bundler leaves the public URLs alone. */
+                --ts-scene-dark: url('<%= assetPrefix %>/backgrounds/cosmos-dark.svg') center / cover no-repeat fixed,
+                    #0f0a2e;
+                --ts-scene-light: url('<%= assetPrefix %>/backgrounds/silk-light.svg') center / cover no-repeat fixed,
+                    #ffffff;
+            }
+            .theme--dark {
+                --ts-scene-light: linear-gradient(rgba(10, 6, 30, 0.78), rgba(10, 6, 30, 0.78)),
+                    url('<%= assetPrefix %>/backgrounds/cosmos-dark.svg') center / cover no-repeat fixed, #0f0a2e;
             }
         </style>
     </head>

@@ -17,8 +17,8 @@ type TLogoMarkProps = {
 };
 
 /**
- * "VolaTrades" -> ["Vola", "Trades"]: splits at the first inner capital so
- * each half gets its own colour and the emblem initials read "VT".
+ * "Traders Scheeme" -> ["Traders ", "Scheeme"]: splits at the first inner capital so
+ * each half gets its own colour and the emblem initials read "TS".
  */
 const splitWordmark = (name: string): [string, string] => {
     for (let i = 1; i < name.length; i++) {
@@ -29,7 +29,7 @@ const splitWordmark = (name: string): [string, string] => {
 
 /**
  * Round emblem used until a real logo file is supplied in public/logo.<ext>:
- * a volatility wave under the app initials, on a cyan-to-violet ring.
+ * a market wave under the app initials, on a light-blue-to-purple ring.
  */
 const Emblem = ({ size, initials }: { size: number; initials: string }) => (
     <svg
@@ -41,16 +41,16 @@ const Emblem = ({ size, initials }: { size: number; initials: string }) => (
     >
         <defs>
             <linearGradient id='vt-ring' x1='0' y1='0' x2='1' y2='1'>
-                <stop offset='0%' stopColor='#22c55e' />
-                <stop offset='100%' stopColor='#ef4444' />
+                <stop offset='0%' stopColor='#38bdf8' />
+                <stop offset='100%' stopColor='#7c3aed' />
             </linearGradient>
             <radialGradient id='vt-core' cx='50%' cy='38%' r='62%'>
                 <stop offset='0%' stopColor='#1e293b' />
                 <stop offset='100%' stopColor='#020617' />
             </radialGradient>
             <linearGradient id='vt-wave' x1='0' x2='1'>
-                <stop offset='0%' stopColor='#22c55e' />
-                <stop offset='100%' stopColor='#ef4444' />
+                <stop offset='0%' stopColor='#38bdf8' />
+                <stop offset='100%' stopColor='#f0c040' />
             </linearGradient>
         </defs>
         <circle cx='20' cy='20' r='19' fill='url(#vt-ring)' />
@@ -65,8 +65,8 @@ const Emblem = ({ size, initials }: { size: number; initials: string }) => (
             strokeLinejoin='round'
         />
         <text x='20' y='17' textAnchor='middle' fontSize='12' fontWeight='900' fontFamily='Arial, sans-serif'>
-            <tspan fill='#22c55e'>{initials.charAt(0)}</tspan>
-            <tspan fill='#f43f5e'>{initials.charAt(1)}</tspan>
+            <tspan fill='#ffffff'>{initials.charAt(0)}</tspan>
+            <tspan fill='#38bdf8'>{initials.charAt(1)}</tspan>
         </text>
     </svg>
 );

@@ -37,19 +37,36 @@
 
     /* Brand colors - dynamically generated from brand.config.json */
     --brand-white: #ffffff;
-    --brand-dark-grey: #0f172a;
-    --brand-red-coral: #3B82F6; /* legacy compatibility */
-    --brand-orange: #8b5cf6; /* legacy compatibility */
+    --brand-dark-grey: #0B1426;
+    --brand-red-coral: #0284C7; /* legacy compatibility */
+    --brand-orange: #D4A017; /* legacy compatibility */
 
     /* Dynamic brand colors (set by brand configuration) */
-    --brand-primary: #3B82F6;
-    --brand-secondary: #64748b;
-    --brand-tertiary: #8b5cf6;
+    --brand-primary: #0284C7;
+    --brand-secondary: #7C3AED;
+    --brand-tertiary: #D4A017;
     --brand-success: #10b981;
-    --brand-danger: #ef4444;
-    --brand-warning: #f59e0b;
-    --brand-info: #0ea5e9;
+    --brand-danger: #E11D48;
+    --brand-warning: #D4A017;
+    --brand-info: #38BDF8;
     --brand-neutral: #6b7280;
+
+    /* Brand palette - dynamically generated from brand.config.json */
+    --brand-sky: #38BDF8;
+    --brand-sky-deep: #0284C7;
+    --brand-sky-soft: #E0F2FE;
+    --brand-gold: #F0C040;
+    --brand-gold-deep: #B8860B;
+    --brand-gold-soft: #FDF6DC;
+    --brand-red: #E11D48;
+    --brand-red-soft: #FFE4E6;
+    --brand-purple: #7C3AED;
+    --brand-purple-deep: #5B21B6;
+    --brand-purple-soft: #EDE9FE;
+    --brand-navy: #0B1426;
+    --brand-gradient: linear-gradient(135deg, var(--brand-sky-deep) 0%, var(--brand-purple) 100%);
+    --brand-gradient-gold: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-gold-deep) 100%);
+    --brand-gradient-nav: linear-gradient(90deg, #0f0a2e 0%, #2e1065 50%, #0c4a6e 100%);
 
     /* Brand typography - dynamically generated from brand.config.json */
     --brand-font-primary: Inter;
@@ -70,14 +87,14 @@
         --general-main-2: #{constants.$color-white};
         --general-main-3: #{constants.$color-grey-1};
         --general-main-4: #{constants.$alpha-color-white-4};
-        --general-section-1: #{constants.$color-grey-2};
+        --general-section-1: #f3f8fd;
         --general-section-2: #{constants.$color-grey-2};
         --general-section-3: #{constants.$color-grey-11};
         --general-section-4: #{constants.$color-grey-12};
         --general-section-5: #{constants.$color-grey-2};
         --general-section-6: #{constants.$color-grey-2};
         --general-disabled: #{constants.$color-grey-3};
-        --general-hover: #{constants.$color-grey-4};
+        --general-hover: #e6f3fc;
         --general-active: #{constants.$color-grey-5};
 
         // Icons and Texts
@@ -87,20 +104,20 @@
         --text-prominent: #{constants.$color-black-1};
         --text-disabled: #{constants.$color-grey-1};
         --text-disabled-1: #{constants.$color-grey-6};
-        --text-loss-danger: #{constants.$color-red-1};
+        --text-loss-danger: var(--brand-red);
         --text-profit-success: #{constants.$color-green-1};
-        --text-warning: #{constants.$color-yellow};
-        --text-red: #{constants.$color-red};
+        --text-warning: var(--brand-gold-deep);
+        --text-red: var(--brand-red);
         --text-green: #{constants.$color-green-6};
-        --text-blue: #{constants.$color-blue-3};
-        --text-info-blue: #{constants.$color-blue};
+        --text-blue: var(--brand-sky-deep);
+        --text-info-blue: var(--brand-sky-deep);
         --text-info-blue-background: #{constants.$color-blue-5};
         --text-colored-background: #{constants.$color-white};
         --icon-light-background: #{constants.$color-black-9};
         --icon-dark-background: #{constants.$color-white};
         --icon-grey-background: #{constants.$color-grey-2};
         --icon-black-plus: #{constants.$color-black-7};
-        --text-status-info-blue: #{constants.$color-blue};
+        --text-status-info-blue: var(--brand-sky-deep);
         --text-hint: #{constants.$color-black-1};
 
         // Purchase
@@ -115,12 +132,12 @@
         --button-primary-default: var(--brand-red-coral);
         --button-secondary-default: #{constants.$color-grey-1};
         --button-tertiary-default: transparent;
-        --button-primary-light-default: #{constants.$alpha-color-red-2};
-        --button-primary-hover: #{constants.$color-red-5};
+        --button-primary-light-default: color-mix(in srgb, var(--brand-sky) 16%, transparent);
+        --button-primary-hover: var(--brand-purple);
         --button-secondary-hover: #{constants.$alpha-color-black-3};
-        --button-tertiary-hover: #{constants.$alpha-color-red-1};
-        --button-primary-light-hover: #{constants.$alpha-color-red-3};
-        --button-toggle-primary: #{constants.$color-blue-3};
+        --button-tertiary-hover: color-mix(in srgb, var(--brand-sky) 12%, transparent);
+        --button-primary-light-hover: color-mix(in srgb, var(--brand-sky) 26%, transparent);
+        --button-toggle-primary: var(--brand-sky-deep);
         --button-toggle-secondary: #{constants.$color-grey-5};
         --button-toggle-alternate: #{constants.$color-white};
 
@@ -136,7 +153,7 @@
 
         // States
         --state-normal: #{constants.$color-white};
-        --state-hover: #{constants.$color-grey-4};
+        --state-hover: #e6f3fc;
         --state-active: #{constants.$color-grey-5};
         --state-disabled: #{constants.$color-grey-3};
         --checkbox-disabled-grey: #{constants.$color-grey-6};
@@ -163,12 +180,12 @@
         // Status
         --status-default: #{constants.$color-grey-3};
         --status-adjustment: #{constants.$color-grey-1};
-        --status-danger: #{constants.$color-red-1};
+        --status-danger: var(--brand-red);
         --status-success: #{constants.$color-green-1};
-        --status-warning: #{constants.$color-yellow};
+        --status-warning: var(--brand-gold);
         --status-warning-transparent: #{constants.$alpha-color-yellow-1};
-        --status-transfer: #{constants.$color-orange};
-        --status-info: #{constants.$color-blue};
+        --status-transfer: var(--brand-gold-deep);
+        --status-info: var(--brand-sky-deep);
         --status-colored-background: #{constants.$color-white};
         --status-alert-background: #{constants.$color-yellow-3};
 
@@ -195,8 +212,8 @@
 
         // Badge
         --badge-white: #{constants.$color-white};
-        --badge-blue: #{constants.$color-blue-4};
-        --badge-violet: #{constants.$color-blue-2};
+        --badge-blue: var(--brand-sky);
+        --badge-violet: var(--brand-purple);
         --badge-green: #{constants.$color-green-3};
 
         // TradersHub Banner
@@ -212,7 +229,7 @@
     }
 
     .theme--dark {
-        // General - VolaTrades navy dark theme
+        // General - Traders Scheeme navy dark theme (logo navy)
         --general-main-1: #0f1d3d;
         --general-main-2: #13234a;
         --general-main-3: #182a57;
@@ -237,11 +254,11 @@
         --text-disabled-1: #{constants.$color-black-6};
         --text-profit-success: #{constants.$color-green-3};
         --text-loss-danger: #{constants.$color-red-2};
-        --text-red: #{constants.$color-red};
+        --text-red: var(--brand-red);
         --text-colored-background: #{constants.$color-white};
         --text-info-blue: #{constants.$color-blue-6};
         --text-info-blue-background: #{constants.$color-blue-7};
-        --text-status-info-blue: #{constants.$color-blue};
+        --text-status-info-blue: var(--brand-sky-deep);
         --text-hint: #{constants.$color-grey};
         --icon-light-background: #{constants.$color-black-9};
         --icon-dark-background: #{constants.$color-white};
@@ -260,12 +277,12 @@
         --button-primary-default: var(--brand-red-coral);
         --button-secondary-default: #{constants.$color-grey-7};
         --button-tertiary-default: transparent;
-        --button-primary-light-default: #{constants.$alpha-color-red-2};
-        --button-primary-hover: #{constants.$color-red-5};
+        --button-primary-light-default: color-mix(in srgb, var(--brand-sky) 16%, transparent);
+        --button-primary-hover: var(--brand-purple);
         --button-secondary-hover: #{constants.$alpha-color-white-3};
-        --button-tertiary-hover: #{constants.$alpha-color-red-1};
-        --button-primary-light-hover: #{constants.$alpha-color-red-3};
-        --button-toggle-primary: #{constants.$color-blue-3};
+        --button-tertiary-hover: color-mix(in srgb, var(--brand-sky) 12%, transparent);
+        --button-primary-light-hover: color-mix(in srgb, var(--brand-sky) 26%, transparent);
+        --button-toggle-primary: var(--brand-sky-deep);
         --button-toggle-secondary: #{constants.$color-black-8};
         --button-toggle-alternate: #{constants.$color-black-8};
         --button-get-started-bg: #{constants.$color-white};
@@ -310,11 +327,11 @@
         --status-default: #{constants.$color-grey-3};
         --status-adjustment: #{constants.$color-grey-1};
         --status-danger: #{constants.$color-red-2};
-        --status-warning: #{constants.$color-yellow};
+        --status-warning: var(--brand-gold);
         --status-warning-transparent: #{constants.$alpha-color-yellow-1};
         --status-success: #{constants.$color-green-3};
-        --status-transfer: #{constants.$color-orange};
-        --status-info: #{constants.$color-blue};
+        --status-transfer: var(--brand-gold-deep);
+        --status-info: var(--brand-sky-deep);
         --status-colored-background: #{constants.$color-white};
         --status-alert-background: #{constants.$color-yellow-3};
 
@@ -337,8 +354,8 @@
 
         // Badge
         --badge-white: #{constants.$color-white};
-        --badge-blue: #{constants.$color-blue-4};
-        --badge-violet: #{constants.$color-blue-2};
+        --badge-blue: var(--brand-sky);
+        --badge-violet: var(--brand-purple);
         --badge-green: #{constants.$color-green-3};
 
         // TradersHub Banner

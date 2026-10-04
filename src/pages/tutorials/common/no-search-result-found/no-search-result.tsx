@@ -9,7 +9,7 @@ const NoSearchResult = observer(() => {
     const { faq_search_value } = dashboard;
     return (
         <div className='dc-tabs__content dc-tabs__content--no-result' data-testid='no-search-result'>
-            <LabelPairedCircleExclamationCaptionFillIcon height='80px' width='80px' fill='#ff444f' />
+            <LabelPairedCircleExclamationCaptionFillIcon height='80px' width='80px' fill='#e11d48' />
             <Text className='dc-tabs__content--no-result__title' as='h1' weight='bold' lineHeight='xxs'>
                 <Localize i18n_default_text='No results found' />
             </Text>

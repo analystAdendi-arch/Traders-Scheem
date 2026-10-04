@@ -163,8 +163,8 @@ const ScannerParametersModal: React.FC<TProps> = ({ isOpen, onClose, onRun }) =>
                                     width: '100%',
                                     padding: '1.4rem 1.6rem',
                                     borderRadius: '1rem',
-                                    border: '1px solid #dbeafe',
-                                    background: '#eff6ff',
+                                    border: '1px solid #e0f2fe',
+                                    background: '#f0f9ff',
                                     fontSize: '1.6rem',
                                     fontWeight: 500,
                                     color: '#1e293b',
@@ -196,8 +196,8 @@ const ScannerParametersModal: React.FC<TProps> = ({ isOpen, onClose, onRun }) =>
                                     width: '100%',
                                     padding: '1.4rem 1.6rem',
                                     borderRadius: '1rem',
-                                    border: '1px solid #dbeafe',
-                                    background: '#eff6ff',
+                                    border: '1px solid #e0f2fe',
+                                    background: '#f0f9ff',
                                     fontSize: '1.6rem',
                                     fontWeight: 500,
                                     color: '#1e293b',
@@ -229,8 +229,8 @@ const ScannerParametersModal: React.FC<TProps> = ({ isOpen, onClose, onRun }) =>
                                     width: '100%',
                                     padding: '1.4rem 1.6rem',
                                     borderRadius: '1rem',
-                                    border: '1px solid #dbeafe',
-                                    background: '#eff6ff',
+                                    border: '1px solid #e0f2fe',
+                                    background: '#f0f9ff',
                                     fontSize: '1.6rem',
                                     fontWeight: 500,
                                     color: '#1e293b',
@@ -262,8 +262,8 @@ const ScannerParametersModal: React.FC<TProps> = ({ isOpen, onClose, onRun }) =>
                                     width: '100%',
                                     padding: '1.4rem 1.6rem',
                                     borderRadius: '1rem',
-                                    border: '1px solid #dbeafe',
-                                    background: '#eff6ff',
+                                    border: '1px solid #e0f2fe',
+                                    background: '#f0f9ff',
                                     fontSize: '1.6rem',
                                     fontWeight: 500,
                                     color: '#1e293b',
@@ -302,12 +302,12 @@ const ScannerParametersModal: React.FC<TProps> = ({ isOpen, onClose, onRun }) =>
                                 height: 32,
                                 borderRadius: 999,
                                 background: useMartingale
-                                    ? 'linear-gradient(90deg, #2563eb 0%, #3b82f6 100%)'
+                                    ? 'linear-gradient(90deg, #0284c7 0%, #0ea5e9 100%)'
                                     : '#cbd5e1',
                                 position: 'relative',
                                 transition: 'background 0.15s ease',
                                 boxShadow: useMartingale
-                                    ? '0 6px 14px rgba(37, 99, 235, 0.3)'
+                                    ? '0 6px 14px rgba(2, 132, 199, 0.3)'
                                     : 'none',
                             }}
                         >
@@ -365,20 +365,20 @@ const ScannerParametersModal: React.FC<TProps> = ({ isOpen, onClose, onRun }) =>
                             borderRadius: '1.1rem',
                             fontSize: '1.5rem',
                             fontWeight: 800,
-                            background: 'linear-gradient(90deg, #2563eb 0%, #3b82f6 100%)',
+                            background: 'linear-gradient(90deg, #0284c7 0%, #0ea5e9 100%)',
                             color: '#ffffff',
                             border: 'none',
                             cursor: 'pointer',
-                            boxShadow: '0 8px 18px rgba(37, 99, 235, 0.3)',
+                            boxShadow: '0 8px 18px rgba(2, 132, 199, 0.3)',
                             transition: 'transform 0.12s ease, box-shadow 0.12s ease',
                         }}
                         onMouseEnter={e => {
                             e.currentTarget.style.transform = 'translateY(-1px)';
-                            e.currentTarget.style.boxShadow = '0 12px 24px rgba(37, 99, 235, 0.38)';
+                            e.currentTarget.style.boxShadow = '0 12px 24px rgba(2, 132, 199, 0.38)';
                         }}
                         onMouseLeave={e => {
                             e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = '0 8px 18px rgba(37, 99, 235, 0.3)';
+                            e.currentTarget.style.boxShadow = '0 8px 18px rgba(2, 132, 199, 0.3)';
                         }}
                     >
                         Load and Run

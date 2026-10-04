@@ -2,15 +2,15 @@
 
 .copy-trader {
     --ct-primary: #D9383A;
-    --ct-orange: #F97316;
-    --ct-orange-red: #EF4444;
-    --ct-accent: #3B82F6;
+    --ct-orange: #d4a017;
+    --ct-orange-red: #e11d48;
+    --ct-accent: #0ea5e9;
     --ct-green: #16A34A;
     --ct-green-dark: #15803D;
     --ct-green-darker: #0F6330;
-    --ct-red: #EF4444;
-    --ct-red-dark: #B91C1C;
-    --ct-amber: #F59E0B;
+    --ct-red: #e11d48;
+    --ct-red-dark: #9f1239;
+    --ct-amber: #d4a017;
     --ct-purple: #A78BFA;
     --ct-surface: #F8FAFC;
     --ct-surface-2: #F1F5F9;
@@ -18,7 +18,7 @@
     --ct-panel-alt: #F8FAFC;
     --ct-border: #CBD5E1;
     --ct-border-soft: #E2E8F0;
-    --ct-border-accent: rgba(59, 130, 246, 0.4);
+    --ct-border-accent: rgba(14, 165, 233, 0.4);
     --ct-muted: #64748B;
     --ct-text: #334155;
     --ct-text-prominent: #0F172A;
@@ -68,11 +68,11 @@
     width: 100%;
     max-width: 760px;
     padding: 0.65rem 0.75rem 0.65rem 0.9rem;
-    background: rgba(239, 68, 68, 0.08);
-    border: 1px solid rgba(239, 68, 68, 0.45);
+    background: rgba(225, 29, 72, 0.08);
+    border: 1px solid rgba(225, 29, 72, 0.45);
     border-radius: 0.6rem;
     box-shadow: var(--ct-shadow);
-    color: #991B1B;
+    color: #881337;
 }
 
 .copy-trader__toast-body {
@@ -88,7 +88,7 @@
     font-weight: 800;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #B91C1C;
+    color: #9f1239;
 }
 
 .copy-trader__toast-message {
@@ -102,7 +102,7 @@
     appearance: none;
     background: transparent;
     border: none;
-    color: #B91C1C;
+    color: #9f1239;
     font-size: 1.6rem;
     line-height: 1;
     font-weight: 700;
@@ -288,10 +288,10 @@
     }
 
     &--add {
-        background: linear-gradient(180deg, #FB923C, var(--ct-orange));
+        background: linear-gradient(180deg, #f0c040, var(--ct-orange));
         color: #FFFFFF;
-        border: 1.5px solid #EA580C;
-        box-shadow: 0 4px 14px rgba(249, 115, 22, 0.32);
+        border: 1.5px solid #b8860b;
+        box-shadow: 0 4px 14px rgba(212, 160, 23, 0.32);
         min-width: 86px;
 
         &:not(:disabled):hover {
@@ -380,10 +380,10 @@
     &--stop {
         background: linear-gradient(180deg, var(--ct-red), var(--ct-red-dark));
         border-color: var(--ct-red-dark);
-        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.28);
+        box-shadow: 0 6px 20px rgba(225, 29, 72, 0.28);
 
         &:not(:disabled):hover {
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.32);
+            box-shadow: 0 8px 24px rgba(225, 29, 72, 0.32);
             filter: brightness(1.03);
         }
     }
@@ -424,15 +424,15 @@
 
     &:focus-within {
         border-color: var(--ct-accent);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
     }
 
     &--error {
-        border-color: rgba(239, 68, 68, 0.65);
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14);
+        border-color: rgba(225, 29, 72, 0.65);
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.14);
 
         &:focus-within {
-            border-color: rgba(239, 68, 68, 0.85);
+            border-color: rgba(225, 29, 72, 0.85);
         }
     }
 }
@@ -484,9 +484,9 @@
 }
 
 .copy-trader__inline-error {
-    background: rgba(239, 68, 68, 0.07);
-    border: 1px solid rgba(239, 68, 68, 0.35);
-    color: #991B1B;
+    background: rgba(225, 29, 72, 0.07);
+    border: 1px solid rgba(225, 29, 72, 0.35);
+    color: #881337;
     border-radius: 0.5rem;
     padding: 0.5rem 0.75rem;
     font-size: 1rem;
@@ -534,8 +534,8 @@
     cursor: pointer;
 
     &:hover:not(:disabled) {
-        background: rgba(239, 68, 68, 0.08);
-        border-color: rgba(239, 68, 68, 0.28);
+        background: rgba(225, 29, 72, 0.08);
+        border-color: rgba(225, 29, 72, 0.28);
     }
 
     &:disabled {
@@ -564,16 +564,16 @@
     align-items: center;
     gap: 0.3rem;
     padding: 0.2rem 0.5rem;
-    border: 1px solid rgba(59, 130, 246, 0.28);
+    border: 1px solid rgba(14, 165, 233, 0.28);
     border-radius: 0.4rem;
-    background: rgba(59, 130, 246, 0.06);
-    color: #1d4ed8;
+    background: rgba(14, 165, 233, 0.06);
+    color: #0369a1;
     font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
 
     &:hover {
-        background: rgba(59, 130, 246, 0.14);
+        background: rgba(14, 165, 233, 0.14);
     }
 }
 
@@ -583,15 +583,15 @@
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #DC2626;
+    color: #be123c;
     border: 1px solid transparent;
     border-radius: 0.4rem;
     padding: 0.28rem 0.65rem;
     cursor: pointer;
 
     &:hover {
-        background: rgba(239, 68, 68, 0.08);
-        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(225, 29, 72, 0.08);
+        border-color: rgba(225, 29, 72, 0.3);
     }
 }
 
@@ -654,7 +654,7 @@
     }
 
     &--error {
-        background: rgba(239, 68, 68, 0.04);
+        background: rgba(225, 29, 72, 0.04);
     }
 }
 
@@ -672,8 +672,8 @@
     color: var(--ct-text-prominent);
 
     code {
-        background: rgba(59, 130, 246, 0.08);
-        border: 1px solid rgba(59, 130, 246, 0.22);
+        background: rgba(14, 165, 233, 0.08);
+        border: 1px solid rgba(14, 165, 233, 0.22);
         padding: 0.16rem 0.5rem;
         border-radius: 0.4rem;
     }
@@ -688,7 +688,7 @@
 .copy-trader__client-err {
     font-size: 0.88rem;
     font-weight: 600;
-    color: #B91C1C;
+    color: #9f1239;
 }
 
 .copy-trader__client-actions {
@@ -700,9 +700,9 @@
 
 .copy-trader__client-remove {
     appearance: none;
-    background: rgba(239, 68, 68, 0.08);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #DC2626;
+    background: rgba(225, 29, 72, 0.08);
+    border: 1px solid rgba(225, 29, 72, 0.3);
+    color: #be123c;
     width: 28px;
     height: 28px;
     border-radius: 0.5rem;
@@ -713,7 +713,7 @@
     transition: background 120ms ease;
 
     &:hover {
-        background: rgba(239, 68, 68, 0.18);
+        background: rgba(225, 29, 72, 0.18);
     }
 }
 
@@ -740,10 +740,10 @@
     }
 
     &--idle { color: #64748B; background: #F1F5F9; border-color: #CBD5E1; }
-    &--starting { color: #B45309; border-color: rgba(245, 158, 11, 0.45); background: #FEF3C7; }
+    &--starting { color: #8a6508; border-color: rgba(212, 160, 23, 0.45); background: #fdf6dc; }
     &--active { color: #15803D; border-color: rgba(22, 163, 74, 0.4); background: #DCFCE7; }
-    &--stopping { color: #1D4ED8; border-color: rgba(59, 130, 246, 0.4); background: #DBEAFE; }
-    &--error { color: #B91C1C; border-color: rgba(239, 68, 68, 0.45); background: #FEE2E2; }
+    &--stopping { color: #0369a1; border-color: rgba(14, 165, 233, 0.4); background: #e0f2fe; }
+    &--error { color: #9f1239; border-color: rgba(225, 29, 72, 0.45); background: #ffe4e6; }
 }
 
 /* ---- YOUTUBE MODAL OVERLAY ---- */
@@ -833,7 +833,7 @@
 }
 
 .copy-trader__modal-title-row svg {
-    color: #EF4444;
+    color: #e11d48;
     flex: 0 0 auto;
 }
 
@@ -867,9 +867,9 @@
     transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
 
     &:hover {
-        background: rgba(239, 68, 68, 0.08);
-        border-color: rgba(239, 68, 68, 0.35);
-        color: #B91C1C;
+        background: rgba(225, 29, 72, 0.08);
+        border-color: rgba(225, 29, 72, 0.35);
+        color: #9f1239;
     }
 
     &:active {
@@ -910,7 +910,7 @@
 }
 
 .copy-trader__btn--danger {
-    background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+    background: linear-gradient(180deg, #e11d48 0%, #be123c 100%);
     color: #ffffff;
     border: 0;
 }
@@ -1000,11 +1000,11 @@
 
     &--partial,
     &--skipped {
-        border-left-color: #f59e0b;
+        border-left-color: #d4a017;
     }
 
     &--failed {
-        border-left-color: #dc2626;
+        border-left-color: #be123c;
     }
 
     @include mobile-or-tablet-screen {

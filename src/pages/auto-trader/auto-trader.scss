@@ -4,7 +4,7 @@
     box-sizing: border-box;
     // Bottom room so the floating Run bar never sits over a card's button.
     padding: 2.4rem 1.6rem 12rem;
-    background: #eef2f7;
+    background: var(--ts-scene-light, #ffffff);
     font-size: 1.3rem;
     color: #1e293b;
 
@@ -16,16 +16,16 @@
         margin: 0 auto 1.6rem;
         max-width: 132rem;
         padding: 1rem 1.4rem;
-        border: 1px solid #bfdbfe;
+        border: 1px solid #bae6fd;
         border-radius: 0.8rem;
-        background: #eff6ff;
-        color: #1e40af;
+        background: #f0f9ff;
+        color: #075985;
         font-weight: 600;
 
         &--error {
             border-color: #fecaca;
-            background: #fef2f2;
-            color: #b91c1c;
+            background: #fff1f2;
+            color: #9f1239;
         }
     }
 
@@ -40,7 +40,7 @@
 }
 
 .auto-card {
-    --accent: #22c55e;
+    --accent: var(--brand-sky);
 
     display: flex;
     flex-direction: column;
@@ -57,7 +57,7 @@
     }
 
     &--blue {
-        --accent: #2196f3;
+        --accent: #0ea5e9;
     }
 
     &--purple {
@@ -128,8 +128,8 @@
         min-width: 9rem;
         padding: 0.9rem 1.2rem;
         border-radius: 0.6rem;
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: #e0f2fe;
+        color: #0369a1;
         font-size: 1.5rem;
         font-weight: 700;
         font-variant-numeric: tabular-nums;
@@ -161,7 +161,7 @@
         }
 
         &--blue {
-            background: #2196f3;
+            background: #0ea5e9;
         }
 
         &--orange {
@@ -220,8 +220,8 @@
         cursor: pointer;
 
         &--active {
-            border-color: #3b82f6;
-            background: #3b82f6;
+            border-color: #0ea5e9;
+            background: #0ea5e9;
             color: #ffffff;
             font-weight: 700;
         }
@@ -256,7 +256,7 @@
         }
 
         &--blue {
-            background: #2196f3;
+            background: #0ea5e9;
         }
 
         &--orange {
@@ -314,7 +314,7 @@
 
         &:focus {
             outline: none;
-            border-color: #3b82f6;
+            border-color: #0ea5e9;
         }
 
         &--select {
@@ -346,7 +346,7 @@
         padding: 1rem 1.6rem;
         border: 0;
         border-radius: 0.6rem;
-        background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+        background: var(--brand-gradient);
         color: #ffffff;
         font-size: 1.4rem;
         font-weight: 700;
@@ -363,7 +363,7 @@
         }
 
         &--stop {
-            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+            background: linear-gradient(180deg, #e11d48 0%, #be123c 100%);
         }
     }
 
@@ -398,7 +398,7 @@
     }
 
     &__neg {
-        color: #dc2626;
+        color: #be123c;
     }
 
     &__account {

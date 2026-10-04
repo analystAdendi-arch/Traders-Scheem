@@ -4,6 +4,7 @@ import { LabelPairedChevronDownLgRegularIcon } from '@deriv/quill-icons/LabelPai
 import { localize } from '@deriv-com/translations';
 import { useStore } from '@/hooks/useStore';
 import { useTickData, type TPercentPair } from '@/hooks/useTickData';
+import SceneFx from '@/components/scene-fx/SceneFx';
 import './bulk-trader.scss';
 type TTradeType = 'even_odd' | 'over_under' | 'matches_differs';
 
@@ -396,6 +397,7 @@ const BulkTrader = () => {
 
     return (
         <div className='bulk-trader'>
+            <SceneFx />
             <div className='bulk-trader__card'>
                 <div className='bulk-trader__top-row'>
                 <div className='bulk-trader__field bulk-trader__field--market'>

@@ -7,6 +7,7 @@ import { isDemoAccount } from '@/utils/account-helpers';
 import CopyTraderStore, { maskToken } from '@/stores/copy-trader-store';
 import type { TClientTokenState, TCopyTraderError } from '@/stores/copy-trader-store';
 
+import SceneFx from '@/components/scene-fx/SceneFx';
 import './copy-trader.scss';
 
 /* ------------------------------------------------------------------ icons */
@@ -253,6 +254,7 @@ const CopyTrader = observer(() => {
 
     return (
         <div className='copy-trader'>
+            <SceneFx />
             {activeError && (
                 <div className='copy-trader__toast-wrap'>
                     <ErrorToast error={activeError} onDismiss={() => setDismissed(prev => [...prev, activeError.timestamp])} />

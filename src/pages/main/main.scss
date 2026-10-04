@@ -256,7 +256,8 @@
         overflow-x: hidden;
         overflow-y: auto;
         overscroll-behavior: contain;
-        background: var(--general-main-1);
+        // Light silk artwork behind every tab; dark tabs paint their own scene on top.
+        background: var(--ts-scene-light, #ffffff);
 
         @include mobile-or-tablet-screen {
             height: var(--tab-content-height-mobile);
@@ -299,8 +300,7 @@
             }
 
             &__container {
-                // Mint status panel beside the teal Run button.
-                background-color: #eaf7f0;
+                background-color: var(--brand-sky-soft);
             }
         }
     }
@@ -344,9 +344,9 @@
     width: 100%;
     margin: 0;
     border-radius: 0;
-    background: linear-gradient(180deg, #13245a 0%, #0c1a45 100%);
-    border-bottom: 2px solid #22d3ee;
-    box-shadow: 0 0.4rem 1.6rem rgba(5, 11, 31, 0.35);
+    background: var(--brand-gradient-nav);
+    border-bottom: 2px solid var(--brand-gold);
+    box-shadow: 0 0.4rem 1.6rem rgba(11, 20, 38, 0.35);
 
     .dc-tabs__item {
         height: 4.8rem;
@@ -361,12 +361,12 @@
             color: #ffffff;
         }
 
-        // Outline tab icons, all in the same coral-orange as the reference.
+        // Outline tab icons in brand gold.
         .nav-icon {
             flex: none;
             width: 2.4rem;
             height: 2.4rem;
-            color: #ff6a3d;
+            color: var(--brand-gold);
             fill: none;
 
             * {
@@ -375,17 +375,17 @@
         }
 
         &:hover {
-            background: rgba(255, 255, 255, 0.07);
+            background: rgba(56, 189, 248, 0.12);
         }
     }
 
     .dc-tabs__active {
-        background: linear-gradient(180deg, #2b59c3 0%, #1e40af 100%);
-        box-shadow: inset 0 -3px 0 #22d3ee;
+        background: var(--brand-gradient);
+        box-shadow: inset 0 -3px 0 var(--brand-gold);
     }
 
     .dc-tabs__item--is-scrollable-and-active::after {
-        border-bottom-color: #22d3ee;
+        border-bottom-color: var(--brand-gold);
     }
 }
 
@@ -545,7 +545,7 @@
             }
 
             &__container {
-                background-color: #eaf7f0;
+                background-color: var(--brand-sky-soft);
             }
         }
     }
@@ -838,7 +838,7 @@
             }
 
             &.danger {
-                background: $color-red;
+                background: var(--brand-gradient);
                 border: none;
                 margin-right: 0;
 

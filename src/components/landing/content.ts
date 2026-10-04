@@ -9,12 +9,12 @@ const APP = getAppName();
 /** Deriv sign-up through the affiliate link (commission tracking). */
 export const AFFILIATE_SIGNUP_URL =
     process.env.NEXT_PUBLIC_DERIV_REFERRAL_LINK ||
-    'https://partner-tracking.deriv.com/click?a=54565&o=1&c=3&link_id=1';
+    'https://t.deriv.link?t=63PLZ8T6L73Q';
 
 /** Master partner (client referral) link - the "Refer a trader" button. */
 export const MASTER_PARTNER_URL = 'https://t.deriv.link?t=CL5VDD7SGG27';
 
-export const TELEGRAM_URL = 'https://t.me/VolaTradescom';
+export { WHATSAPP_NUMBER, WHATSAPP_URL } from '@/constants/contact';
 
 export const HEADLINES = [
     {
@@ -149,7 +149,7 @@ export const WHY_CHOOSE = [
     'Prices, digits and results come straight from the Deriv API, live',
     'Analysis, scanner, free bots and automation in a single workspace',
     'Synthetic markets that keep trading at weekends and through the night',
-    'A person to talk to on Telegram when something needs explaining',
+    'A person to talk to on WhatsApp when something needs explaining',
 ];
 
 export type TStep = { badge: string; title: string; text: string };

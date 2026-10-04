@@ -52,7 +52,7 @@ div.radio-group {
                     border-radius: 4px;
 
                     &--selected {
-                        border: solid 1px #85acb0;
+                        border: solid 1px var(--brand-purple);
 
                         & .save-type__radio-text {
                             font-weight: 700;

@@ -3,7 +3,7 @@ import brandConfig from '../../brand.config.json';
 // Candidate logo paths, in priority order. The BFF writes exactly one of these to
 // public/ at deploy time; the header mark and favicon probe them in turn (matches the
 // Next.js templates' lib/get-logo-src.ts and lib/build-favicon-uri.ts behaviour).
-export const LOGO_CANDIDATES = ['/logo.webp', '/logo.png', '/logo.jpg', '/logo.jpeg'];
+export const LOGO_CANDIDATES = ['/logo.png', '/logo.webp', '/logo.jpg', '/logo.jpeg'];
 
 /**
  * Resolves the partner app name. The BFF injects NEXT_PUBLIC_DERIV_APP_NAME into

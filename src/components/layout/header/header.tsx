@@ -4,6 +4,8 @@ import { observer } from 'mobx-react-lite';
 import { generateOAuthURL } from '@/components/shared';
 import Button from '@/components/shared_ui/button';
 import useActiveAccount from '@/hooks/api/account/useActiveAccount';
+import WhatsAppIcon from '@/components/shared_ui/whatsapp-icon/WhatsAppIcon';
+import { WHATSAPP_NUMBER, WHATSAPP_URL } from '@/constants/contact';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useLogout } from '@/hooks/useLogout';
 import { useStore } from '@/hooks/useStore';
@@ -15,24 +17,17 @@ import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
 import './header.scss';
 
-const TELEGRAM_URL = 'https://t.me/VolaTradescom';
-
-/** Blue phone handset that opens the VolaTrades Telegram chat/call. */
-const TelegramCallButton = () => (
+/** WhatsApp button that opens a chat with the Traders Scheeme support line. */
+const WhatsAppButton = () => (
     <a
-        className='app-header__telegram'
-        href={TELEGRAM_URL}
+        className='app-header__whatsapp'
+        href={WHATSAPP_URL}
         target='_blank'
         rel='noopener noreferrer'
-        aria-label='Contact VolaTrades on Telegram'
-        title='Chat or call us on Telegram'
+        aria-label={`Chat with Traders Scheeme on WhatsApp (${WHATSAPP_NUMBER})`}
+        title={`WhatsApp us: ${WHATSAPP_NUMBER}`}
     >
-        <svg width='30' height='30' viewBox='0 0 24 24' aria-hidden='true'>
-            <path
-                fill='currentColor'
-                d='M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z'
-            />
-        </svg>
+        <WhatsAppIcon size={22} />
     </a>
 );
 
@@ -235,7 +230,7 @@ const AppHeader = observer(() => {
                 <Wrapper variant='left'>
                     <MobileMenu onLogout={handleLogout} />
                     <AppLogo />
-                    <TelegramCallButton />
+                    <WhatsAppButton />
                     {isDesktop && <MenuItems />}
                 </Wrapper>
                 <Wrapper variant='right'>{renderAccountSection('right')}</Wrapper>

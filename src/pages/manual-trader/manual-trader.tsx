@@ -23,6 +23,7 @@ import { contract_stages } from '@/constants/contract-stage';
 import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
+import SceneFx from '@/components/scene-fx/SceneFx';
 import './manual-trader.scss';
 
 type TSymbol = { symbol: string; display_name: string };
@@ -377,6 +378,7 @@ const ManualTrader = observer(() => {
 
     return (
         <div className='manual-trader'>
+            <SceneFx />
             <div className='manual-trader__container'>
                 <div className='manual-trader__topbar'>
                     <div className='manual-trader__title'>{localize('Manual Trader')}</div>
