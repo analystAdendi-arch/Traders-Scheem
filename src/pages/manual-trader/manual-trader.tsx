@@ -1,574 +1,608 @@
 /**
- * Manual Trader.
+ * Manual Trader: Deriv Trader, inside the site.
  *
- * A trade panel inside the site, on the Deriv API - the shape the bossiousfx
- * project uses for its Smart Trader (MIT, deriv.com): pick a volatility index
- * and a digit trade type, watch the last digits stream in, and buy. No frame
- * and no redirect, so the session is ours and the account is the one this site
- * is signed in as.
- *
- * Three faults in that original are not carried over:
- *  - its "Trade once" button started the same endless loop as auto trading, so
- *    it could never buy a single contract;
- *  - the loop bought again 500ms later whether or not the contract had settled;
- *  - it raised the stake with setStake() and then read the previous value from
- *    the render closure, so a martingale step never reached the buy.
- * Here one purchase is one purchase, auto trading waits for each contract to
- * close, and the stake is read from a ref.
+ * Deriv's own trader (dtrader.deriv.com) cannot live here: it refuses to be framed,
+ * keeps its session on its own origin, and trades under Deriv's app id. So the same
+ * screen is built here on the site's socket instead - market tabs, the trade type
+ * and market picker, the live tick chart, the trade panel with live prices, and
+ * open positions - and every quote and purchase goes through this site's OAuth app
+ * id and the account the site is signed in as. Nothing opens outside the site.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import Text from '@/components/shared_ui/text';
-import { contract_stages } from '@/constants/contract-stage';
-import { api_base } from '@/external/bot-skeleton';
-import { useStore } from '@/hooks/useStore';
-import { localize } from '@deriv-com/translations';
+
 import SceneFx from '@/components/scene-fx/SceneFx';
+import { useStore } from '@/hooks/useStore';
+
+import { apiVersion, isReady, send, subscribe } from './deriv-stream';
+import { loadMarkets, loadOffer, offerRow, TOffer } from './market-data';
+import MarketPicker, { MarketIcon } from './MarketPicker';
+import TickChart, { TChartLine, TTick } from './TickChart';
+import {
+    buildParameters,
+    DEFAULT_FORM,
+    getTradeType,
+    lastDigit,
+    TForm,
+    TMarket,
+    TTradeTypeId,
+} from './trade-types';
+import TradePanel, { TPosition, TProposal } from './TradePanel';
+
 import './manual-trader.scss';
 
-type TSymbol = { symbol: string; display_name: string };
+type TTab = { id: string; symbol: string; trade_type: TTradeTypeId };
 
-const TRADE_TYPES = [
-    { value: 'DIGITOVER', label: localize('Digits Over') },
-    { value: 'DIGITUNDER', label: localize('Digits Under') },
-    { value: 'DIGITEVEN', label: localize('Even') },
-    { value: 'DIGITODD', label: localize('Odd') },
-    { value: 'DIGITMATCH', label: localize('Matches') },
-    { value: 'DIGITDIFF', label: localize('Differs') },
-];
+const TABS_KEY = 'ts-trader-tabs';
+const MAX_TABS = 5;
+const HISTORY = 1000;
+const FIRST_TAB: TTab = { id: 'tab-1', symbol: '1HZ100V', trade_type: 'rise_fall' };
 
-const NEEDS_BARRIER = ['DIGITOVER', 'DIGITUNDER', 'DIGITMATCH', 'DIGITDIFF'];
+const readTabs = (): { tabs: TTab[]; active: string } => {
+    try {
+        const saved = JSON.parse(localStorage.getItem(TABS_KEY) || 'null');
+        if (saved?.tabs?.length) return saved;
+    } catch {
+        /* fall through to the default tab */
+    }
+    return { tabs: [FIRST_TAB], active: FIRST_TAB.id };
+};
 
-const clampDigit = (value: number) => Math.max(0, Math.min(9, Math.trunc(Number(value) || 0)));
+const RETRY_CODES = ['InvalidContractProposal', 'PriceMoved'];
 
 const ManualTrader = observer(() => {
-    const store = useStore();
-    const { run_panel, transactions, client } = store;
+    const { client, transactions } = useStore();
 
-    const tick_sub_id = useRef<string | null>(null);
-    const tick_listener = useRef<((evt: MessageEvent) => void) | null>(null);
-    const stop_requested = useRef(false);
-    const is_mounted = useRef(true);
-    // Read at purchase time rather than through a render closure.
-    const stake_ref = useRef(0.5);
-    const after_loss = useRef(false);
+    /* ------------------------------------------------------------ socket */
+    // Bumps when the site's socket becomes ready or is replaced, so streams re-open.
+    const [conn, setConn] = useState(0);
+    useEffect(() => {
+        let version = apiVersion();
+        let ready = isReady();
+        const timer = setInterval(() => {
+            const next_version = apiVersion();
+            const next_ready = isReady();
+            if (next_version !== version || next_ready !== ready) {
+                version = next_version;
+                ready = next_ready;
+                if (next_ready) setConn(c => c + 1);
+            }
+        }, 1500);
+        return () => clearInterval(timer);
+    }, []);
 
-    const [symbols, setSymbols] = useState<TSymbol[]>([]);
-    const [symbol, setSymbol] = useState('');
-    const [trade_type, setTradeType] = useState('DIGITOVER');
-    const [ticks, setTicks] = useState(1);
-    const [stake, setStake] = useState(0.5);
-    const [prediction, setPrediction] = useState(5);
-    const [prediction_after_loss, setPredictionAfterLoss] = useState(5);
-    const [martingale, setMartingale] = useState(1);
+    /* ------------------------------------------------------------- state */
+    const [markets, setMarkets] = useState<TMarket[]>([]);
+    const [{ tabs, active }, setTabState] = useState(readTabs);
+    const [picker, setPicker] = useState<null | 'edit' | 'new'>(null);
+    const [ticks, setTicks] = useState<TTick[]>([]);
+    const [decimals, setDecimals] = useState(2);
+    const [chart_error, setChartError] = useState('');
+    const [offer, setOffer] = useState<TOffer | null>(null);
+    const [form, setFormState] = useState<TForm>({ ...DEFAULT_FORM });
+    const [proposal, setProposal] = useState<TProposal>({ loading: true });
+    const [positions, setPositions] = useState<TPosition[]>([]);
+    const [buying, setBuying] = useState(false);
+    const [toast, setToast] = useState<{ text: string; error: boolean } | null>(null);
+    const [how_to, setHowTo] = useState(false);
+    const [now, setNow] = useState(Date.now());
 
-    const [digits, setDigits] = useState<number[]>([]);
-    const [last_digit, setLastDigit] = useState<number | null>(null);
-    const [wins, setWins] = useState(0);
-    const [losses, setLosses] = useState(0);
+    const follow_stops = useRef(new Map<number, () => void>());
+    const toast_timer = useRef<ReturnType<typeof setTimeout>>();
 
-    const [is_running, setIsRunning] = useState(false);
-    const [is_buying, setIsBuying] = useState(false);
-    const [status, setStatus] = useState('');
-    const [is_error, setIsError] = useState(false);
+    const tab = tabs.find(t => t.id === active) ?? tabs[0];
+    const type = getTradeType(tab.trade_type);
+    const side = type.sides.find(s => s.key === form.side) ?? type.sides[0];
+    const market = markets.find(m => m.symbol === tab.symbol);
+    const currency = client?.is_logged_in && client?.currency ? client.currency : 'USD';
+
+    const notify = useCallback((text: string, error = false) => {
+        setToast({ text, error });
+        if (toast_timer.current) clearTimeout(toast_timer.current);
+        toast_timer.current = setTimeout(() => setToast(null), 6000);
+    }, []);
+
+    const setForm = useCallback((patch: Partial<TForm>) => setFormState(prev => ({ ...prev, ...patch })), []);
 
     useEffect(() => {
-        stake_ref.current = stake;
-    }, [stake]);
-
-    const currency = client?.currency || 'USD';
-
-    const say = useCallback((message: string, error = false) => {
-        if (!is_mounted.current) return;
-        setStatus(message);
-        setIsError(error);
-    }, []);
-
-    /** Our own socket, already authorised for the signed-in account. */
-    const send = useCallback(async (request: Record<string, unknown>) => {
-        if (!api_base?.api) throw new Error(localize('Not connected to Deriv yet. Please try again.'));
-        const response: any = await api_base.api.send(request);
-        if (response?.error) throw new Error(response.error.message || response.error.code);
-        return response;
-    }, []);
-
-    const stopTicks = useCallback(() => {
         try {
-            if (tick_sub_id.current) {
-                api_base?.api?.forget?.({ forget: tick_sub_id.current });
-                tick_sub_id.current = null;
-            }
-            if (tick_listener.current) {
-                api_base?.api?.connection?.removeEventListener('message', tick_listener.current);
-                tick_listener.current = null;
-            }
+            localStorage.setItem(TABS_KEY, JSON.stringify({ tabs, active }));
         } catch {
-            /* the stream closes with the socket anyway */
+            /* tabs last for the visit only */
         }
+    }, [tabs, active]);
+
+    useEffect(() => {
+        const timer = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(timer);
     }, []);
 
-    const startTicks = useCallback(
-        async (next_symbol: string) => {
-            stopTicks();
-            setDigits([]);
-            setLastDigit(null);
-            if (!next_symbol) return;
-
-            try {
-                const response = await send({ ticks: next_symbol, subscribe: 1 });
-                if (response?.subscription?.id) tick_sub_id.current = response.subscription.id;
-
-                const onMessage = (evt: MessageEvent) => {
-                    try {
-                        const data = JSON.parse(evt.data as string);
-                        if (data?.msg_type !== 'tick' || data?.tick?.symbol !== next_symbol) return;
-                        const digit = Number(String(data.tick.quote).slice(-1));
-                        setLastDigit(digit);
-                        setDigits(prev => [...prev.slice(-9), digit]);
-                    } catch {
-                        /* a frame we do not care about */
-                    }
-                };
-                tick_listener.current = onMessage;
-                api_base?.api?.connection?.addEventListener('message', onMessage);
-            } catch (error) {
-                say(error instanceof Error ? error.message : localize('Could not follow that market'), true);
-            }
+    // Close every contract stream when leaving the page.
+    useEffect(
+        () => () => {
+            follow_stops.current.forEach(stop => stop());
+            follow_stops.current.clear();
+            if (toast_timer.current) clearTimeout(toast_timer.current);
         },
-        [say, send, stopTicks]
+        []
     );
 
-    // Load the volatility indices once, and follow the first one.
+    /* ----------------------------------------------------------- markets */
     useEffect(() => {
-        is_mounted.current = true;
+        if (!isReady()) return;
+        loadMarkets()
+            .then(setMarkets)
+            .catch(error => notify(error.message, true));
+    }, [conn, notify]);
+
+    /* ------------------------------------------------- ticks for the chart */
+    useEffect(() => {
+        if (!isReady()) return undefined;
+        let alive = true;
+        let stop: (() => void) | null = null;
+        setTicks([]);
+        setChartError('');
 
         (async () => {
             try {
-                const { active_symbols } = await send({ active_symbols: 'brief' });
-                const synthetic = (active_symbols || [])
-                    .filter((s: any) => /synthetic/i.test(s.market) || /^(R_|1HZ)/.test(s.symbol))
-                    .map((s: any) => ({ symbol: s.symbol, display_name: s.display_name }));
+                const history = await send({ ticks_history: tab.symbol, end: 'latest', count: HISTORY, style: 'ticks' });
+                if (!alive) return;
+                const prices: number[] = history?.history?.prices || [];
+                const times: number[] = history?.history?.times || [];
+                if (Number.isFinite(history?.pip_size)) setDecimals(Number(history.pip_size));
+                setTicks(times.map((epoch, i) => ({ epoch, quote: Number(prices[i]) })));
 
-                if (!is_mounted.current) return;
-                setSymbols(synthetic);
-
-                const first = synthetic[0]?.symbol;
-                if (first) {
-                    setSymbol(first);
-                    startTicks(first);
-                }
+                stop = await subscribe({ ticks: tab.symbol }, 'tick', data => {
+                    const tick = data?.tick;
+                    if (!alive || !tick || tick.symbol !== tab.symbol) return;
+                    if (Number.isFinite(tick.pip_size)) setDecimals(Number(tick.pip_size));
+                    setTicks(prev =>
+                        prev.length && prev[prev.length - 1].epoch >= tick.epoch
+                            ? prev
+                            : [...prev.slice(-(HISTORY - 1)), { epoch: tick.epoch, quote: Number(tick.quote) }]
+                    );
+                });
+                if (!alive) stop();
             } catch (error) {
-                say(error instanceof Error ? error.message : localize('Could not load markets'), true);
+                if (alive) setChartError(error instanceof Error ? error.message : 'Could not load this market');
             }
         })();
 
         return () => {
-            is_mounted.current = false;
-            stop_requested.current = true;
-            stopTicks();
+            alive = false;
+            stop?.();
+        };
+    }, [tab.symbol, conn]);
+
+    /* ------------------------------------------- what this market offers */
+    useEffect(() => {
+        if (!isReady()) return undefined;
+        let alive = true;
+        setOffer(null);
+        loadOffer(tab.symbol)
+            .then(next => alive && setOffer(next))
+            .catch(error => alive && notify(error.message, true));
+        return () => {
+            alive = false;
+        };
+    }, [tab.symbol, conn, notify]);
+
+    // New trade type: first side, its default duration.
+    useEffect(() => {
+        const [duration, duration_unit] = type.default_duration;
+        setFormState(prev => ({ ...prev, side: type.sides[0].key, duration, duration_unit }));
+    }, [type]);
+
+    // Keep the choices valid for this market (Deriv's defaults where we have them).
+    useEffect(() => {
+        if (!offer) return;
+        setFormState(prev => {
+            const next = { ...prev };
+            const row = offerRow(offer, side.contract_type);
+            // The default barrier for the duration family in use (ticks, intraday or daily).
+            const timed_row = offerRow(offer, side.contract_type, prev.duration_unit);
+            if (type.uses_barrier && timed_row?.barrier) next.barrier = timed_row.barrier;
+            if (type.uses_growth_rate) {
+                const rates: number[] = offerRow(offer, 'ACCU')?.growth_rate_range ?? [];
+                if (rates.length && !rates.includes(prev.growth_rate)) next.growth_rate = rates.includes(0.03) ? 0.03 : rates[0];
+            }
+            if (type.uses_multiplier) {
+                const range: number[] = row?.multiplier_range ?? [];
+                if (range.length && !range.includes(prev.multiplier)) next.multiplier = range.includes(100) ? 100 : range[0];
+            }
+            if (type.uses_payout_per_point) {
+                const choices: number[] = timed_row?.payout_choices ?? [];
+                if (choices.length && !choices.includes(prev.payout_per_point)) {
+                    next.payout_per_point = choices[Math.floor(choices.length / 2)];
+                }
+            }
+            if (type.uses_strike) {
+                const choices: string[] = timed_row?.barrier_choices ?? [];
+                if (choices.length && !choices.includes(prev.strike)) next.strike = timed_row?.barrier ?? choices[0];
+            }
+            if (type.uses_digit && !(side.contract_type === 'DIGITOVER' ? prev.digit <= 8 : side.contract_type === 'DIGITUNDER' ? prev.digit >= 1 : true)) {
+                next.digit = 5;
+            }
+            return next;
+        });
+    }, [offer, type, side.contract_type, form.duration_unit]);
+
+    const offered = !offer || type.sides.every(s => offer.types.has(s.contract_type));
+
+    /* ------------------------------------------------------ live proposal */
+    const params_key = JSON.stringify(buildParameters(type, side, form, tab.symbol, currency));
+
+    useEffect(() => {
+        if (!isReady() || !offer) return undefined;
+        if (!offered) {
+            setProposal({
+                error: `${type.label} is not offered on ${market?.name ?? tab.symbol}. Choose another market or trade type.`,
+            });
+            return undefined;
+        }
+        let alive = true;
+        let stop: (() => void) | null = null;
+        setProposal(prev => ({ ...prev, loading: true, error: undefined }));
+
+        const timer = setTimeout(async () => {
+            try {
+                stop = await subscribe({ proposal: 1, ...JSON.parse(params_key) }, 'proposal', data => {
+                    if (!alive) return;
+                    if (data?.error) {
+                        setProposal({ error: data.error.message });
+                        return;
+                    }
+                    const p = data?.proposal;
+                    if (!p) return;
+                    setProposal({
+                        id: p.id,
+                        ask_price: Number(p.ask_price),
+                        payout: Number(p.payout),
+                        longcode: p.longcode,
+                        details: p.contract_details,
+                        limit_order: p.limit_order,
+                        commission: p.commission,
+                        payout_per_point: p.display_number_of_contracts,
+                    });
+                });
+                if (!alive) stop();
+            } catch (error) {
+                if (alive) setProposal({ error: error instanceof Error ? error.message : 'No price for this trade' });
+            }
+        }, 300);
+
+        return () => {
+            alive = false;
+            clearTimeout(timer);
+            stop?.();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [params_key, offer, offered, conn]);
+
+    /* ------------------------------------------------------- positions */
+    const updatePosition = useCallback((contract_id: number, patch: Partial<TPosition>) => {
+        setPositions(prev => prev.map(p => (p.contract_id === contract_id ? { ...p, ...patch } : p)));
     }, []);
 
-    /** Which digits would win right now, for the colour hints under the form. */
-    const hintFor = (digit: number) => {
-        const active_prediction = after_loss.current ? prediction_after_loss : prediction;
-        if (trade_type === 'DIGITEVEN') return digit % 2 === 0 ? 'is-green' : 'is-red';
-        if (trade_type === 'DIGITODD') return digit % 2 !== 0 ? 'is-green' : 'is-red';
-        if (trade_type === 'DIGITMATCH') return digit === active_prediction ? 'is-green' : 'is-red';
-        if (trade_type === 'DIGITDIFF') return digit !== active_prediction ? 'is-green' : 'is-red';
-        if (trade_type === 'DIGITOVER') {
-            if (digit > active_prediction) return 'is-green';
-            return digit < active_prediction ? 'is-red' : 'is-neutral';
-        }
-        if (trade_type === 'DIGITUNDER') {
-            if (digit < active_prediction) return 'is-green';
-            return digit > active_prediction ? 'is-red' : 'is-neutral';
-        }
-        return '';
-    };
+    const follow = useCallback(
+        async (contract_id: number) => {
+            try {
+                const stop = await subscribe({ proposal_open_contract: 1, contract_id }, 'proposal_open_contract', data => {
+                    const c = data?.proposal_open_contract;
+                    if (!c || Number(c.contract_id) !== contract_id) return;
+                    transactions.onBotContractEvent(c);
+                    const profit = Number(c.profit || 0);
+                    const status: TPosition['status'] = !c.is_sold
+                        ? 'open'
+                        : c.status === 'won' || (c.status !== 'lost' && profit > 0)
+                          ? 'won'
+                          : c.status === 'lost' || profit < 0
+                            ? 'lost'
+                            : 'sold';
+                    updatePosition(contract_id, {
+                        profit,
+                        status,
+                        can_sell: Boolean(c.is_valid_to_sell),
+                        entry_spot: c.entry_spot !== undefined ? Number(c.entry_spot) : undefined,
+                    });
+                    if (c.is_sold) {
+                        follow_stops.current.get(contract_id)?.();
+                        follow_stops.current.delete(contract_id);
+                    }
+                });
+                follow_stops.current.set(contract_id, stop);
+            } catch (error) {
+                notify(error instanceof Error ? error.message : 'Lost track of a contract', true);
+            }
+        },
+        [notify, transactions, updatePosition]
+    );
 
-    /** Buy one contract and resolve once it has settled, with its profit. */
-    const buyAndFollow = useCallback(
-        async (amount: number): Promise<number> => {
-            const active_prediction = after_loss.current ? prediction_after_loss : prediction;
-            const parameters: Record<string, unknown> = {
-                amount,
-                basis: 'stake',
-                contract_type: trade_type,
-                currency,
-                duration: Math.max(1, Math.trunc(ticks)),
-                duration_unit: 't',
-                symbol,
-            };
-            if (NEEDS_BARRIER.includes(trade_type)) {
-                parameters.barrier = String(
-                    clampDigit(trade_type === 'DIGITMATCH' || trade_type === 'DIGITDIFF' ? prediction : active_prediction)
-                );
+    /* ------------------------------------------------------------- buying */
+    const buy = useCallback(async () => {
+        if (!client?.is_logged_in) {
+            notify('Log in to your Deriv account to buy contracts.', true);
+            return;
+        }
+        if (buying) return;
+        setBuying(true);
+        const parameters = JSON.parse(params_key);
+        try {
+            let response;
+            try {
+                response = proposal.id
+                    ? await send({ buy: proposal.id, price: Number(proposal.ask_price ?? form.stake) })
+                    : await send({ buy: '1', price: Number(form.stake), parameters });
+            } catch (error: any) {
+                // The quote can expire between ticks; buy on the parameters instead.
+                if (!proposal.id || !RETRY_CODES.includes(error?.code)) throw error;
+                response = await send({ buy: '1', price: Number(form.stake), parameters });
             }
 
-            const { buy } = await send({ buy: 1, price: amount, parameters });
-            const contract_id = Number(buy?.contract_id);
-            if (!contract_id) throw new Error(localize('The purchase did not return a contract'));
+            const bought = response?.buy;
+            const contract_id = Number(bought?.contract_id);
+            if (!contract_id) throw new Error('The purchase did not return a contract.');
 
-            say(`${localize('Bought')} ${buy?.longcode || trade_type}`);
-            run_panel.setHasOpenContract(true);
-            run_panel.setContractStage(contract_stages.PURCHASE_SENT);
+            setPositions(prev => [
+                {
+                    contract_id,
+                    contract_type: parameters.contract_type,
+                    label: type.sides.length > 1 ? `${side.label} · ${type.label}` : type.label,
+                    tone: side.tone,
+                    symbol: tab.symbol,
+                    symbol_name: market?.name ?? tab.symbol,
+                    buy_price: Number(bought.buy_price),
+                    profit: 0,
+                    status: 'open',
+                    can_sell: false,
+                    longcode: bought.longcode,
+                },
+                ...prev,
+            ]);
 
-            // Show the row straight away, then follow the contract to settlement.
             transactions.onBotContractEvent({
                 contract_id,
-                transaction_ids: { buy: buy?.transaction_id },
-                buy_price: buy?.buy_price,
+                transaction_ids: { buy: bought.transaction_id },
+                buy_price: bought.buy_price,
                 currency,
-                contract_type: trade_type,
-                underlying: symbol,
-                display_name: symbols.find(s => s.symbol === symbol)?.display_name || symbol,
+                contract_type: parameters.contract_type,
+                underlying: tab.symbol,
+                display_name: market?.name ?? tab.symbol,
                 date_start: Math.floor(Date.now() / 1000),
                 status: 'open',
             } as never);
 
-            return await new Promise<number>((resolve, reject) => {
-                let sub_id: string | null = null;
-                let settled = false;
+            notify(`Contract bought: ${bought.longcode || type.label}`);
+            follow(contract_id);
+        } catch (error) {
+            notify(error instanceof Error ? error.message : 'The purchase failed', true);
+        } finally {
+            setBuying(false);
+        }
+    }, [buying, client?.is_logged_in, currency, follow, form.stake, market?.name, notify, params_key, proposal, side, tab.symbol, transactions, type]);
 
-                const finish = (profit: number) => {
-                    if (settled) return;
-                    settled = true;
-                    try {
-                        if (sub_id) api_base?.api?.forget?.({ forget: sub_id });
-                        api_base?.api?.connection?.removeEventListener('message', onMessage);
-                    } catch {
-                        /* nothing to clean up */
-                    }
-                    run_panel.setHasOpenContract(false);
-                    run_panel.setContractStage(contract_stages.CONTRACT_CLOSED);
-                    resolve(profit);
+    const sell = useCallback(
+        async (contract_id: number) => {
+            updatePosition(contract_id, { selling: true });
+            try {
+                const response = await send({ sell: contract_id, price: 0 });
+                notify(`Contract closed for ${Number(response?.sell?.sold_for ?? 0).toFixed(2)} ${currency}`);
+            } catch (error) {
+                notify(error instanceof Error ? error.message : 'Could not close the contract', true);
+            } finally {
+                updatePosition(contract_id, { selling: false });
+            }
+        },
+        [currency, notify, updatePosition]
+    );
+
+    /* -------------------------------------------------------------- tabs */
+    const pick = useCallback(
+        (trade_type: TTradeTypeId, symbol: string, done: boolean) => {
+            setTabState(prev => {
+                if (picker === 'new' && prev.tabs.length < MAX_TABS) {
+                    const id = `tab-${Date.now()}`;
+                    return { tabs: [...prev.tabs, { id, symbol, trade_type }], active: id };
+                }
+                return {
+                    ...prev,
+                    tabs: prev.tabs.map(t => (t.id === prev.active ? { ...t, symbol, trade_type } : t)),
                 };
-
-                const onMessage = (evt: MessageEvent) => {
-                    try {
-                        const data = JSON.parse(evt.data as string);
-                        if (data?.msg_type !== 'proposal_open_contract') return;
-                        const contract = data.proposal_open_contract;
-                        if (Number(contract?.contract_id) !== contract_id) return;
-
-                        if (!sub_id && data?.subscription?.id) sub_id = data.subscription.id;
-                        transactions.onBotContractEvent(contract);
-
-                        if (contract?.is_sold || contract?.status === 'sold') finish(Number(contract?.profit || 0));
-                    } catch {
-                        /* a frame we do not care about */
-                    }
-                };
-
-                api_base?.api?.connection?.addEventListener('message', onMessage);
-
-                send({ proposal_open_contract: 1, contract_id, subscribe: 1 })
-                    .then(response => {
-                        if (response?.subscription?.id) sub_id = response.subscription.id;
-                        const contract = response?.proposal_open_contract;
-                        if (contract) {
-                            transactions.onBotContractEvent(contract);
-                            if (contract.is_sold || contract.status === 'sold') {
-                                finish(Number(contract.profit || 0));
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        if (settled) return;
-                        settled = true;
-                        try {
-                            api_base?.api?.connection?.removeEventListener('message', onMessage);
-                        } catch {
-                            /* nothing to clean up */
-                        }
-                        reject(error);
-                    });
             });
+            if (done) setPicker(null);
         },
-        [currency, prediction, prediction_after_loss, run_panel, say, send, symbol, symbols, ticks, trade_type, transactions]
+        [picker]
     );
 
-    /** Record an outcome: streaks, and the stake for a martingale step. */
-    const applyOutcome = useCallback(
-        (profit: number, base_stake: number, step: number) => {
-            if (profit > 0) {
-                after_loss.current = false;
-                setWins(w => w + 1);
-                setLosses(0);
-                stake_ref.current = base_stake;
-                setStake(base_stake);
-                return 0;
+    const closeTab = (id: string) =>
+        setTabState(prev => {
+            if (prev.tabs.length < 2) return prev;
+            const tabs_left = prev.tabs.filter(t => t.id !== id);
+            return { tabs: tabs_left, active: prev.active === id ? tabs_left[tabs_left.length - 1].id : prev.active };
+        });
+
+    /* --------------------------------------------------------- derived */
+    const digit_stats = useMemo(() => {
+        if (!ticks.length) return [];
+        const counts = new Array(10).fill(0);
+        ticks.forEach(t => counts[lastDigit(t.quote, decimals)]++);
+        return counts.map(c => (c / ticks.length) * 100);
+    }, [ticks, decimals]);
+
+    const last_quote = ticks.length ? ticks[ticks.length - 1].quote : null;
+    const last_digit = last_quote === null ? null : lastDigit(last_quote, decimals);
+
+    const chart_lines = useMemo(() => {
+        const lines: TChartLine[] = [];
+        if (last_quote !== null && type.uses_barrier) {
+            const offset = Number(form.barrier);
+            if (/^[+-]/.test(form.barrier.trim()) && Number.isFinite(offset)) {
+                lines.push({ value: last_quote + offset, label: 'Barrier', tone: 'barrier' });
+            } else if (Number.isFinite(offset) && offset > 0) {
+                lines.push({ value: offset, label: 'Barrier', tone: 'barrier' });
             }
-            after_loss.current = true;
-            setLosses(l => l + 1);
-            setWins(0);
-            const next_step = Math.min(step + 1, 50);
-            const next_stake = Number((base_stake * Math.pow(martingale, next_step)).toFixed(2));
-            stake_ref.current = next_stake;
-            setStake(next_stake);
-            return next_step;
-        },
-        [martingale]
-    );
-
-    const openRunPanel = useCallback(() => {
-        run_panel.toggleDrawer(true);
-        run_panel.setActiveTabIndex(1);
-        run_panel.run_id = `manual-${Date.now()}`;
-        run_panel.setIsRunning(true);
-        run_panel.setContractStage(contract_stages.STARTING);
-    }, [run_panel]);
-
-    const closeRunPanel = useCallback(() => {
-        run_panel.setIsRunning(false);
-        run_panel.setHasOpenContract(false);
-        run_panel.setContractStage(contract_stages.NOT_RUNNING);
-    }, [run_panel]);
-
-    /** One contract, start to settlement. */
-    const tradeOnce = useCallback(async () => {
-        if (is_buying || is_running || !symbol) return;
-        setIsBuying(true);
-        openRunPanel();
-        try {
-            await buyAndFollow(Number(stake_ref.current));
-        } catch (error) {
-            say(error instanceof Error ? error.message : localize('The trade failed'), true);
-        } finally {
-            closeRunPanel();
-            if (is_mounted.current) setIsBuying(false);
         }
-    }, [buyAndFollow, closeRunPanel, is_buying, is_running, openRunPanel, say, symbol]);
-
-    /** Keep trading, one contract at a time, until stopped. */
-    const startAuto = useCallback(async () => {
-        if (is_buying || is_running || !symbol) return;
-        stop_requested.current = false;
-        setIsRunning(true);
-        openRunPanel();
-
-        const base_stake = Number(stake_ref.current);
-        let step = 0;
-
-        try {
-            while (!stop_requested.current && is_mounted.current) {
-                const profit = await buyAndFollow(Number(stake_ref.current));
-                step = applyOutcome(profit, base_stake, step);
-            }
-        } catch (error) {
-            say(error instanceof Error ? error.message : localize('Auto trading stopped'), true);
-        } finally {
-            closeRunPanel();
-            if (is_mounted.current) setIsRunning(false);
+        const details = proposal.details || {};
+        if ((type.id === 'turbos' || type.id === 'vanillas') && Number(details.barrier)) {
+            lines.push({ value: Number(details.barrier), label: type.id === 'turbos' ? 'Barrier' : 'Strike', tone: 'barrier' });
         }
-    }, [applyOutcome, buyAndFollow, closeRunPanel, is_buying, is_running, openRunPanel, say, symbol]);
+        if (type.id === 'accumulators' && Number(details.high_barrier) && Number(details.low_barrier)) {
+            lines.push({ value: Number(details.high_barrier), label: 'High barrier', tone: 'barrier' });
+            lines.push({ value: Number(details.low_barrier), label: 'Low barrier', tone: 'barrier' });
+        }
+        positions
+            .filter(p => p.status === 'open' && p.symbol === tab.symbol && p.entry_spot)
+            .slice(0, 3)
+            .forEach(p =>
+                lines.push({
+                    value: Number(p.entry_spot),
+                    label: `Entry · ${p.label}`,
+                    tone: p.tone === 'up' ? 'entry-up' : 'entry-down',
+                })
+            );
+        return lines;
+    }, [form.barrier, last_quote, positions, proposal.details, tab.symbol, type]);
 
-    const stopAuto = useCallback(() => {
-        stop_requested.current = true;
-        say(localize('Stopping after this contract…'));
-    }, [say]);
+    let trade_hint = '';
+    if (!client?.is_logged_in) trade_hint = 'Prices are live. Log in to your Deriv account to buy contracts.';
+    else if (market && !market.is_open) trade_hint = `${market.name} is closed right now.`;
 
-    const shows_match_prediction = trade_type === 'DIGITMATCH' || trade_type === 'DIGITDIFF';
-    const shows_over_under = trade_type === 'DIGITOVER' || trade_type === 'DIGITUNDER';
-    const busy = is_buying || is_running;
+    const account_label = client?.is_logged_in ? (client.is_virtual ? 'Demo account' : 'Real account') : 'Not logged in';
 
-    const total_profit = useMemo(() => Number(store?.summary_card?.profit || 0), [store?.summary_card?.profit]);
-
+    /* ------------------------------------------------------------ render */
     return (
         <div className='manual-trader'>
             <SceneFx />
-            <div className='manual-trader__container'>
-                <div className='manual-trader__topbar'>
-                    <div className='manual-trader__title'>{localize('Manual Trader')}</div>
-                    <div className='manual-trader__balance'>
-                        {Number(client?.balance || 0).toFixed(2)} {currency}
-                    </div>
-                </div>
-
-                <div className='manual-trader__card'>
-                    <div className='manual-trader__row manual-trader__row--two'>
-                        <div className='manual-trader__field'>
-                            <label htmlFor='mt-symbol'>{localize('Market')}</label>
-                            <select
-                                id='mt-symbol'
-                                value={symbol}
-                                onChange={event => {
-                                    setSymbol(event.target.value);
-                                    startTicks(event.target.value);
-                                }}
-                                disabled={busy}
-                            >
-                                {symbols.map(item => (
-                                    <option key={item.symbol} value={item.symbol}>
-                                        {item.display_name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className='manual-trader__field'>
-                            <label htmlFor='mt-trade-type'>{localize('Trade type')}</label>
-                            <select
-                                id='mt-trade-type'
-                                value={trade_type}
-                                onChange={event => setTradeType(event.target.value)}
-                                disabled={busy}
-                            >
-                                {TRADE_TYPES.map(item => (
-                                    <option key={item.value} value={item.value}>
-                                        {item.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className='manual-trader__row manual-trader__row--compact'>
-                        <div className='manual-trader__field'>
-                            <label htmlFor='mt-ticks'>{localize('Ticks')}</label>
-                            <input
-                                id='mt-ticks'
-                                type='number'
-                                min={1}
-                                max={10}
-                                value={ticks}
-                                onChange={event => setTicks(Math.max(1, Math.min(10, Number(event.target.value) || 1)))}
-                                disabled={busy}
-                            />
-                        </div>
-
-                        <div className='manual-trader__field'>
-                            <label htmlFor='mt-stake'>{localize('Stake')}</label>
-                            <input
-                                id='mt-stake'
-                                type='number'
-                                step='0.01'
-                                min={0.35}
-                                value={stake}
-                                onChange={event => setStake(Math.max(0.35, Number(event.target.value) || 0.35))}
-                                disabled={busy}
-                            />
-                        </div>
-
-                        {shows_match_prediction && (
-                            <div className='manual-trader__field'>
-                                <label htmlFor='mt-prediction'>{localize('Prediction digit')}</label>
-                                <input
-                                    id='mt-prediction'
-                                    type='number'
-                                    min={0}
-                                    max={9}
-                                    value={prediction}
-                                    onChange={event => setPrediction(clampDigit(Number(event.target.value)))}
-                                    disabled={busy}
-                                />
-                            </div>
-                        )}
-
-                        {shows_over_under && (
-                            <>
-                                <div className='manual-trader__field'>
-                                    <label htmlFor='mt-prediction'>{localize('Prediction')}</label>
-                                    <input
-                                        id='mt-prediction'
-                                        type='number'
-                                        min={0}
-                                        max={9}
-                                        value={prediction}
-                                        onChange={event => setPrediction(clampDigit(Number(event.target.value)))}
-                                        disabled={busy}
-                                    />
-                                </div>
-                                <div className='manual-trader__field'>
-                                    <label htmlFor='mt-prediction-after-loss'>{localize('Prediction after a loss')}</label>
-                                    <input
-                                        id='mt-prediction-after-loss'
-                                        type='number'
-                                        min={0}
-                                        max={9}
-                                        value={prediction_after_loss}
-                                        onChange={event => setPredictionAfterLoss(clampDigit(Number(event.target.value)))}
-                                        disabled={busy}
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        <div className='manual-trader__field'>
-                            <label htmlFor='mt-martingale'>{localize('Martingale (auto)')}</label>
-                            <input
-                                id='mt-martingale'
-                                type='number'
-                                min={1}
-                                step='0.1'
-                                value={martingale}
-                                onChange={event => setMartingale(Math.max(1, Number(event.target.value) || 1))}
-                                disabled={busy}
-                            />
-                        </div>
-                    </div>
-
-                    <div className='manual-trader__digits'>
-                        {digits.length === 0 && <div className='manual-trader__digits-empty'>{localize('Waiting for ticks…')}</div>}
-                        {digits.map((digit, index) => (
-                            <div
-                                key={`${index}-${digit}`}
-                                className={`manual-trader__digit ${digit === last_digit && index === digits.length - 1 ? 'is-current' : ''} ${hintFor(digit)}`}
-                            >
-                                {digit}
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className='manual-trader__footer-bar'>
-                        <span className='manual-trader__footer-item'>
-                            {localize('Total profit/loss')}: {total_profit.toFixed(2)} {currency}
-                        </span>
-                        <span className='manual-trader__footer-item'>
-                            {localize('Last digit')}: {last_digit ?? '-'}
-                        </span>
-                        <span className='manual-trader__footer-item'>
-                            {localize('Wins')}: {wins} · {localize('Losses')}: {losses}
-                        </span>
-                    </div>
-
-                    <div className='manual-trader__cta'>
+            <div className='mt-shell'>
+                <header className='mt-top'>
+                    <div className='mt-tabs'>
                         <button
                             type='button'
-                            className='manual-trader__cta-once'
-                            onClick={tradeOnce}
-                            disabled={busy || !symbol}
+                            className='mt-tabs__add'
+                            onClick={() => setPicker('new')}
+                            disabled={tabs.length >= MAX_TABS}
+                            aria-label='Open another market'
+                            title={tabs.length >= MAX_TABS ? `Up to ${MAX_TABS} tabs` : 'Open another market'}
                         >
-                            {is_buying ? localize('Buying…') : localize('Trade once')}
+                            +
                         </button>
-
-                        {is_running ? (
-                            <button type='button' className='manual-trader__cta-stop' onClick={stopAuto}>
-                                {localize('Stop')}
-                            </button>
-                        ) : (
-                            <button
-                                type='button'
-                                className='manual-trader__cta-auto'
-                                onClick={startAuto}
-                                disabled={busy || !symbol}
-                            >
-                                {localize('Start auto trading')}
-                            </button>
-                        )}
+                        <div className='mt-tabs__list'>
+                            {tabs.map(t => {
+                                const m = markets.find(x => x.symbol === t.symbol);
+                                const is_active = t.id === tab.id;
+                                return (
+                                    <div key={t.id} className={`mt-tab ${is_active ? 'is-active' : ''}`}>
+                                        <button
+                                            type='button'
+                                            className='mt-tab__main'
+                                            onClick={() => (is_active ? setPicker('edit') : setTabState(prev => ({ ...prev, active: t.id })))}
+                                        >
+                                            {m && <MarketIcon market={m} />}
+                                            <span className='mt-tab__text'>
+                                                <span className='mt-tab__name'>{m?.name ?? t.symbol}</span>
+                                                <span className='mt-tab__type'>
+                                                    {getTradeType(t.trade_type).label}
+                                                    {is_active && (
+                                                        <svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.4'>
+                                                            <path d='m6 9 6 6 6-6' />
+                                                        </svg>
+                                                    )}
+                                                </span>
+                                            </span>
+                                        </button>
+                                        {tabs.length > 1 && (
+                                            <button
+                                                type='button'
+                                                className='mt-tab__close'
+                                                onClick={() => closeTab(t.id)}
+                                                aria-label={`Close ${m?.name ?? t.symbol}`}
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
 
-                    {status && (
-                        <div className='manual-trader__status'>
-                            <Text size='xs' color={is_error ? 'loss-danger' : 'prominent'}>
-                                {status}
-                            </Text>
+                    <div className='mt-account'>
+                        <span className={`mt-account__type ${client?.is_virtual ? 'is-demo' : ''}`}>{account_label}</span>
+                        {client?.is_logged_in && (
+                            <span className='mt-account__balance'>
+                                {Number(client.balance || 0).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                })}{' '}
+                                {currency}
+                            </span>
+                        )}
+                    </div>
+                </header>
+
+                <section className='mt-stage'>
+                    {chart_error ? <div className='mt-stage__error'>{chart_error}</div> : <TickChart ticks={ticks} decimals={decimals} lines={chart_lines} />}
+
+                    {picker && markets.length > 0 && (
+                        <MarketPicker
+                            markets={markets}
+                            trade_type={tab.trade_type}
+                            symbol={picker === 'new' ? '' : tab.symbol}
+                            onPick={pick}
+                            onClose={() => setPicker(null)}
+                        />
+                    )}
+
+                    {toast && (
+                        <div className={`mt-toast ${toast.error ? 'is-error' : ''}`} role='status'>
+                            {toast.text}
+                            <button type='button' onClick={() => setToast(null)} aria-label='Dismiss'>
+                                ×
+                            </button>
                         </div>
                     )}
-                </div>
+                </section>
+
+                <TradePanel
+                    type={type}
+                    side={side}
+                    form={form}
+                    setForm={setForm}
+                    offer={offer}
+                    proposal={proposal}
+                    currency={currency}
+                    digit_stats={digit_stats}
+                    last_digit={last_digit}
+                    can_trade={offered && Boolean(market?.is_open ?? true)}
+                    trade_hint={trade_hint}
+                    buying={buying}
+                    onBuy={buy}
+                    positions={positions}
+                    onSell={sell}
+                    onHowTo={() => setHowTo(true)}
+                    now={now}
+                />
             </div>
+
+            {how_to && (
+                <div className='mt-modal' role='dialog' aria-modal='true' aria-label={`How to trade ${type.label}`}>
+                    <button type='button' className='mt-modal__backdrop' aria-label='Close' onClick={() => setHowTo(false)} />
+                    <div className='mt-modal__card'>
+                        <div className='mt-modal__head'>
+                            <h3>How to trade {type.label}</h3>
+                            <button type='button' onClick={() => setHowTo(false)} aria-label='Close'>
+                                ×
+                            </button>
+                        </div>
+                        <ul>
+                            {type.how.map(line => (
+                                <li key={line}>{line}</li>
+                            ))}
+                        </ul>
+                        {proposal.longcode && <p className='mt-modal__longcode'>{proposal.longcode}</p>}
+                    </div>
+                </div>
+            )}
         </div>
     );
 });
