@@ -1,11 +1,11 @@
 {
     "brand_name": "Traders Scheeme",
-    "brand_domain": "volatrades.com",
+    "brand_domain": "traderscheem.com",
     "brand_hostname": {
-        "staging": "staging.volatrades.com/dashboard",
-        "production": "volatrades.com/dashboard"
+        "staging": "staging.traderscheem.com/dashboard",
+        "production": "traderscheem.com/dashboard"
     },
-    "domain_name": "VolaTrades.com",
+    "domain_name": "Traderscheem.com",
     "colors": {
         "primary": "#0284C7",
         "secondary": "#7C3AED",
@@ -100,10 +100,10 @@
         },
         "hostname": {
             "production": {
-                "com": "volatrades.com"
+                "com": "traderscheem.com"
             },
             "staging": {
-                "com": "staging.volatrades.com"
+                "com": "staging.traderscheem.com"
             }
         },
         "auth2_url": {
