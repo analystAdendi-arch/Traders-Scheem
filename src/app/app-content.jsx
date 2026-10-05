@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { ToastContainer } from 'react-toastify';
 import AuthLoadingWrapper from '@/components/auth-loading-wrapper';
 import { botNotification } from '@/components/bot-notification/bot-notification';
-import useLiveChat from '@/components/chat/useLiveChat';
 import ChunkLoader from '@/components/loader/chunk-loader';
 import { getUrlBase } from '@/components/shared';
 import TransactionDetailsModal from '@/components/transaction-details';
@@ -59,22 +58,8 @@ const AppContent = observer(() => {
         }
     }, []);
 
-    const livechat_client_information = {
-        is_client_store_initialized: client?.is_logged_in ? true : !!client,
-        is_logged_in: client?.is_logged_in,
-        loginid: client?.loginid,
-        currency: client?.currency,
-        residence: client?.residence,
-        email: '',
-        first_name: '',
-        last_name: '',
-    };
-
-    useLiveChat(livechat_client_information);
-
-    // NOTE: Disabled Intercom until further notice
-    // const token = V2GetActiveToken() ?? null;
-    // useIntercom(token);
+    // Support is by WhatsApp only (header button, landing page, "contact us" links), so
+    // Deriv's LiveChat and Intercom widgets are not started here.
 
     useEffect(() => {
         if (connectionStatus === CONNECTION_STATUS.OPENED) {

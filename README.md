@@ -1,76 +1,64 @@
-# Deriv Trading Bot
+# Traders Scheeme
 
-A self-hosted, visual trading-bot builder on the Deriv WebSocket API. Drag-and-drop
-strategy building with Blockly, an interactive SmartCharts chart, automated strategy
-execution, and dashboard/tutorials.
+Trading bots and analysis tools on Deriv, at **https://traderscheem.com**: a visual bot
+builder (Blockly), free bots, auto and bulk trading, copy trading, the market scanner and
+analysis tool, and a built-in Manual Trader in the style of Deriv Trader. Every login,
+quote and trade goes through the Traders Scheeme Deriv app id.
 
-> **Note:** Unlike the other templates in this repo (Rise/Fall, Accumulators, Digits)
-> which are **Next.js** apps, the bot is a **[Rsbuild](https://rsbuild.dev) + React
-> Router** single-page app. The commands, build output, and environment variables
-> below differ accordingly.
+Support is by WhatsApp only: **+254741030460** (header button and landing page).
 
-## Prerequisites
+Built with [Rsbuild](https://rsbuild.dev) + React Router as a single-page app.
 
-- Node.js 18.18 or later
+## Settings
 
-## Step 1: Register Your App ID
+The live values are in `.env.production` (all of them end up in the browser bundle, so
+none is secret):
 
-1. Log in to your Deriv account and go to the [API Token page](https://app.deriv.com/account/api-token) to create a token with the required scopes.
-2. Navigate to [App Registration](https://developers.deriv.com/dashboard/) and register a new application.
-3. Set the **Redirect URI** to the URL where you will host this app (e.g. `http://localhost:4003` for local development).
-4. Copy the **App ID** shown after registration — you will need it in the next step.
+| Variable | Value | What it does |
+|---|---|---|
+| `NEXT_PUBLIC_DERIV_APP_ID` | `34AhEfRe2X1oVGu2p3e0J` | Deriv app id for OAuth login/sign-up and the trading socket. |
+| `NEXT_PUBLIC_DERIV_APP_NAME` | `Traders Scheeme` | App name in the header, tab title, splash and landing page. |
+| `NEXT_PUBLIC_DERIV_REFERRAL_LINK` | `https://t.deriv.link?t=63PLZ8T6L73Q` | Sign-up referral link; its `t=` code is sent with every sign-up. |
+| `NEXT_PUBLIC_DERIV_ENV` | `production` | Live Deriv endpoints (`staging` for the staging ones). |
 
-## Step 2: Configure `.env`
+These are baked in at **build time** (`rsbuild.config.ts`), so rebuild after changing them.
+The WhatsApp number lives in `src/constants/contact.ts`.
 
-Copy `.env.example` to `.env` and fill in your values:
+### Deriv app settings
 
-```bash
-cp .env.example .env
+In the Deriv app registration for `34AhEfRe2X1oVGu2p3e0J`, the redirect URL must be
+exactly:
+
+```
+https://traderscheem.com/callback
 ```
 
-```env
-# Required: Deriv app id — drives OAuth login/sign-up and WebSocket connections.
-NEXT_PUBLIC_DERIV_APP_ID=your_app_id_here
+## Local development
 
-# Optional: environment + affiliate attribution.
-NEXT_PUBLIC_DERIV_ENV=production
-NEXT_PUBLIC_DERIV_REFERRAL_LINK=your_referral_link_here
-
-# Optional: Google Drive integration (leave blank to disable).
-GD_CLIENT_ID=
-GD_APP_ID=
-GD_API_KEY=
-```
-
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_DERIV_APP_ID` | Deriv app id issued for your registered app. Drives OAuth login/sign-up and WebSocket connections. Without it, Log in / Sign up stay disabled. |
-| `NEXT_PUBLIC_DERIV_ENV` | `production` for live Deriv endpoints; `preview` (or `staging`) for staging. Read by both the bot's URL resolver and `@deriv/core` for OAuth. |
-| `NEXT_PUBLIC_DERIV_REFERRAL_LINK` | Affiliate referral link — appended as `affiliate_token` / `utm_campaign` on OAuth (optional). |
-| `GD_CLIENT_ID` / `GD_APP_ID` / `GD_API_KEY` | Google Drive integration credentials for saving/loading strategies (optional). |
-
-> These variables are injected at **build time** via Rsbuild's `source.define`
-> (see `rsbuild.config.ts`), so re-build after changing them.
-
-## Step 3: Local Development
+Requires Node.js 20 or later.
 
 ```bash
 npm install
 npm run dev
 ```
 
-The app is available at `http://localhost:4003`. (`npm install` and `npm run dev`
-also regenerate brand CSS — see Branding below.)
+The app runs at `http://localhost:4003`.
 
-## Step 4: Build for Production
+## Hosting
 
 ```bash
 npm run build
+npm start
 ```
 
-This produces a static build in the `dist/` directory (Rsbuild output — there is no
-`.next`/`out`). Serve the contents of `dist/` from any web server or static host.
-SmartCharts engine assets are copied into `dist/js/smartcharts/` during the build.
+`npm run build` writes the site to `dist/`; `npm start` runs `server.js`, a dependency-free
+static server on `$PORT` (default 3000). It answers unknown paths with `index.html` so
+Deriv's `/callback` return reaches the app, gzips each asset once and caches hashed assets
+for a year.
+
+`railway.json` is set up for Railway (build `npm run build`, start `npm start`). On any
+other Node host use the same two commands; on a static host, publish `dist/` and send
+unknown paths to `index.html`.
 
 ## Google Drive integration (optional)
 

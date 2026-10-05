@@ -15,6 +15,7 @@ import {
     TStrategyFamily,
 } from '@/utils/analysis';
 
+import SceneFx from '@/components/scene-fx/SceneFx';
 import './scanner.scss';
 
 const ANALYSIS_TICKS = 1000;
@@ -395,6 +396,7 @@ const Scanner = observer(() => {
 
     return (
         <div className='signal-scanner'>
+            <SceneFx variant='dark' />
             <div className='signal-scanner__matrix' aria-hidden='true'>
                 {/* Two copies scroll upward in a loop; faster while a scan runs. */}
                 <div

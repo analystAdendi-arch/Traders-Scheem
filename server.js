@@ -116,7 +116,15 @@ const serve = (req, res, file, status = 200) => {
     const cache = ext === '.html' ? 'no-cache' : immutable ? 'public, max-age=31536000, immutable' : 'public, max-age=3600';
 
     const accepts_gzip = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
-    const headers = { 'Content-Type': type, 'Cache-Control': cache };
+    const headers = {
+        'Content-Type': type,
+        'Cache-Control': cache,
+        // Standard hardening; none of these limit the app (it is never framed and
+        // loads its fonts and Deriv sockets by https/wss).
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    };
     const compressing = accepts_gzip && COMPRESSIBLE.test(type);
 
     // A HEAD carries no body, so do no body work for it. This used to read and

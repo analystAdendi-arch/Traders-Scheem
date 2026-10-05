@@ -6,6 +6,38 @@ body {
     // Updated to use brand font variable from brand.config.json
     font-family: var(--brand-font-primary);
     background: var(--general-main-1);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+// Display face (Sora, loaded in index.html) for headings, the app name and big figures.
+h1,
+h2,
+h3,
+.te-brand-name,
+.app-header__logo-text,
+.te-landing__headline,
+.te-landing__h2,
+.te-landing__wordmark,
+.te-splash__welcome,
+.db-hero__greeting,
+.free-bots h1,
+.mt-account__balance,
+.mt-buy__label,
+.mt-modal__head h3 {
+    font-family: var(--brand-font-display, var(--brand-font-primary));
+    letter-spacing: -0.01em;
+}
+
+// Prices and counters keep their width as they tick.
+.tick-chart__axis,
+.tick-chart__tag-text,
+.te-ticker,
+.te-landing__ticker,
+.mt-picker__change,
+.mt-digits__pct {
+    font-variant-numeric: tabular-nums;
 }
 
 /* --------------------------------------------- Traders Scheeme brand touches */
