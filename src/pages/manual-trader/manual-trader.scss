@@ -1,23 +1,66 @@
-// Manual Trader: Deriv Trader's layout - market tabs on top, the chart on a white
-// card, the trade panel on the right - with the site's brand accents.
-
-$up: #00a884;
-$up-soft: #e6f7f2;
-$down: #e11d48;
-$down-soft: #ffe4e6;
-$ink: #0f172a;
-$muted: #64748b;
-$field: #f2f4f7;
-$line: #e5e9f0;
+// Manual Trader, laid out and coloured as Deriv Trader: left navigation, market tabs
+// on top, the chart on a white card, the trade panel and a slim rail on the right.
+// Every colour is a variable so the Theme button can switch to Deriv's dark mode.
 
 .manual-trader {
+    // Light (Deriv Trader default)
+    --mt-page: #f2f3f4;
+    --mt-card: #ffffff;
+    --mt-field: #f2f3f4;
+    --mt-field-hover: #e6e9e9;
+    --mt-ink: #333333;
+    --mt-strong: #000000;
+    --mt-muted: #999999;
+    --mt-soft: #6e6e6e;
+    --mt-line: #e6e9e9;
+    --mt-up: #00c390;
+    --mt-up-ink: #008832;
+    --mt-up-soft: #e6f9f4;
+    --mt-down: #ff444f;
+    --mt-down-ink: #cc2e3d;
+    --mt-down-soft: #ffebec;
+    --mt-demo: #ff9c13;
+    --mt-tag: #000000;
+    --mt-tag-ink: #ffffff;
+    --mt-chart-line: #000000;
+    --mt-chart-fill: #000000;
+    --mt-grid: #f2f3f4;
+    --mt-axis: #999999;
+    --mt-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.06);
+    --mt-accent: #85acb0;
+
+    position: relative;
+    display: flex;
     width: 100%;
     height: 100%;
-    background: var(--ts-scene-light, #f2f3f4);
+    background: var(--mt-page);
+    color: var(--mt-ink);
+    font-size: 1.4rem;
     overflow: hidden;
     box-sizing: border-box;
-    color: $ink;
-    font-size: 1.4rem;
+
+    &.mt-theme-dark {
+        --mt-page: #0e0e0e;
+        --mt-card: #151717;
+        --mt-field: #242828;
+        --mt-field-hover: #323738;
+        --mt-ink: #ffffff;
+        --mt-strong: #ffffff;
+        --mt-muted: #999999;
+        --mt-soft: #c2c2c2;
+        --mt-line: #323738;
+        --mt-up-soft: rgba(0, 195, 144, 0.14);
+        --mt-down-soft: rgba(255, 68, 79, 0.14);
+        --mt-up-ink: #00c390;
+        --mt-down-ink: #ff444f;
+        --mt-tag: #ffffff;
+        --mt-tag-ink: #000000;
+        --mt-chart-line: #ffffff;
+        --mt-chart-fill: #ffffff;
+        --mt-grid: #1e2121;
+        --mt-axis: #6e6e6e;
+        --mt-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.4);
+    }
 
     * {
         box-sizing: border-box;
@@ -25,49 +68,146 @@ $line: #e5e9f0;
 
     button {
         font: inherit;
+        color: inherit;
         cursor: pointer;
     }
 
     @media (max-width: 900px) {
+        flex-direction: column;
         overflow-y: auto;
     }
 }
 
-.mt-shell {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 34rem;
-    grid-template-rows: auto auto minmax(0, 1fr);
-    grid-template-areas:
-        'top top'
-        'types types'
-        'stage panel';
-    gap: 0 1.2rem;
-    height: 100%;
-    padding: 0.8rem 1.2rem 1.2rem;
+/* -------------------------------------------------------- left navigation */
+
+.mt-side {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    width: 7.2rem;
+    padding: 1.2rem 0;
+    border-right: 1px solid var(--mt-line);
+    background: var(--mt-card);
+
+    &__logo {
+        display: flex;
+        width: 3.6rem;
+        height: 3.6rem;
+        margin-bottom: 1.6rem;
+        overflow: hidden;
+        border-radius: 0.8rem;
+        background: #0b1426;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        width: 100%;
+        padding: 0.9rem 0.2rem;
+        border: 0;
+        background: transparent;
+        color: var(--mt-ink);
+        font-size: 1.15rem;
+
+        &:hover {
+            background: var(--mt-field);
+        }
+
+        &.is-active {
+            color: var(--mt-strong);
+            font-weight: 700;
+
+            .mt-side__icon {
+                color: var(--mt-down);
+            }
+        }
+    }
+
+    &__icon {
+        position: relative;
+        display: flex;
+    }
+
+    &__badge {
+        position: absolute;
+        top: -0.6rem;
+        right: -0.9rem;
+        min-width: 1.6rem;
+        height: 1.6rem;
+        padding: 0 0.4rem;
+        border-radius: 999px;
+        background: var(--mt-down);
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.6rem;
+        text-align: center;
+    }
+
+    &__rule {
+        width: 3.2rem;
+        margin: 0.6rem 0;
+        border-top: 1px solid var(--mt-line);
+    }
 
     @media (max-width: 900px) {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: auto auto 46vh auto;
-        grid-template-areas: 'top' 'types' 'stage' 'panel';
-        gap: 0.8rem;
-        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+        padding: 0.4rem 0.4rem;
+        border-right: 0;
+        border-bottom: 1px solid var(--mt-line);
+        overflow-x: auto;
+
+        &__logo,
+        &__rule {
+            display: none;
+        }
+
+        &__item {
+            width: auto;
+            min-width: 5.6rem;
+            font-size: 1rem;
+        }
+    }
+}
+
+/* ------------------------------------------------------------- main area */
+
+.mt-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    padding: 0.8rem 0 0.8rem 1.2rem;
+
+    @media (max-width: 900px) {
         padding: 0.8rem;
     }
 }
 
-/* ------------------------------------------------------------------- top */
-
 .mt-top {
-    grid-area: top;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
     gap: 1.2rem;
     min-width: 0;
+    padding-right: 1.2rem;
 
     @media (max-width: 900px) {
         flex-direction: column-reverse;
         align-items: stretch;
+        padding-right: 0;
     }
 }
 
@@ -79,24 +219,20 @@ $line: #e5e9f0;
 
     &__add {
         display: flex;
+        flex: none;
         align-items: center;
         justify-content: center;
-        flex: none;
         width: 4.4rem;
         height: 4.4rem;
-        padding: 0;
         margin-bottom: 0.6rem;
+        padding: 0;
         border: 0;
         border-radius: 0.8rem;
-        background: #ffffff;
-        box-shadow: 0 0.2rem 0.6rem rgba(15, 23, 42, 0.08);
-        color: $ink;
+        background: var(--mt-card);
+        box-shadow: var(--mt-shadow);
+        color: var(--mt-strong);
         font-size: 2.6rem;
         line-height: 1;
-
-        &:hover:not(:disabled) {
-            color: var(--brand-purple, #7c3aed);
-        }
 
         &:disabled {
             opacity: 0.4;
@@ -120,9 +256,9 @@ $line: #e5e9f0;
 .mt-tab {
     position: relative;
     display: flex;
-    align-items: center;
     flex: none;
-    border-radius: 1rem 1rem 0 0;
+    align-items: center;
+    border-radius: 0.8rem 0.8rem 0 0;
 
     & + & {
         &::before {
@@ -131,23 +267,12 @@ $line: #e5e9f0;
             left: 0;
             top: 30%;
             height: 40%;
-            border-left: 1px solid $line;
+            border-left: 1px solid var(--mt-line);
         }
     }
 
     &.is-active {
-        background: #ffffff;
-        box-shadow: 0 -0.2rem 0.6rem rgba(15, 23, 42, 0.05);
-
-        // Brand edge on the active tab.
-        &::after {
-            content: '';
-            position: absolute;
-            inset: 0 1rem auto;
-            height: 0.3rem;
-            border-radius: 0 0 0.3rem 0.3rem;
-            background: linear-gradient(90deg, var(--brand-sky, #38bdf8), var(--brand-purple, #7c3aed), var(--brand-gold, #f0c040));
-        }
+        background: var(--mt-card);
 
         & + .mt-tab::before {
             display: none;
@@ -171,9 +296,9 @@ $line: #e5e9f0;
     }
 
     &__name {
+        color: var(--mt-strong);
         font-size: 1.4rem;
         font-weight: 700;
-        color: $ink;
         white-space: nowrap;
     }
 
@@ -181,65 +306,96 @@ $line: #e5e9f0;
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
+        color: var(--mt-soft);
         font-size: 1.2rem;
-        color: $muted;
     }
 
     &__close {
         width: 2rem;
         height: 2rem;
         margin-right: 1rem;
+        padding: 0;
         border: 0;
         border-radius: 50%;
-        background: #94a3b8;
-        color: #ffffff;
+        background: #999999;
+        color: #ffffff !important;
         font-size: 1.4rem;
         line-height: 1;
-
-        &:hover {
-            background: var(--brand-red, #e11d48);
-        }
     }
 }
 
 .mt-account {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    padding: 0 0.4rem 0.8rem;
+    align-items: center;
+    gap: 1.6rem;
+    padding-bottom: 0.8rem;
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
 
     &__type {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--mt-up-ink);
         font-size: 1.3rem;
-        color: $muted;
 
         &.is-demo {
-            color: var(--brand-gold-deep, #b8860b);
+            color: var(--mt-demo);
         }
     }
 
     &__balance {
+        color: var(--mt-strong);
         font-size: 1.6rem;
-        font-weight: 800;
-        color: $ink;
+        font-weight: 700;
+    }
+
+    &__deposit {
+        padding: 0.8rem 1.6rem;
+        border: 0;
+        border-radius: 999px;
+        background: var(--mt-down);
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+    &__login {
+        padding: 0.7rem 1.6rem;
+        border: 1px solid var(--mt-soft);
+        border-radius: 999px;
+        background: transparent;
+        font-weight: 700;
     }
 
     @media (max-width: 900px) {
-        flex-direction: row;
         justify-content: space-between;
-        align-items: baseline;
+    }
+}
+
+.mt-body {
+    display: flex;
+    flex: 1;
+    gap: 0.8rem;
+    min-height: 0;
+
+    @media (max-width: 900px) {
+        flex-direction: column;
     }
 }
 
 /* ----------------------------------------------------------------- stage */
 
 .mt-stage {
-    grid-area: stage;
     position: relative;
+    flex: 1;
     min-width: 0;
     min-height: 0;
-    border-radius: 0 1rem 1rem 1rem;
-    background: rgba(255, 255, 255, 0.94);
-    box-shadow: 0 0.4rem 1.6rem rgba(15, 23, 42, 0.06);
+    border-radius: 0 0.8rem 0.8rem 0.8rem;
+    background: var(--mt-card);
     overflow: hidden;
 
     &__error {
@@ -248,14 +404,23 @@ $line: #e5e9f0;
         justify-content: center;
         height: 100%;
         padding: 2rem;
-        color: $down;
+        color: var(--mt-down);
         text-align: center;
+    }
+
+    @media (max-width: 900px) {
+        flex: none;
+        height: 46vh;
     }
 }
 
 .tick-chart {
     position: absolute;
     inset: 0;
+
+    &.is-drawing svg {
+        cursor: crosshair;
+    }
 
     &__canvas {
         position: absolute;
@@ -273,61 +438,92 @@ $line: #e5e9f0;
         justify-content: center;
         gap: 1rem;
         height: 100%;
-        color: $muted;
+        color: var(--mt-muted);
     }
 
     &__spinner {
         width: 1.8rem;
         height: 1.8rem;
-        border: 2px solid rgba(124, 58, 237, 0.2);
-        border-top-color: var(--brand-purple, #7c3aed);
+        border: 2px solid var(--mt-line);
+        border-top-color: var(--mt-ink);
         border-radius: 50%;
         animation: mt-spin 0.8s linear infinite;
     }
 
+    &__fill-top {
+        stop-color: var(--mt-chart-fill);
+        stop-opacity: 0.12;
+    }
+
+    &__fill-bottom {
+        stop-color: var(--mt-chart-fill);
+        stop-opacity: 0;
+    }
+
     &__grid {
-        stroke: #eef1f5;
+        stroke: var(--mt-grid);
         stroke-width: 1;
     }
 
     &__axis {
-        fill: #a3acb9;
+        fill: var(--mt-axis);
         font-size: 1.1rem;
         font-variant-numeric: tabular-nums;
     }
 
     &__line {
         fill: none;
-        stroke: #1e293b;
+        stroke: var(--mt-chart-line);
         stroke-width: 1.8;
         stroke-linejoin: round;
     }
 
+    &__sma {
+        fill: none;
+        stroke: #ff9c13;
+        stroke-width: 1.6;
+        stroke-dasharray: 4 3;
+    }
+
     &__spot-line {
-        stroke: #1e293b;
+        stroke: var(--mt-chart-line);
         stroke-width: 1;
     }
 
     &__dot {
-        fill: #0f172a;
+        fill: var(--mt-chart-line);
     }
 
     &__pulse {
-        fill: rgba(15, 23, 42, 0.15);
+        fill: var(--mt-chart-line);
+        fill-opacity: 0.15;
         transform-box: fill-box;
         transform-origin: center;
         animation: mt-pulse 1.4s ease-out infinite;
     }
 
     &__tag {
-        fill: #0f172a;
+        fill: var(--mt-tag);
     }
 
     &__tag-text {
-        fill: #ffffff;
+        fill: var(--mt-tag-ink);
         font-size: 1.2rem;
         font-weight: 700;
         font-variant-numeric: tabular-nums;
+    }
+
+    &__drawn {
+        line {
+            stroke: #2196f3;
+            stroke-width: 1.2;
+        }
+
+        text {
+            fill: #2196f3;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
     }
 
     &__mark {
@@ -343,31 +539,31 @@ $line: #e5e9f0;
 
         &--barrier {
             line {
-                stroke: var(--brand-purple, #7c3aed);
+                stroke: var(--mt-soft);
             }
 
             text {
-                fill: var(--brand-purple, #7c3aed);
+                fill: var(--mt-soft);
             }
         }
 
         &--entry-up {
             line {
-                stroke: $up;
+                stroke: var(--mt-up);
             }
 
             text {
-                fill: $up;
+                fill: var(--mt-up);
             }
         }
 
         &--entry-down {
             line {
-                stroke: $down;
+                stroke: var(--mt-down);
             }
 
             text {
-                fill: $down;
+                fill: var(--mt-down);
             }
         }
     }
@@ -376,7 +572,7 @@ $line: #e5e9f0;
     &__tools {
         position: absolute;
         left: 1.6rem;
-        bottom: 6.4rem;
+        bottom: 1.6rem;
         display: flex;
         flex-direction: column;
         gap: 1rem;
@@ -389,14 +585,19 @@ $line: #e5e9f0;
         justify-content: center;
         width: 4rem;
         height: 4rem;
+        padding: 0;
         border: 0;
         border-radius: 50%;
-        background: $field;
-        color: #475569;
+        background: var(--mt-field);
+        color: var(--mt-ink) !important;
 
-        &:hover,
+        &:hover {
+            background: var(--mt-field-hover);
+        }
+
         &.is-active {
-            color: var(--brand-purple, #7c3aed);
+            background: var(--mt-ink);
+            color: var(--mt-card) !important;
         }
     }
 
@@ -406,10 +607,34 @@ $line: #e5e9f0;
         right: -0.4rem;
         padding: 0.1rem 0.4rem;
         border-radius: 0.4rem;
-        background: #334155;
+        background: #333333;
         color: #ffffff;
         font-size: 0.9rem;
         font-weight: 700;
+    }
+
+    &__hint {
+        position: absolute;
+        left: 7.2rem;
+        bottom: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 999px;
+        background: var(--mt-ink);
+        color: var(--mt-card);
+        font-size: 1.2rem;
+
+        button {
+            padding: 0.2rem 0.8rem;
+            border: 0;
+            border-radius: 999px;
+            background: var(--mt-card);
+            color: var(--mt-ink) !important;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
     }
 
     &__zoom {
@@ -426,17 +651,72 @@ $line: #e5e9f0;
             justify-content: center;
             width: 3.2rem;
             height: 3.2rem;
+            padding: 0;
             border: 0;
             border-radius: 50%;
-            background: $field;
-            color: #475569;
+            background: var(--mt-field);
+            color: var(--mt-ink) !important;
             font-size: 1.8rem;
             line-height: 1;
 
             &:hover {
-                color: var(--brand-purple, #7c3aed);
+                background: var(--mt-field-hover);
             }
         }
+    }
+}
+
+// Open contracts on the chart, bottom left, as Deriv Trader shows them.
+.mt-cards {
+    position: absolute;
+    top: 1.2rem;
+    left: 1.2rem;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.mt-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1rem 0.8rem 1.2rem;
+    border-left: 0.4rem solid var(--mt-up);
+    border-radius: 0.8rem;
+    background: var(--mt-card);
+    box-shadow: 0 0.4rem 1.6rem rgba(0, 0, 0, 0.16);
+    font-size: 1.25rem;
+
+    &--down {
+        border-left-color: var(--mt-down);
+    }
+
+    &__type {
+        font-weight: 700;
+        color: var(--mt-strong);
+    }
+
+    &__pnl {
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+
+        &.is-up {
+            color: var(--mt-up-ink);
+        }
+
+        &.is-down {
+            color: var(--mt-down-ink);
+        }
+    }
+
+    &__close {
+        padding: 0.3rem 1rem;
+        border: 1px solid var(--mt-ink);
+        border-radius: 999px;
+        background: transparent;
+        font-size: 1.15rem;
+        font-weight: 700;
     }
 }
 
@@ -452,8 +732,8 @@ $line: #e5e9f0;
     width: min(92rem, 100%);
     height: min(56rem, 100%);
     border-radius: 0 1.6rem 1.6rem 1.6rem;
-    background: #ffffff;
-    box-shadow: 0 1.6rem 4.8rem rgba(15, 23, 42, 0.22);
+    background: var(--mt-card);
+    box-shadow: 0 1.6rem 4.8rem rgba(0, 0, 0, 0.22);
     overflow: hidden;
     animation: mt-pop 140ms ease-out;
 
@@ -471,7 +751,7 @@ $line: #e5e9f0;
 
     &__types {
         padding: 1.2rem 0;
-        border-right: 1px solid $line;
+        border-right: 1px solid var(--mt-line);
         overflow-y: auto;
 
         @media (max-width: 700px) {
@@ -479,7 +759,7 @@ $line: #e5e9f0;
             gap: 0.4rem;
             padding: 0.8rem;
             border-right: 0;
-            border-bottom: 1px solid $line;
+            border-bottom: 1px solid var(--mt-line);
             overflow-x: auto;
 
             > div {
@@ -490,9 +770,9 @@ $line: #e5e9f0;
 
     &__group {
         padding: 1.2rem 2.4rem 0.6rem;
+        color: var(--mt-strong);
         font-size: 1.4rem;
         font-weight: 800;
-        color: $ink;
 
         @media (max-width: 700px) {
             display: none;
@@ -501,7 +781,7 @@ $line: #e5e9f0;
 
     &__rule {
         margin: 0.8rem 0 0;
-        border-top: 1px solid $line;
+        border-top: 1px solid var(--mt-line);
 
         @media (max-width: 700px) {
             display: none;
@@ -517,18 +797,18 @@ $line: #e5e9f0;
         border: 0;
         border-left: 0.3rem solid transparent;
         background: transparent;
-        color: #334155;
+        color: var(--mt-ink);
         font-size: 1.5rem;
         text-align: start;
 
         &:hover {
-            background: $field;
+            background: var(--mt-field);
         }
 
         &.is-active {
-            border-left-color: var(--brand-red, #e11d48);
+            border-left-color: var(--mt-down);
+            color: var(--mt-strong);
             font-weight: 800;
-            color: $ink;
         }
 
         @media (max-width: 700px) {
@@ -539,8 +819,8 @@ $line: #e5e9f0;
             white-space: nowrap;
 
             &.is-active {
-                background: $ink;
-                color: #ffffff;
+                background: var(--mt-strong);
+                color: var(--mt-card);
             }
         }
     }
@@ -562,15 +842,15 @@ $line: #e5e9f0;
         gap: 1rem;
         padding: 0 1.2rem;
         border-radius: 0.8rem;
-        background: $field;
-        color: #94a3b8;
+        background: var(--mt-field);
+        color: var(--mt-muted);
 
         input {
             flex: 1;
             height: 4rem;
             border: 0;
             background: transparent;
-            color: $ink;
+            color: var(--mt-ink);
             font-size: 1.4rem;
             outline: none;
         }
@@ -585,16 +865,16 @@ $line: #e5e9f0;
 
     &__chip {
         padding: 0.7rem 1.4rem;
-        border: 1px solid $line;
+        border: 1px solid var(--mt-line);
         border-radius: 999px;
-        background: #ffffff;
-        color: #334155;
+        background: var(--mt-card);
+        color: var(--mt-ink);
         font-size: 1.3rem;
 
         &.is-active {
-            border-color: $ink;
-            box-shadow: inset 0 0 0 1px $ink;
-            color: $ink;
+            border-color: var(--mt-strong);
+            box-shadow: inset 0 0 0 1px var(--mt-strong);
+            color: var(--mt-strong);
             font-weight: 700;
         }
     }
@@ -608,7 +888,7 @@ $line: #e5e9f0;
 
     &__empty {
         padding: 3rem 1rem;
-        color: $muted;
+        color: var(--mt-muted);
         text-align: center;
     }
 
@@ -620,9 +900,9 @@ $line: #e5e9f0;
         display: flex;
         justify-content: space-between;
         padding: 0 0.4rem 0.8rem;
+        color: var(--mt-soft);
         font-size: 1.3rem;
         font-weight: 700;
-        color: $muted;
     }
 
     &__section-note {
@@ -636,16 +916,16 @@ $line: #e5e9f0;
     &__row {
         position: relative;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         border-radius: 0.8rem;
-        flex-wrap: wrap;
 
         &:hover {
-            background: #f8fafc;
+            background: var(--mt-field);
         }
 
         &.is-current {
-            background: #f5f3ff;
+            background: var(--mt-field);
         }
 
         &.is-disabled {
@@ -656,9 +936,9 @@ $line: #e5e9f0;
     &__pick {
         display: grid;
         grid-template-columns: auto minmax(0, 1fr) 10rem 7.6rem;
+        flex: 1;
         align-items: center;
         gap: 1.2rem;
-        flex: 1;
         min-width: 0;
         padding: 1rem 0.4rem;
         border: 0;
@@ -680,7 +960,7 @@ $line: #e5e9f0;
 
     &__name {
         overflow: hidden;
-        color: #334155;
+        color: var(--mt-ink);
         font-size: 1.45rem;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -690,8 +970,8 @@ $line: #e5e9f0;
         margin-left: 0.8rem;
         padding: 0.1rem 0.6rem;
         border-radius: 0.4rem;
-        background: #f1f5f9;
-        color: $muted;
+        background: var(--mt-field);
+        color: var(--mt-muted);
         font-size: 1.1rem;
         font-style: normal;
     }
@@ -708,27 +988,27 @@ $line: #e5e9f0;
 
         &--up {
             polyline {
-                stroke: $up;
+                stroke: var(--mt-up);
             }
 
             polygon {
-                fill: rgba(0, 168, 132, 0.1);
+                fill: var(--mt-up-soft);
             }
         }
 
         &--down {
             polyline {
-                stroke: $down;
+                stroke: var(--mt-down);
             }
 
             polygon {
-                fill: rgba(225, 29, 72, 0.08);
+                fill: var(--mt-down-soft);
             }
         }
 
         &--empty {
             display: block;
-            border-bottom: 1px dashed $line;
+            border-bottom: 1px dashed var(--mt-line);
         }
     }
 
@@ -736,19 +1016,19 @@ $line: #e5e9f0;
         justify-self: end;
         padding: 0.3rem 0.6rem;
         border-radius: 0.4rem;
-        color: $muted;
+        color: var(--mt-muted);
         font-size: 1.25rem;
         font-weight: 700;
         font-variant-numeric: tabular-nums;
 
         &.is-up {
-            background: $up-soft;
-            color: $up;
+            background: var(--mt-up-soft);
+            color: var(--mt-up-ink);
         }
 
         &.is-down {
-            background: $down-soft;
-            color: $down;
+            background: var(--mt-down-soft);
+            color: var(--mt-down-ink);
         }
     }
 
@@ -758,13 +1038,14 @@ $line: #e5e9f0;
         justify-content: center;
         width: 3.6rem;
         height: 3.6rem;
+        padding: 0;
         border: 0;
         border-radius: 50%;
         background: transparent;
-        color: #64748b;
+        color: var(--mt-soft) !important;
 
         &:hover {
-            background: $field;
+            background: var(--mt-field-hover);
         }
 
         svg path {
@@ -773,10 +1054,10 @@ $line: #e5e9f0;
     }
 
     &__star.is-on {
-        color: var(--brand-gold-deep, #b8860b);
+        color: var(--mt-demo) !important;
 
         svg path {
-            fill: var(--brand-gold, #f0c040);
+            fill: var(--mt-demo);
         }
     }
 
@@ -785,8 +1066,8 @@ $line: #e5e9f0;
         margin: 0 0.8rem 1rem 5.6rem;
         padding: 0.8rem 1.2rem;
         border-radius: 0.8rem;
-        background: #f5f3ff;
-        color: #4c1d95;
+        background: var(--mt-field);
+        color: var(--mt-ink);
         font-size: 1.25rem;
     }
 }
@@ -805,7 +1086,7 @@ $line: #e5e9f0;
         left: 0;
         padding: 0 0.3rem;
         border-radius: 0.3rem;
-        background: #1e293b;
+        background: #333333;
         color: #ffffff;
         font-size: 0.85rem;
         font-weight: 800;
@@ -823,7 +1104,7 @@ $line: #e5e9f0;
         height: 1.4rem;
         padding: 0 0.2rem;
         border-radius: 999px;
-        background: var(--brand-red, #e11d48);
+        background: #ff444f;
         color: #ffffff;
         font-size: 0.75rem;
         font-weight: 800;
@@ -835,38 +1116,29 @@ $line: #e5e9f0;
         bottom: 0.2rem;
 
         rect {
-            fill: var(--brand-sky-deep, #0284c7);
+            fill: #4bb4b3;
         }
 
         rect:nth-child(2) {
-            fill: var(--brand-purple, #7c3aed);
+            fill: #ff444f;
         }
 
         rect:nth-child(3) {
-            fill: $up;
+            fill: #4bb4b3;
         }
-    }
-
-    &--forex &__main,
-    &--cryptocurrency &__main {
-        background: var(--brand-purple-deep, #5b21b6);
-    }
-
-    &--commodities &__main {
-        background: var(--brand-gold-deep, #b8860b);
     }
 }
 
 /* ----------------------------------------------------------------- panel */
 
 .mt-panel {
-    grid-area: panel;
     display: flex;
+    flex: none;
     flex-direction: column;
+    width: 30.4rem;
     min-height: 0;
-    border-radius: 1rem;
-    background: #ffffff;
-    box-shadow: 0 0.4rem 1.6rem rgba(15, 23, 42, 0.06);
+    border-radius: 0.8rem;
+    background: var(--mt-card);
     overflow: hidden;
 
     &__scroll {
@@ -876,7 +1148,7 @@ $line: #e5e9f0;
         overflow-y: auto;
 
         > * + * {
-            margin-top: 1rem;
+            margin-top: 0.8rem;
         }
     }
 
@@ -884,14 +1156,14 @@ $line: #e5e9f0;
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        padding: 0.4rem 0;
+        padding: 0.4rem 0 0.8rem;
         border: 0;
         background: transparent;
-        color: $ink;
-        font-size: 1.45rem;
+        color: var(--mt-ink) !important;
+        font-size: 1.4rem;
 
         &:hover {
-            color: var(--brand-purple, #7c3aed);
+            text-decoration: underline;
         }
     }
 
@@ -900,51 +1172,53 @@ $line: #e5e9f0;
         grid-template-columns: 1fr 1fr;
         padding: 0.4rem;
         border-radius: 999px;
-        background: $field;
+        background: var(--mt-field);
     }
 
     &__side {
-        padding: 1.1rem;
+        padding: 1rem;
         border: 0;
         border-radius: 999px;
         background: transparent;
-        color: #475569;
-        font-size: 1.5rem;
+        color: var(--mt-soft) !important;
+        font-size: 1.4rem;
 
         &.is-active {
-            background: #ffffff;
-            box-shadow: 0 0.2rem 0.6rem rgba(15, 23, 42, 0.1);
-            font-weight: 800;
+            background: var(--mt-card);
+            box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.12);
+            font-weight: 700;
         }
 
         &--up.is-active {
-            color: $up;
+            color: var(--mt-up) !important;
         }
 
         &--down.is-active {
-            color: $down;
+            color: var(--mt-down) !important;
         }
     }
 
     &__error {
         margin: 0.6rem 0 0;
-        color: $down;
+        color: var(--mt-down);
         font-size: 1.25rem;
         line-height: 1.4;
     }
 
     &__hint {
         margin: 0.6rem 0 0;
-        color: $muted;
+        color: var(--mt-muted);
         font-size: 1.25rem;
         line-height: 1.4;
     }
 
     &__clock {
         display: flex;
+        align-items: center;
         justify-content: space-between;
         padding: 1.2rem 1.6rem;
-        border-top: 1px solid $line;
+        border-top: 1px solid var(--mt-line);
+        color: var(--mt-strong);
         font-size: 1.35rem;
         font-variant-numeric: tabular-nums;
     }
@@ -955,36 +1229,52 @@ $line: #e5e9f0;
         height: 0.9rem;
         margin-right: 0.6rem;
         border-radius: 50%;
-        background: var(--brand-sky-deep, #0284c7);
-        animation: mt-blink 2s ease-in-out infinite;
+        background: #4bb4b3;
+    }
+
+    &__clock-right {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &__fullscreen {
+        display: flex;
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+
+    @media (max-width: 900px) {
+        width: 100%;
     }
 }
 
 .mt-field {
     position: relative;
     display: block;
-    padding: 1rem 1.4rem;
+    padding: 0.9rem 1.4rem;
     border-radius: 0.8rem;
-    background: $field;
+    background: var(--mt-field);
 
     &__label {
         display: block;
-        margin-bottom: 0.4rem;
-        color: $muted;
-        font-size: 1.25rem;
+        margin-bottom: 0.2rem;
+        color: var(--mt-soft);
+        font-size: 1.2rem;
     }
 
     &__value {
-        font-size: 1.55rem;
-        color: $ink;
+        color: var(--mt-ink);
+        font-size: 1.6rem;
     }
 
     &__input {
         width: 100%;
         border: 0;
         background: transparent;
-        color: $ink;
-        font-size: 1.55rem;
+        color: var(--mt-ink);
+        font-size: 1.6rem;
         outline: none;
 
         &--small {
@@ -1000,7 +1290,7 @@ $line: #e5e9f0;
     &__open {
         display: block;
         width: 100%;
-        padding: 1rem 1.4rem;
+        padding: 0.9rem 1.4rem;
         border: 0;
         background: transparent;
         text-align: start;
@@ -1017,6 +1307,12 @@ $line: #e5e9f0;
     }
 }
 
+.mt-field-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
 .mt-duration {
     padding: 0 1.2rem 1.2rem;
 
@@ -1028,14 +1324,13 @@ $line: #e5e9f0;
 
         button {
             padding: 0.5rem 1rem;
-            border: 1px solid $line;
+            border: 1px solid var(--mt-line);
             border-radius: 999px;
-            background: #ffffff;
+            background: var(--mt-card);
             font-size: 1.2rem;
 
             &.is-active {
-                border-color: var(--brand-purple, #7c3aed);
-                color: var(--brand-purple, #7c3aed);
+                border-color: var(--mt-strong);
                 font-weight: 700;
             }
         }
@@ -1050,11 +1345,11 @@ $line: #e5e9f0;
             padding: 0.7rem 0;
             border: 0;
             border-radius: 0.6rem;
-            background: #ffffff;
+            background: var(--mt-card);
 
             &.is-active {
-                background: $ink;
-                color: #ffffff;
+                background: var(--mt-strong);
+                color: var(--mt-card) !important;
                 font-weight: 700;
             }
         }
@@ -1064,16 +1359,20 @@ $line: #e5e9f0;
         width: 100%;
         height: 3.6rem;
         padding: 0 1rem;
-        border: 1px solid $line;
+        border: 1px solid var(--mt-line);
         border-radius: 0.6rem;
+        background: var(--mt-card);
+        color: var(--mt-ink);
         font-size: 1.5rem;
     }
 }
 
+// Last digit prediction: white boxes with the share of each digit under them.
 .mt-digits {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 0.8rem 0.6rem;
+    margin-top: 0.6rem;
 
     &__cell {
         display: flex;
@@ -1084,19 +1383,23 @@ $line: #e5e9f0;
 
     &__digit {
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
-        max-width: 4.6rem;
+        max-width: 4.4rem;
         height: 3.6rem;
-        border: 1px solid $line;
+        padding: 0;
+        border: 1px solid var(--mt-line);
         border-radius: 0.8rem;
-        background: #ffffff;
-        color: $ink;
+        background: var(--mt-card);
+        color: var(--mt-ink) !important;
         font-size: 1.6rem;
 
         &.is-selected {
-            border-color: $ink;
-            background: $ink;
-            color: #ffffff;
+            border-color: var(--mt-strong);
+            background: var(--mt-strong);
+            color: var(--mt-card) !important;
             font-weight: 700;
         }
 
@@ -1107,30 +1410,28 @@ $line: #e5e9f0;
             left: 50%;
             bottom: -0.6rem;
             border: 0.5rem solid transparent;
-            border-top-color: var(--brand-gold, #f0c040);
+            border-top-color: var(--mt-down);
             border-bottom: 0;
             transform: translateX(-50%);
         }
 
         &:disabled {
-            color: #cbd5e1;
+            color: var(--mt-line) !important;
             cursor: default;
         }
     }
 
     &__pct {
-        color: $muted;
+        color: var(--mt-muted);
         font-size: 1.15rem;
         font-variant-numeric: tabular-nums;
 
         &.is-high {
-            color: $up;
-            font-weight: 700;
+            color: var(--mt-up-ink);
         }
 
         &.is-low {
-            color: $down;
-            font-weight: 700;
+            color: var(--mt-down-ink);
         }
     }
 }
@@ -1142,47 +1443,52 @@ $line: #e5e9f0;
 
     button {
         padding: 0.6rem 1.1rem;
-        border: 1px solid $line;
+        border: 1px solid var(--mt-line);
         border-radius: 999px;
-        background: #ffffff;
+        background: var(--mt-card);
         font-size: 1.3rem;
 
         &.is-active {
-            border-color: $ink;
-            background: $ink;
-            color: #ffffff;
+            border-color: var(--mt-strong);
+            background: var(--mt-strong);
+            color: var(--mt-card) !important;
             font-weight: 700;
+        }
+    }
+
+    &--ticks {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+
+        button {
+            padding: 0.7rem 0;
         }
     }
 }
 
+// Stake reads "$2", as on Deriv Trader.
 .mt-stake {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.2rem;
+    color: var(--mt-ink);
+    font-size: 1.6rem;
 
     input {
         flex: 1;
         min-width: 0;
+        padding: 0;
         border: 0;
         background: transparent;
-        font-size: 1.55rem;
-        outline: none;
-    }
-
-    &__currency {
-        color: $muted;
-        font-size: 1.3rem;
-    }
-
-    button {
-        width: 2.8rem;
-        height: 2.8rem;
-        border: 0;
-        border-radius: 50%;
-        background: #ffffff;
+        color: var(--mt-ink);
         font-size: 1.6rem;
-        line-height: 1;
+        outline: none;
+        -moz-appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
     }
 }
 
@@ -1191,10 +1497,10 @@ $line: #e5e9f0;
     align-items: center;
     justify-content: space-between;
     padding: 0.4rem 0.4rem 0.4rem 0.8rem;
-    color: #334155;
+    color: var(--mt-ink);
 
     span {
-        border-bottom: 1px dotted #94a3b8;
+        border-bottom: 1px dotted var(--mt-soft);
     }
 }
 
@@ -1202,9 +1508,10 @@ $line: #e5e9f0;
     position: relative;
     width: 4.4rem;
     height: 2.6rem;
+    padding: 0;
     border: 0;
     border-radius: 999px;
-    background: #cbd5e1;
+    background: var(--mt-field-hover);
     transition: background 160ms ease;
 
     span {
@@ -1215,12 +1522,12 @@ $line: #e5e9f0;
         height: 2rem;
         border-radius: 50%;
         background: #ffffff;
-        box-shadow: 0 0.1rem 0.3rem rgba(15, 23, 42, 0.25);
+        box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.25);
         transition: transform 160ms ease;
     }
 
     &.is-on {
-        background: var(--brand-purple, #7c3aed);
+        background: var(--mt-up);
 
         span {
             transform: translateX(1.8rem);
@@ -1228,33 +1535,29 @@ $line: #e5e9f0;
     }
 }
 
+// The Buy button: green for up sides, red for down sides, payout underneath.
 .mt-buy {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     margin-top: 1.4rem !important;
-    padding: 1.1rem;
+    padding: 1rem;
     border: 0;
     border-radius: 999px;
-    color: #ffffff;
-    transition:
-        transform 120ms ease,
-        filter 120ms ease;
+    color: #ffffff !important;
+    transition: filter 120ms ease;
 
     &--up {
-        background: linear-gradient(180deg, #10c49a 0%, $up 100%);
-        box-shadow: 0 0.6rem 1.6rem rgba(0, 168, 132, 0.3);
+        background: var(--mt-up);
     }
 
     &--down {
-        background: linear-gradient(180deg, #f43f5e 0%, $down 100%);
-        box-shadow: 0 0.6rem 1.6rem rgba(225, 29, 72, 0.28);
+        background: var(--mt-down);
     }
 
     &:hover:not(:disabled) {
-        transform: translateY(-1px);
-        filter: brightness(1.05);
+        filter: brightness(1.06);
     }
 
     &:disabled {
@@ -1263,38 +1566,111 @@ $line: #e5e9f0;
     }
 
     &__label {
-        font-size: 1.7rem;
-        font-weight: 800;
+        font-size: 1.6rem;
+        font-weight: 700;
     }
 
     &__caption {
-        font-size: 1.25rem;
-        opacity: 0.95;
+        font-size: 1.2rem;
     }
 }
 
-.mt-positions {
-    margin-top: 1.6rem !important;
-    padding-top: 1.2rem;
-    border-top: 1px solid $line;
+/* ------------------------------------------------------------------- rail */
+
+.mt-rail {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 4.8rem;
+    padding-top: 0.8rem;
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 4.8rem;
+        height: 4.4rem;
+        padding: 0;
+        border: 0;
+        border-radius: 0.8rem 0 0 0.8rem;
+        background: transparent;
+        color: var(--mt-ink) !important;
+
+        &:hover {
+            background: var(--mt-field-hover);
+        }
+
+        &.is-active {
+            background: var(--mt-card);
+        }
+    }
+
+    @media (max-width: 900px) {
+        display: none;
+    }
+}
+
+/* ------------------------------------------------------- positions drawer */
+
+.mt-drawer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 7.2rem;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    width: min(36rem, calc(100% - 7.2rem));
+    border-right: 1px solid var(--mt-line);
+    background: var(--mt-card);
+    box-shadow: 0.8rem 0 2.4rem rgba(0, 0, 0, 0.12);
+    animation: mt-slide 160ms ease-out;
 
     &__head {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.8rem;
-        font-weight: 800;
+        padding: 1.6rem;
+        border-bottom: 1px solid var(--mt-line);
 
-        span {
-            color: $muted;
-            font-weight: 400;
+        h3 {
+            margin: 0;
+            color: var(--mt-strong);
+            font-size: 1.8rem;
         }
+
+        button {
+            border: 0;
+            background: transparent;
+            color: var(--mt-soft) !important;
+            font-size: 2.4rem;
+            line-height: 1;
+        }
+    }
+
+    .mt-positions {
+        flex: 1;
+        padding: 1.2rem;
+        overflow-y: auto;
+    }
+
+    .mt-positions__empty {
+        padding: 2.4rem 1.6rem;
+        color: var(--mt-muted);
+        text-align: center;
+    }
+
+    @media (max-width: 900px) {
+        left: 0;
+        width: 100%;
     }
 }
 
 .mt-position {
     padding: 1rem 1.2rem;
     border-radius: 0.8rem;
-    background: $field;
+    background: var(--mt-field);
     font-size: 1.25rem;
 
     & + & {
@@ -1302,11 +1678,11 @@ $line: #e5e9f0;
     }
 
     &--won {
-        background: $up-soft;
+        background: var(--mt-up-soft);
     }
 
     &--lost {
-        background: $down-soft;
+        background: var(--mt-down-soft);
     }
 
     &__top,
@@ -1321,12 +1697,12 @@ $line: #e5e9f0;
         margin-top: 0.6rem;
 
         .is-up {
-            color: $up;
+            color: var(--mt-up-ink);
             font-weight: 700;
         }
 
         .is-down {
-            color: $down;
+            color: var(--mt-down-ink);
             font-weight: 700;
         }
     }
@@ -1335,24 +1711,24 @@ $line: #e5e9f0;
         font-weight: 800;
 
         &--up {
-            color: $up;
+            color: var(--mt-up-ink);
         }
 
         &--down {
-            color: $down;
+            color: var(--mt-down-ink);
         }
     }
 
     &__market {
-        color: $muted;
+        color: var(--mt-soft);
         text-align: right;
     }
 
     &__close {
         padding: 0.4rem 1.2rem;
-        border: 1px solid $ink;
+        border: 1px solid var(--mt-ink);
         border-radius: 999px;
-        background: #ffffff;
+        background: transparent;
         font-weight: 700;
 
         &:disabled {
@@ -1364,15 +1740,15 @@ $line: #e5e9f0;
         font-weight: 700;
 
         &--open {
-            color: var(--brand-sky-deep, #0284c7);
+            color: var(--mt-soft);
         }
 
         &--won {
-            color: $up;
+            color: var(--mt-up-ink);
         }
 
         &--lost {
-            color: $down;
+            color: var(--mt-down-ink);
         }
     }
 }
@@ -1389,23 +1765,23 @@ $line: #e5e9f0;
     gap: 1rem;
     max-width: min(56rem, 90%);
     padding: 1rem 1.2rem 1rem 1.6rem;
-    border-left: 0.4rem solid $up;
+    border-left: 0.4rem solid var(--mt-up);
     border-radius: 0.8rem;
-    background: #0f172a;
+    background: #333333;
     color: #ffffff;
     font-size: 1.3rem;
-    box-shadow: 0 0.8rem 2.4rem rgba(15, 23, 42, 0.3);
+    box-shadow: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.3);
     transform: translateX(-50%);
-    animation: mt-pop 160ms ease-out;
+    animation: mt-toast-pop 160ms ease-out;
 
     &.is-error {
-        border-left-color: $down;
+        border-left-color: var(--mt-down);
     }
 
     button {
         border: 0;
         background: transparent;
-        color: #94a3b8;
+        color: #999999 !important;
         font-size: 1.8rem;
     }
 }
@@ -1423,7 +1799,7 @@ $line: #e5e9f0;
         position: absolute;
         inset: 0;
         border: 0;
-        background: rgba(15, 23, 42, 0.55);
+        background: rgba(0, 0, 0, 0.55);
     }
 
     &__card {
@@ -1431,8 +1807,9 @@ $line: #e5e9f0;
         width: min(48rem, 100%);
         padding: 2.4rem;
         border-radius: 1.6rem;
-        background: #ffffff;
-        box-shadow: 0 2.4rem 6rem rgba(15, 23, 42, 0.35);
+        background: var(--mt-card);
+        color: var(--mt-ink);
+        box-shadow: 0 2.4rem 6rem rgba(0, 0, 0, 0.35);
 
         ul {
             margin: 0;
@@ -1453,13 +1830,14 @@ $line: #e5e9f0;
 
         h3 {
             margin: 0;
+            color: var(--mt-strong);
             font-size: 2rem;
         }
 
         button {
             border: 0;
             background: transparent;
-            color: $muted;
+            color: var(--mt-soft) !important;
             font-size: 2.4rem;
         }
     }
@@ -1468,8 +1846,7 @@ $line: #e5e9f0;
         margin: 1.6rem 0 0;
         padding: 1.2rem;
         border-radius: 0.8rem;
-        background: #f5f3ff;
-        color: #4c1d95;
+        background: var(--mt-field);
         font-size: 1.3rem;
     }
 }
@@ -1492,22 +1869,11 @@ $line: #e5e9f0;
     }
 }
 
-@keyframes mt-blink {
-    50% {
-        opacity: 0.35;
-    }
-}
-
 @keyframes mt-pop {
     from {
         opacity: 0;
         transform: translateY(-0.4rem);
     }
-}
-
-// .mt-toast keeps its horizontal centring through the pop-in.
-.mt-toast {
-    animation-name: mt-toast-pop;
 }
 
 @keyframes mt-toast-pop {
@@ -1517,93 +1883,15 @@ $line: #e5e9f0;
     }
 }
 
+@keyframes mt-slide {
+    from {
+        opacity: 0;
+        transform: translateX(-1.2rem);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .tick-chart__pulse,
-    .mt-panel__clock-dot {
+    .tick-chart__pulse {
         animation: none;
-    }
-}
-
-/* ------------------------------------------------------- trade-type bar */
-
-// Every trade type one tap away, as on Deriv Trader. Scrolls sideways when narrow.
-.mt-types {
-    grid-area: types;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-width: 0;
-    margin-bottom: 0.8rem;
-    padding: 0.6rem;
-    border-radius: 1.2rem;
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 0.2rem 0.8rem rgba(15, 23, 42, 0.06);
-    overflow-x: auto;
-    scrollbar-width: thin;
-
-    &__sep {
-        flex: none;
-        width: 1px;
-        height: 2.4rem;
-        margin: 0 0.4rem;
-        background: $line;
-    }
-
-    &__chip {
-        display: inline-flex;
-        flex: none;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.8rem 1.4rem;
-        border: 1px solid $line;
-        border-radius: 999px;
-        background: #ffffff;
-        color: #334155;
-        font-size: 1.3rem;
-        font-weight: 600;
-        white-space: nowrap;
-        transition:
-            background 140ms ease,
-            color 140ms ease,
-            border-color 140ms ease;
-
-        &:hover {
-            border-color: var(--brand-purple, #7c3aed);
-            color: var(--brand-purple, #7c3aed);
-        }
-
-        &.is-active {
-            border-color: transparent;
-            background: linear-gradient(120deg, var(--brand-sky-deep, #0284c7), var(--brand-purple, #7c3aed));
-            color: #ffffff;
-            box-shadow: 0 0.4rem 1.2rem rgba(124, 58, 237, 0.3);
-        }
-
-        // Not offered on the current market: still clickable, it opens the picker.
-        &.is-off:not(.is-active) {
-            color: #94a3b8;
-            border-style: dashed;
-        }
-    }
-
-    &__hot {
-        font-size: 1.1rem;
-    }
-}
-
-/* -------------------------------------------- two barriers, tick choice */
-
-.mt-field-pair {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8rem;
-}
-
-.mt-chips--ticks {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-
-    button {
-        padding: 0.7rem 0;
     }
 }

@@ -2,7 +2,8 @@
  * The Deriv Trader trade panel: side toggle, last-digit prediction with live
  * statistics, duration, barrier / growth rate / multiplier / payout per point /
  * strike as the trade type needs, stake, take profit and stop loss, Allow equals,
- * and the Buy button with the live payout. Open positions sit underneath.
+ * and the Buy button with the live payout. Open positions live in their own
+ * drawer (PositionsList), as on Deriv Trader.
  */
 import { useEffect, useRef, useState } from 'react';
 
@@ -52,14 +53,21 @@ type TProps = {
     trade_hint: string;
     buying: boolean;
     onBuy: () => void;
-    positions: TPosition[];
-    onSell: (contract_id: number) => void;
     onHowTo: () => void;
+    onFullscreen: () => void;
     now: number;
 };
 
-const money = (value: number | undefined, currency: string) =>
-    value === undefined || Number.isNaN(Number(value)) ? '—' : `${Number(value).toFixed(2)} ${currency}`;
+const SYMBOLS: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', AUD: 'A$', JPY: '¥' };
+
+/** "$3.80" for symbol currencies, "3.80 BTC" otherwise - as Deriv Trader writes amounts. */
+export const money = (value: number | undefined, currency: string) => {
+    if (value === undefined || Number.isNaN(Number(value))) return '—';
+    const amount = Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const symbol = SYMBOLS[currency];
+    if (!symbol) return `${amount} ${currency}`;
+    return Number(value) < 0 ? `-${symbol}${amount.replace('-', '')}` : `${symbol}${amount}`;
+};
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -131,9 +139,6 @@ const TradePanel = (props: TProps) => {
     } else if (proposal.payout !== undefined) {
         caption = `Payout ${money(proposal.payout, currency)}`;
     }
-
-    const open_positions = props.positions.filter(p => p.status === 'open');
-    const closed_positions = props.positions.filter(p => p.status !== 'open').slice(0, 6);
 
     return (
         <aside className='mt-panel'>
@@ -379,16 +384,10 @@ const TradePanel = (props: TProps) => {
                     </div>
                 )}
 
-                <div className='mt-field'>
+                <label className='mt-field'>
                     <span className='mt-field__label'>Stake</span>
-                    <div className='mt-stake'>
-                        <button
-                            type='button'
-                            aria-label='Decrease stake'
-                            onClick={() => setForm({ stake: Math.max(0.35, Number((form.stake - 1).toFixed(2))) })}
-                        >
-                            −
-                        </button>
+                    <span className='mt-stake'>
+                        <span className='mt-stake__currency'>{SYMBOLS[currency] ?? currency}</span>
                         <input
                             type='number'
                             step='0.01'
@@ -397,16 +396,8 @@ const TradePanel = (props: TProps) => {
                             onChange={event => setForm({ stake: Number(event.target.value) || 0 })}
                             aria-label={`Stake in ${currency}`}
                         />
-                        <span className='mt-stake__currency'>{currency}</span>
-                        <button
-                            type='button'
-                            aria-label='Increase stake'
-                            onClick={() => setForm({ stake: Number((form.stake + 1).toFixed(2)) })}
-                        >
-                            +
-                        </button>
-                    </div>
-                </div>
+                    </span>
+                </label>
 
                 {type.uses_take_profit && (
                     <div className='mt-field mt-field--row'>
@@ -451,60 +442,84 @@ const TradePanel = (props: TProps) => {
                     onClick={props.onBuy}
                     disabled={props.buying || !props.can_trade || Boolean(proposal.error) || proposal.loading}
                 >
-                    <span className='mt-buy__label'>
-                        {props.buying ? 'Buying…' : type.sides.length > 1 ? `Buy ${side.label}` : 'Buy'}
-                    </span>
+                    <span className='mt-buy__label'>{props.buying ? 'Buying…' : 'Buy'}</span>
                     {caption && <span className='mt-buy__caption'>{caption}</span>}
                 </button>
                 {proposal.error && <p className='mt-panel__error'>{proposal.error}</p>}
                 {!proposal.error && props.trade_hint && <p className='mt-panel__hint'>{props.trade_hint}</p>}
-
-                {(open_positions.length > 0 || closed_positions.length > 0) && (
-                    <div className='mt-positions'>
-                        <div className='mt-positions__head'>
-                            Positions <span>{open_positions.length} open</span>
-                        </div>
-                        {[...open_positions, ...closed_positions].map(position => (
-                            <div key={position.contract_id} className={`mt-position mt-position--${position.status}`}>
-                                <div className='mt-position__top'>
-                                    <span className={`mt-position__type mt-position__type--${position.tone}`}>{position.label}</span>
-                                    <span className='mt-position__market'>{position.symbol_name}</span>
-                                </div>
-                                <div className='mt-position__bottom'>
-                                    <span>Stake {money(position.buy_price, currency)}</span>
-                                    <span className={position.profit >= 0 ? 'is-up' : 'is-down'}>
-                                        {position.profit >= 0 ? '+' : ''}
-                                        {money(position.profit, currency)}
-                                    </span>
-                                    {position.status === 'open' && position.can_sell ? (
-                                        <button
-                                            type='button'
-                                            className='mt-position__close'
-                                            disabled={position.selling}
-                                            onClick={() => props.onSell(position.contract_id)}
-                                        >
-                                            {position.selling ? 'Closing…' : 'Close'}
-                                        </button>
-                                    ) : (
-                                        <span className={`mt-position__status mt-position__status--${position.status}`}>
-                                            {position.status === 'open' ? 'Running' : position.status === 'won' ? 'Won' : position.status === 'lost' ? 'Lost' : 'Closed'}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
             </div>
 
             <footer className='mt-panel__clock'>
                 <span>
                     <i className='mt-panel__clock-dot' /> {date_text}
                 </span>
-                <span>{time_text}</span>
+                <span className='mt-panel__clock-right'>
+                    {time_text}
+                    <button type='button' className='mt-panel__fullscreen' onClick={props.onFullscreen} aria-label='Full screen' title='Full screen'>
+                        <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'>
+                            <path d='M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5' />
+                        </svg>
+                    </button>
+                </span>
             </footer>
         </aside>
     );
 };
 
 export default TradePanel;
+
+/** Open and recent contracts, with Close for those Deriv allows to be sold early. */
+export const PositionsList = ({
+    positions,
+    currency,
+    onSell,
+}: {
+    positions: TPosition[];
+    currency: string;
+    onSell: (contract_id: number) => void;
+}) => {
+    const open = positions.filter(p => p.status === 'open');
+    const closed = positions.filter(p => p.status !== 'open').slice(0, 20);
+    if (!open.length && !closed.length) {
+        return <p className='mt-positions__empty'>No positions yet. Contracts you buy here appear in this list.</p>;
+    }
+    return (
+        <div className='mt-positions'>
+            {[...open, ...closed].map(position => (
+                <div key={position.contract_id} className={`mt-position mt-position--${position.status}`}>
+                    <div className='mt-position__top'>
+                        <span className={`mt-position__type mt-position__type--${position.tone}`}>{position.label}</span>
+                        <span className='mt-position__market'>{position.symbol_name}</span>
+                    </div>
+                    <div className='mt-position__bottom'>
+                        <span>Stake {money(position.buy_price, currency)}</span>
+                        <span className={position.profit >= 0 ? 'is-up' : 'is-down'}>
+                            {position.profit >= 0 ? '+' : ''}
+                            {money(position.profit, currency)}
+                        </span>
+                        {position.status === 'open' && position.can_sell ? (
+                            <button
+                                type='button'
+                                className='mt-position__close'
+                                disabled={position.selling}
+                                onClick={() => onSell(position.contract_id)}
+                            >
+                                {position.selling ? 'Closing…' : 'Close'}
+                            </button>
+                        ) : (
+                            <span className={`mt-position__status mt-position__status--${position.status}`}>
+                                {position.status === 'open'
+                                    ? 'Running'
+                                    : position.status === 'won'
+                                      ? 'Won'
+                                      : position.status === 'lost'
+                                        ? 'Lost'
+                                        : 'Closed'}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
