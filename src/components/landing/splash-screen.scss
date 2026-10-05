@@ -46,7 +46,7 @@
             inset: 14%;
             border: 1.5px solid transparent;
             background:
-                linear-gradient(#0f0a2e, #0f0a2e) padding-box,
+                linear-gradient(#070912, #070912) padding-box,
                 conic-gradient(from 0deg, var(--brand-sky, #38bdf8), var(--brand-purple, #7c3aed), transparent 70%)
                     border-box;
             animation-duration: 8s;
@@ -128,7 +128,7 @@
     align-items: safe center;
     justify-content: center;
     padding: 1.6rem 1.6rem 6rem;
-    background: #0f0a2e;
+    background: #05070f;
     color: #e2e8f0;
     font-family: var(--brand-font-primary, sans-serif);
     overflow-x: hidden;
@@ -139,12 +139,17 @@
         z-index: 1;
         width: min(52rem, 100%);
         padding: 3.2rem 3.2rem 2.4rem;
-        border: 1px solid rgba(240, 192, 64, 0.3);
-        border-radius: 2.8rem;
-        background: linear-gradient(160deg, rgba(46, 16, 101, 0.55) 0%, rgba(15, 10, 46, 0.75) 60%, rgba(12, 74, 110, 0.45) 100%);
+        border: 1px solid rgba(240, 192, 64, 0.22);
+        border-radius: 2rem;
+        background:
+            radial-gradient(40rem 16rem at 50% 0%, rgba(240, 192, 64, 0.1), transparent 70%),
+            radial-gradient(30rem 20rem at 0% 100%, rgba(56, 189, 248, 0.1), transparent 70%),
+            radial-gradient(30rem 20rem at 100% 100%, rgba(167, 139, 250, 0.12), transparent 70%),
+            linear-gradient(170deg, rgba(16, 20, 40, 0.9) 0%, rgba(5, 7, 15, 0.94) 100%);
         box-shadow:
-            0 2.4rem 6rem rgba(0, 0, 0, 0.55),
-            inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            0 3rem 8rem rgba(0, 0, 0, 0.6),
+            0 0 0 1px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
         text-align: center;
         backdrop-filter: blur(14px);
     }
@@ -163,7 +168,7 @@
         font-size: 1.15rem;
         font-weight: 700;
         letter-spacing: 0.5em;
-        color: #a78bfa;
+        color: #f0c040;
     }
 
     &__live {
@@ -206,13 +211,64 @@
         overflow: hidden;
     }
 
+    // Gold bar with a light sweeping along it.
     &__fill {
         position: relative;
         height: 100%;
+        overflow: hidden;
         border-radius: 999px;
-        background: linear-gradient(90deg, var(--brand-sky) 0%, var(--brand-purple) 60%, var(--brand-gold) 100%);
-        box-shadow: 0 0 1.2rem rgba(240, 192, 64, 0.5);
+        background: linear-gradient(90deg, #b8860b 0%, #f0c040 55%, #fde68a 100%);
+        box-shadow: 0 0 1.4rem rgba(240, 192, 64, 0.55);
         transition: width 120ms linear;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+            transform: translateX(-100%);
+            animation: te-bar-shine 1.6s ease-in-out infinite;
+        }
+    }
+
+    // Start-up checks that tick off as the app connects.
+    &__checks {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.8rem 1.6rem;
+        margin: 0 0 2.4rem;
+        padding: 0;
+        list-style: none;
+        font-size: 1.15rem;
+        color: #64748b;
+
+        li {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: color 200ms ease;
+
+            i {
+                width: 1.4rem;
+                height: 1.4rem;
+                border: 1.5px solid #334155;
+                border-radius: 50%;
+                transition: all 200ms ease;
+            }
+
+            &.is-done {
+                color: #e2e8f0;
+
+                i {
+                    border-color: #22c55e;
+                    background: #22c55e
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E")
+                        center / 1rem no-repeat;
+                    box-shadow: 0 0 0.8rem rgba(34, 197, 94, 0.6);
+                }
+            }
+        }
     }
 
     &__pct {
@@ -248,7 +304,7 @@
         display: flex;
         justify-content: center;
         gap: 0.8rem;
-        margin: 2.4rem 0;
+        margin: 2.4rem 0 1.6rem;
 
         i {
             width: 0.8rem;
@@ -259,7 +315,8 @@
 
             &.active {
                 width: 3rem;
-                background: linear-gradient(90deg, var(--brand-sky), var(--brand-gold));
+                background: linear-gradient(90deg, #b8860b, #fde68a);
+                box-shadow: 0 0 0.8rem rgba(240, 192, 64, 0.6);
             }
         }
     }
@@ -326,8 +383,8 @@
     bottom: 0;
     z-index: 100051;
     overflow: hidden;
-    border-top: 1px solid rgba(240, 192, 64, 0.25);
-    background: rgba(15, 10, 46, 0.92);
+    border-top: 1px solid rgba(240, 192, 64, 0.3);
+    background: rgba(5, 7, 15, 0.94);
     font-family: 'Courier New', Courier, monospace;
 
     &__track {
@@ -359,6 +416,12 @@
 
     &__change--down {
         color: #fb7185;
+    }
+}
+
+@keyframes te-bar-shine {
+    to {
+        transform: translateX(100%);
     }
 }
 
@@ -454,7 +517,8 @@
 
 @media (prefers-reduced-motion: reduce) {
     .te-orbit__ring,
-    .te-orbit__core {
+    .te-orbit__core,
+    .te-splash__fill::after {
         animation: none;
     }
 }

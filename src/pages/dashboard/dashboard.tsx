@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { FinIcon } from '@/components/fin-ui/FinIcon';
 import TradingBackdrop from '@/components/trading-backdrop/TradingBackdrop';
 import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
@@ -15,12 +16,15 @@ type TMobileIconGuide = {
 };
 
 const QUOTES = [
-    'The trend is your friend — until it ends.',
-    'Plan the trade, trade the plan.',
-    'Cut losses short, let profits run.',
-    'Discipline beats prediction.',
-    'Protect your capital first.',
+    'Plan the trade, then trade the plan.',
+    'Protect your capital first; returns follow discipline.',
+    'Cut losses short and let winning positions run.',
+    'Risk management is the only edge you fully control.',
+    'The trend is your friend — until it bends.',
+    'Size every position as if the next trade could be a loss.',
 ];
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
 
 const getGreeting = () => {
     const hour = new Date().getHours();
@@ -39,6 +43,19 @@ const DashboardComponent = observer(({ handleTabChange }: TMobileIconGuide) => {
     const name = client.is_logged_in && client.loginid ? client.loginid : localize('Trader');
     const quote = QUOTES[new Date().getDate() % QUOTES.length];
 
+    // Session clock for the desk header.
+    const [now, setNow] = React.useState(() => new Date());
+    React.useEffect(() => {
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+    const clock = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
+    const account = !client.is_logged_in
+        ? localize('Guest view')
+        : client.is_virtual
+          ? localize('Demo account')
+          : localize('Real account');
+
     return (
         <React.Fragment>
             <div
@@ -53,14 +70,33 @@ const DashboardComponent = observer(({ handleTabChange }: TMobileIconGuide) => {
                     )}
                     <div className='quick-panel db-hero__inner'>
                         <div className='tab__dashboard__header db-hero__header'>
+                            <span className='fin-eyebrow'>
+                                <i aria-hidden='true' />
+                                {localize('Trading desk · Markets live')}
+                            </span>
                             <h2 className='db-hero__greeting'>
-                                <span className='db-hero__greeting-word'>{getGreeting()}</span>, {name}{' '}
-                                <span aria-hidden='true'>👋</span>
+                                <span className='db-hero__greeting-word'>{getGreeting()}</span>, {name}
                             </h2>
-                            <p className='db-hero__quote'>“{quote}”</p>
+                            <p className='db-hero__quote'>
+                                <span className='db-hero__quote-label'>{localize('Principle of the day')}</span>“{quote}”
+                            </p>
+                            <div className='db-hero__session'>
+                                <span className='db-hero__chip'>
+                                    <FinIcon name='clock' size={16} />
+                                    {clock}
+                                </span>
+                                <span className='db-hero__chip'>
+                                    <FinIcon name='globe' size={16} />
+                                    {localize('Synthetic indices open 24/7')}
+                                </span>
+                                <span className='db-hero__chip'>
+                                    <FinIcon name='vault' size={16} />
+                                    {account}
+                                </span>
+                            </div>
                         </div>
                         <div className='db-hero__divider'>
-                            <span>{localize('Quick actions')}</span>
+                            <span>{localize('Strategy desk')}</span>
                         </div>
                         <Cards has_dashboard_strategies={has_dashboard_strategies} is_mobile={!isDesktop} />
                     </div>

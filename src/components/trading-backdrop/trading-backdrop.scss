@@ -7,7 +7,7 @@
     overflow: hidden;
     pointer-events: none;
     // Artwork comes from --ts-scene-dark (declared in index.html).
-    background: var(--ts-scene-dark, #0f0a2e);
+    background: var(--ts-scene-dark, #05070f);
 
     // Large soft lights that drift slowly across the scene.
     &__orb {

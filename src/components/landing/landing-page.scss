@@ -924,3 +924,332 @@
         animation-duration: 180s;
     }
 }
+
+/* ==========================================================================
+   Obsidian & gold redesign. Later rules here take over from the ones above;
+   every animation above (ticker, marquee, caret, orbit) is unchanged.
+   ========================================================================== */
+
+.te-landing {
+    background: #05070f;
+
+    &__top {
+        border-bottom: 1px solid rgba(240, 192, 64, 0.22);
+        background: linear-gradient(180deg, rgba(5, 7, 15, 0.92), rgba(5, 7, 15, 0.72));
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 1rem 3rem rgba(0, 0, 0, 0.35);
+    }
+
+    &__top-btn {
+        padding: 0.9rem 1.6rem;
+        font-size: 1.35rem;
+    }
+
+    &__ticker {
+        border-bottom: 1px solid rgba(240, 192, 64, 0.18);
+        background: rgba(5, 7, 15, 0.9);
+    }
+
+    &__greeting {
+        letter-spacing: 0.04em;
+    }
+
+    &__lead {
+        color: #cbd5e1;
+    }
+
+    &__hero-tag {
+        border-color: rgba(240, 192, 64, 0.45);
+        background: rgba(240, 192, 64, 0.08);
+        color: #fde68a;
+    }
+
+    /* ------------------------------------------------- stats as KPI tiles */
+
+    &__stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.4rem;
+        max-width: 76rem;
+
+        @media (max-width: 600px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    &__stat {
+        --tone: #f0c040;
+
+        position: relative;
+        gap: 0.6rem;
+        padding: 1.8rem 1.2rem 1.6rem;
+        border: 1px solid color-mix(in srgb, var(--tone) 35%, transparent);
+        border-radius: 1.6rem;
+        background:
+            radial-gradient(14rem 8rem at 50% 0%, color-mix(in srgb, var(--tone) 16%, transparent), transparent 70%),
+            linear-gradient(170deg, rgba(16, 20, 40, 0.85), rgba(6, 8, 16, 0.9));
+        box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+
+        // Thin bar of the tone along the top edge.
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0 20% auto;
+            height: 0.2rem;
+            border-radius: 0 0 0.2rem 0.2rem;
+            background: var(--tone);
+            box-shadow: 0 0 1.2rem var(--tone);
+        }
+
+        &--sky {
+            --tone: #38bdf8;
+        }
+
+        &--purple {
+            --tone: #a78bfa;
+        }
+
+        &--red {
+            --tone: #fb7185;
+        }
+    }
+
+    &__stat-value {
+        font-family: var(--brand-font-display, inherit);
+        font-size: 2.6rem;
+        font-weight: 800;
+        line-height: 1.1;
+        background: linear-gradient(180deg, #ffffff 20%, color-mix(in srgb, var(--tone) 70%, #ffffff));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__stat-label {
+        color: #94a3b8;
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    /* ------------------------------------------------------------ panels */
+
+    &__panel,
+    &__cta {
+        border: 1px solid rgba(240, 192, 64, 0.2);
+        border-radius: 2.4rem;
+        background:
+            radial-gradient(60rem 20rem at 0% 0%, rgba(56, 189, 248, 0.07), transparent 60%),
+            radial-gradient(60rem 20rem at 100% 100%, rgba(167, 139, 250, 0.09), transparent 60%),
+            linear-gradient(165deg, rgba(16, 20, 40, 0.86) 0%, rgba(6, 8, 16, 0.9) 100%);
+        box-shadow:
+            0 2.4rem 6rem rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    &__cta {
+        border-color: rgba(240, 192, 64, 0.45);
+        background:
+            radial-gradient(50rem 22rem at 50% 0%, rgba(240, 192, 64, 0.16), transparent 70%),
+            linear-gradient(165deg, rgba(20, 22, 40, 0.92) 0%, rgba(6, 8, 16, 0.94) 100%);
+
+        .fin-btn {
+            margin-top: 2.4rem;
+        }
+    }
+
+    &__community {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    &__h2 {
+        background: linear-gradient(180deg, #ffffff 40%, #cbd5e1);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    &__body {
+        color: #cbd5e1;
+    }
+
+    &__pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        border-color: rgba(240, 192, 64, 0.3);
+        background: rgba(10, 12, 24, 0.85);
+
+        svg {
+            color: #f0c040;
+        }
+    }
+
+    &__checks span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: #cbd5e1;
+
+        svg {
+            color: #f0c040;
+        }
+    }
+
+    /* ---------------------------------------------------------- referral */
+
+    &__referral {
+        align-items: center;
+        border: 1px solid rgba(240, 192, 64, 0.4);
+        background:
+            radial-gradient(30rem 16rem at 50% 0%, rgba(240, 192, 64, 0.16), transparent 70%),
+            linear-gradient(170deg, rgba(20, 22, 40, 0.94), rgba(6, 8, 16, 0.96));
+        box-shadow: 0 2.4rem 6rem rgba(0, 0, 0, 0.45);
+        text-align: center;
+
+        h2 {
+            font-family: var(--brand-font-display, inherit);
+            font-weight: 800;
+            background: linear-gradient(100deg, #fdf6dc, #f0c040 50%, #b8860b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    }
+
+    &__referral-pill {
+        align-self: center;
+        border: 1px solid rgba(240, 192, 64, 0.5);
+    }
+
+    /* --------------------------------------------------------------- why */
+
+    &__why li {
+        border-color: rgba(240, 192, 64, 0.2);
+        background: linear-gradient(170deg, rgba(16, 20, 40, 0.8), rgba(6, 8, 16, 0.85));
+
+        &:hover {
+            border-color: rgba(240, 192, 64, 0.6);
+            box-shadow: 0 0 1.6rem rgba(240, 192, 64, 0.2);
+        }
+
+        span {
+            border-radius: 1rem;
+            background: rgba(240, 192, 64, 0.12);
+            color: #f0c040;
+        }
+    }
+
+    /* -------------------------------------------------------------- risk */
+
+    &__risk h2 {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        color: #fda4af;
+    }
+
+    &__footer {
+        border-top-color: rgba(240, 192, 64, 0.2);
+        background: rgba(5, 7, 15, 0.85);
+    }
+}
+
+/* ----------------------------------------------------- highlight cards */
+
+.te-card {
+    border-color: color-mix(in srgb, var(--tone) 55%, transparent);
+    background:
+        radial-gradient(24rem 12rem at 50% 0%, color-mix(in srgb, var(--tone) 14%, transparent), transparent 70%),
+        linear-gradient(170deg, rgba(16, 20, 40, 0.94) 0%, rgba(6, 8, 16, 0.96) 100%);
+
+    &--emerald {
+        --tone: #f0c040;
+    }
+
+    // Icon badge in place of the round initials.
+    &__avatar--icon {
+        top: -2.8rem;
+        width: auto;
+        height: auto;
+        border: 0;
+        background: none;
+        box-shadow: none;
+    }
+
+    &__quote {
+        opacity: 0.5;
+    }
+}
+
+/* ------------------------------------------------------- feature cards */
+
+.te-feature {
+    --tone: #38bdf8;
+
+    position: relative;
+    border-color: color-mix(in srgb, var(--tone) 40%, transparent);
+    background:
+        radial-gradient(22rem 12rem at 0% 0%, color-mix(in srgb, var(--tone) 12%, transparent), transparent 70%),
+        linear-gradient(170deg, rgba(16, 20, 40, 0.92), rgba(6, 8, 16, 0.94));
+    transition:
+        transform 200ms ease,
+        box-shadow 200ms ease,
+        border-color 200ms ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        border-color: var(--tone);
+        box-shadow: 0 1.6rem 4rem color-mix(in srgb, var(--tone) 25%, transparent);
+    }
+
+    &--gold {
+        --tone: #f0c040;
+    }
+
+    &--purple {
+        --tone: #a78bfa;
+    }
+
+    &--red {
+        --tone: #fb7185;
+    }
+}
+
+/* --------------------------------------------------- steps as gold coins */
+
+.te-step {
+    position: relative;
+    border-color: rgba(240, 192, 64, 0.25);
+    background: linear-gradient(170deg, rgba(16, 20, 40, 0.9), rgba(6, 8, 16, 0.92));
+
+    &__badge {
+        width: 5rem;
+        height: 5rem;
+        background:
+            radial-gradient(circle at 35% 30%, #fde68a 0%, #f0c040 45%, #b8860b 100%);
+        box-shadow:
+            0 0 0 0.3rem rgba(240, 192, 64, 0.2),
+            0 0.8rem 2rem rgba(240, 192, 64, 0.35),
+            inset 0 -0.3rem 0.6rem rgba(122, 90, 8, 0.45);
+        color: #3b2a04;
+        font-family: var(--brand-font-display, inherit);
+        font-size: 2rem;
+    }
+}
+
+.te-faq {
+    border-color: rgba(240, 192, 64, 0.18);
+    background: linear-gradient(170deg, rgba(16, 20, 40, 0.85), rgba(6, 8, 16, 0.9));
+
+    &[open] {
+        border-color: rgba(240, 192, 64, 0.5);
+    }
+
+    &__q::after {
+        color: #f0c040;
+    }
+}

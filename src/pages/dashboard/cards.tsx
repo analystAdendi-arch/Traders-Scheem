@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 import GoogleDrive from '@/components/load-modal/google-drive';
 import Dialog from '@/components/shared_ui/dialog';
 import MobileFullPageModal from '@/components/shared_ui/mobile-full-page-modal';
+import { FinBadge } from '@/components/fin-ui/FinIcon';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
@@ -29,50 +30,6 @@ type TCardArray = {
     description: string;
     callback: () => void;
 };
-
-const Glyph = ({ children }: { children: React.ReactNode }) => (
-    <svg width='22' height='22' viewBox='0 0 24 24' fill='none' aria-hidden='true'>
-        {children}
-    </svg>
-);
-
-const FolderGlyph = () => (
-    <Glyph>
-        <path d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z' fill='#f0c040' />
-        <path d='M3 10h18v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7z' fill='#d4a017' />
-    </Glyph>
-);
-
-const RobotGlyph = () => (
-    <Glyph>
-        <rect x='4' y='8' width='16' height='11' rx='3' fill='#c4b5fd' />
-        <rect x='11' y='3' width='2' height='5' rx='1' fill='#a78bfa' />
-        <circle cx='9' cy='13' r='1.8' fill='#1e1b4b' />
-        <circle cx='15' cy='13' r='1.8' fill='#1e1b4b' />
-        <rect x='9' y='16' width='6' height='1.5' rx='0.75' fill='#1e1b4b' />
-    </Glyph>
-);
-
-const PuzzleGlyph = () => (
-    <Glyph>
-        <path
-            d='M10 3a2 2 0 0 1 2 2v1h3a1 1 0 0 1 1 1v3h1a2 2 0 1 1 0 4h-1v3a1 1 0 0 1-1 1h-3v-1a2 2 0 1 0-4 0v1H5a1 1 0 0 1-1-1v-3h1a2 2 0 1 0 0-4H4V7a1 1 0 0 1 1-1h3V5a2 2 0 0 1 2-2z'
-            fill='#bae6fd'
-        />
-    </Glyph>
-);
-
-const BoltGlyph = () => (
-    <Glyph>
-        <path d='M13 2 4 14h7l-1 8 9-12h-7l1-8z' fill='#f0c040' />
-    </Glyph>
-);
-
-const CloudGlyph = () => (
-    <Glyph>
-        <path d='M7 18a5 5 0 1 1 1.2-9.85A6 6 0 0 1 20 10a4 4 0 0 1-1 7.9V18H7z' fill='#7dd3fc' />
-    </Glyph>
-);
 
 const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => {
     const { dashboard, load_modal, quick_strategy, google_drive } = useStore();
@@ -99,33 +56,33 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
         {
             id: 'my-computer',
             accent: 'orange',
-            icon: <FolderGlyph />,
+            icon: <FinBadge name='upload' tone='red' />,
             title: localize('Upload Bot'),
-            description: localize('Import an XML bot from your computer'),
+            description: localize('Import a saved XML strategy and deploy it in seconds'),
             callback: openFileLoader,
         },
         {
             id: 'free-bots',
             accent: 'green',
-            icon: <RobotGlyph />,
+            icon: <FinBadge name='bot' tone='white' />,
             title: localize('Free Bots'),
-            description: localize('Browse ready-made trading strategies'),
+            description: localize('A library of automated strategies, ready to run'),
             callback: () => setActiveTab(DBOT_TABS.FREE_BOTS),
         },
         {
             id: 'bot-builder',
             accent: 'purple',
-            icon: <PuzzleGlyph />,
+            icon: <FinBadge name='blocks' tone='purple' />,
             title: localize('Bot Editor'),
-            description: localize('Build a custom bot with the visual editor'),
+            description: localize('Design entry, exit and risk rules visually - no code'),
             callback: () => setActiveTab(DBOT_TABS.BOT_BUILDER),
         },
         {
             id: 'quick-strategy',
             accent: 'yellow',
-            icon: <BoltGlyph />,
+            icon: <FinBadge name='bolt' tone='gold' />,
             title: localize('Quick Strategy'),
-            description: localize('Start fast with a pre-built strategy template'),
+            description: localize('Launch a pre-built strategy template with your own limits'),
             callback: () => {
                 setActiveTab(DBOT_TABS.BOT_BUILDER);
                 setFormVisibility(true);
@@ -134,9 +91,9 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
         {
             id: 'google-drive',
             accent: 'cyan',
-            icon: <CloudGlyph />,
+            icon: <FinBadge name='cloud' tone='sky' />,
             title: localize('Google Drive'),
-            description: localize('Load a bot saved in your Google Drive'),
+            description: localize('Load strategies stored securely in your Google Drive'),
             callback: openGoogleDriveDialog,
         },
     ]
@@ -174,7 +131,12 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                             </span>
                             <span className='db-card__title'>{title}</span>
                             <span className='db-card__description'>{description}</span>
-                            <span className='db-card__open'>{localize('Open')} →</span>
+                            <span className='db-card__open'>
+                                {localize('Open')}
+                                <span className='db-card__open-coin' aria-hidden='true'>
+                                    →
+                                </span>
+                            </span>
                         </button>
                     ))}
 

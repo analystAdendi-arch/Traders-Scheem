@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { generateOAuthURL } from '@/components/shared';
 import { TAB_IDS } from '@/constants/bot-contents';
+import { FinBadge, FinIcon, TFinIconName, TFinTone } from '@/components/fin-ui/FinIcon';
 import WhatsAppIcon from '@/components/shared_ui/whatsapp-icon/WhatsAppIcon';
 import { getFreeBots } from '@/pages/free-bots/free-bot-list';
 import TradingBackdrop from '@/components/trading-backdrop/TradingBackdrop';
@@ -81,49 +82,17 @@ const greeting = () => {
 
 /* ------------------------------------------------------------------ icons */
 
-const Icon = ({ name }: { name: string }) => {
-    const common = {
-        width: 28,
-        height: 28,
-        viewBox: '0 0 24 24',
-        fill: 'none',
-        stroke: 'currentColor',
-        strokeWidth: 2,
-        strokeLinecap: 'round' as const,
-        strokeLinejoin: 'round' as const,
-        'aria-hidden': true,
-    };
-    switch (name) {
-        case 'bot':
-            return (
-                <svg {...common}>
-                    <rect x='4' y='8' width='16' height='12' rx='3' />
-                    <path d='M12 8V4.5M9 13h.01M15 13h.01M9.5 17h5' />
-                </svg>
-            );
-        case 'chart':
-            return (
-                <svg {...common}>
-                    <path d='M6 20V10M12 20V4M18 20v-7' />
-                </svg>
-            );
-        case 'users':
-            return (
-                <svg {...common}>
-                    <path d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2' />
-                    <circle cx='9' cy='7' r='4' />
-                    <path d='M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' />
-                </svg>
-            );
-        default:
-            return (
-                <svg {...common}>
-                    <path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' />
-                    <path d='m9 12 2 2 4-4' />
-                </svg>
-            );
-    }
+/** Icon for each highlight card, by its badge code. */
+const HIGHLIGHT_ICONS: Record<string, TFinIconName> = {
+    AT: 'bolt',
+    SC: 'radar',
+    AI: 'trend',
+    CT: 'copy',
+    FB: 'bot',
+    AN: 'candles',
 };
+
+const TONE_OF: Record<string, TFinTone> = { teal: 'sky', violet: 'purple', sky: 'sky', emerald: 'gold' };
 
 /** The logo emblem (when the file is there) beside the two-tone name. */
 const Wordmark = () => {
@@ -156,7 +125,7 @@ const HeroBrand = () => (
         <h1 className='te-landing__hero-name'>
             <BrandName />
         </h1>
-        <span className='te-landing__hero-tag'>AI-powered trading on Deriv</span>
+        <span className='te-landing__hero-tag'>Professional trading terminal · Powered by Deriv</span>
     </div>
 );
 
@@ -222,11 +191,11 @@ const LandingPage = () => {
     const signup = () => window.open(AFFILIATE_SIGNUP_URL, '_blank', 'noopener,noreferrer');
 
     const bots = getFreeBots().length;
-    const stats = [
-        { value: feed.markets === null ? '--' : `${feed.markets}`, label: 'Live markets' },
-        { value: `${bots}+`, label: 'Free bots' },
-        { value: `${TAB_IDS.length}`, label: 'Trading tools' },
-        { value: '24/7', label: 'Synthetic markets' },
+    const stats: { value: string; label: string; icon: TFinIconName; tone: TFinTone }[] = [
+        { value: feed.markets === null ? '--' : `${feed.markets}`, label: 'Live markets', icon: 'globe', tone: 'sky' },
+        { value: `${bots}+`, label: 'Strategy bots', icon: 'bot', tone: 'purple' },
+        { value: `${TAB_IDS.length}`, label: 'Trading tools', icon: 'blocks', tone: 'gold' },
+        { value: '24/7', label: 'Market access', icon: 'clock', tone: 'red' },
     ];
 
     return (
@@ -238,14 +207,18 @@ const LandingPage = () => {
                 <div className='te-landing__top-actions'>
                     <button
                         type='button'
-                        className='te-landing__btn te-landing__btn--light'
+                        className='fin-btn fin-btn--glass te-landing__top-btn'
                         onClick={login}
                         disabled={!has_app_id || logging_in}
                     >
-                        {logging_in ? 'Redirecting…' : 'Login Now'} <span aria-hidden='true'>→</span>
+                        <FinIcon name='lock' size={16} />
+                        <span>{logging_in ? 'Redirecting…' : 'Log in'}</span>
                     </button>
-                    <button type='button' className='te-landing__btn te-landing__btn--outline' onClick={signup}>
-                        Sign Up
+                    <button type='button' className='fin-btn fin-btn--gold te-landing__top-btn' onClick={signup}>
+                        <span>Open account</span>
+                        <span className='fin-btn__coin' aria-hidden='true'>
+                            →
+                        </span>
                     </button>
                 </div>
             </header>
@@ -279,7 +252,15 @@ const LandingPage = () => {
                                         className={`te-card te-card--${card.tone}`}
                                         aria-hidden={copy === 1 ? 'true' : undefined}
                                     >
-                                        <span className='te-card__avatar'>{card.badge}</span>
+                                        {HIGHLIGHT_ICONS[card.badge] ? (
+                                            <FinBadge
+                                                name={HIGHLIGHT_ICONS[card.badge]}
+                                                tone={TONE_OF[card.tone]}
+                                                className='te-card__avatar te-card__avatar--icon'
+                                            />
+                                        ) : (
+                                            <span className='te-card__avatar'>{card.badge}</span>
+                                        )}
                                         <span className='te-card__quote' aria-hidden='true'>
                                             ”
                                         </span>
@@ -299,8 +280,9 @@ const LandingPage = () => {
 
                     <div className='te-landing__stats'>
                         {stats.map(stat => (
-                            <div key={stat.label} className='te-landing__stat'>
-                                <span className='te-landing__stat-circle'>{stat.value}</span>
+                            <div key={stat.label} className={`te-landing__stat te-landing__stat--${stat.tone}`}>
+                                <FinBadge name={stat.icon} tone={stat.tone} size='sm' />
+                                <span className='te-landing__stat-value'>{stat.value}</span>
                                 <span className='te-landing__stat-label'>{stat.label}</span>
                             </div>
                         ))}
@@ -309,19 +291,18 @@ const LandingPage = () => {
 
                 {/* features */}
                 <section className='te-landing__panel'>
-                    <span className='te-landing__chip'>PLATFORM</span>
-                    <h2 className='te-landing__h2'>Four things this platform does well</h2>
-                    <p className='te-landing__muted'>Built on live Deriv data, with the workings shown rather than hidden.</p>
+                    <span className='te-landing__chip'>THE PLATFORM</span>
+                    <h2 className='te-landing__h2'>Institutional-grade tools for every trader</h2>
+                    <p className='te-landing__muted'>Live Deriv market data, with every calculation shown rather than hidden.</p>
                     <p className='te-landing__body'>
-                        Trade by hand, hand it to a bot, or copy one account onto another - {getAppName()} keeps the
-                        same numbers in front of you either way, so a decision can be checked before it costs anything.
+                        Trade manually, automate a strategy, or mirror one account onto another - {getAppName()} puts the
+                        same live numbers in front of you every time, so each position can be justified before capital is
+                        at risk.
                     </p>
                     <div className='te-landing__features'>
                         {FEATURES.map(feature => (
                             <article key={feature.title} className={`te-feature te-feature--${feature.tone}`}>
-                                <span className='te-feature__icon'>
-                                    <Icon name={feature.icon} />
-                                </span>
+                                <FinBadge name={feature.icon} tone={feature.tone} size='lg' />
                                 <h3>{feature.title}</h3>
                                 <span className='te-feature__sub'>{feature.subtitle}</span>
                                 <p>{feature.text}</p>
@@ -332,9 +313,9 @@ const LandingPage = () => {
 
                 {/* how it works */}
                 <section className='te-landing__panel'>
-                    <span className='te-landing__chip'>HOW IT WORKS</span>
-                    <h2 className='te-landing__h2'>Three steps from login to first trade</h2>
-                    <p className='te-landing__muted'>No installs, no licence keys, nothing to configure first.</p>
+                    <span className='te-landing__chip'>GETTING STARTED</span>
+                    <h2 className='te-landing__h2'>From sign-in to your first position in three steps</h2>
+                    <p className='te-landing__muted'>No downloads, no licence keys, no set-up fees.</p>
                     <ol className='te-landing__steps'>
                         {HOW_IT_WORKS.map(step => (
                             <li key={step.title} className='te-step'>
@@ -350,7 +331,8 @@ const LandingPage = () => {
 
                 {/* referral */}
                 <section className='te-landing__referral'>
-                    <span className='te-landing__referral-kicker'>CLIENT REFERRAL</span>
+                    <FinBadge name='coins' tone='gold' size='lg' className='te-landing__referral-badge' />
+                    <span className='te-landing__referral-kicker'>PARTNER PROGRAMME</span>
                     <h2>Revenue Share</h2>
                     <span className='te-landing__referral-pill'>Up to 45%</span>
                     <p>
@@ -363,16 +345,21 @@ const LandingPage = () => {
                             revenue share paid by Deriv. Exact rates depend on Deriv&apos;s partner terms.
                         </p>
                     )}
-                    <button type='button' className='te-landing__btn te-landing__btn--ghost' onClick={() => setReferralOpen(o => !o)}>
-                        {referral_open ? 'Show less ↑' : 'Show more ↓'}
+                    <button type='button' className='fin-btn fin-btn--glass fin-btn--block' onClick={() => setReferralOpen(o => !o)}>
+                        <span>{referral_open ? 'Show less' : 'How the revenue share works'}</span>
+                        <span aria-hidden='true'>{referral_open ? '↑' : '↓'}</span>
                     </button>
                     {MASTER_PARTNER_URL ? (
-                        <a className='te-landing__btn te-landing__btn--pink' href={MASTER_PARTNER_URL} target='_blank' rel='noopener noreferrer'>
-                            Refer a trader →
+                        <a className='fin-btn fin-btn--aurora fin-btn--block' href={MASTER_PARTNER_URL} target='_blank' rel='noopener noreferrer'>
+                            <FinIcon name='coins' size={18} />
+                            <span>Become a partner</span>
+                            <span className='fin-btn__coin' aria-hidden='true'>
+                                →
+                            </span>
                         </a>
                     ) : (
-                        <button type='button' className='te-landing__btn te-landing__btn--pink' disabled>
-                            Referral link coming soon
+                        <button type='button' className='fin-btn fin-btn--aurora fin-btn--block' disabled>
+                            <span>Referral link coming soon</span>
                         </button>
                     )}
                 </section>
@@ -380,26 +367,32 @@ const LandingPage = () => {
                 {/* community */}
                 <section className='te-landing__community'>
                     <span className='te-landing__chip'>COMMUNITY</span>
-                    <h2 className='te-landing__h2'>Join the {getAppName()} Community</h2>
-                    <p className='te-landing__muted'>Get updates, new bots and help from the team on WhatsApp.</p>
+                    <h2 className='te-landing__h2'>Join the {getAppName()} trading community</h2>
+                    <p className='te-landing__muted'>Market updates, new strategies and direct support from the team on WhatsApp.</p>
                     <div className='te-landing__pills'>
                         <a className='te-landing__pill te-landing__pill--whatsapp' href={WHATSAPP_URL} target='_blank' rel='noopener noreferrer'>
                             <WhatsAppIcon size={18} /> Chat on WhatsApp · {WHATSAPP_NUMBER}
                         </a>
-                        <span className='te-landing__pill'>🔒 Official Deriv login</span>
-                        <span className='te-landing__pill'>⚡ Live Deriv data</span>
+                        <span className='te-landing__pill'>
+                            <FinIcon name='lock' size={16} /> Secure Deriv login
+                        </span>
+                        <span className='te-landing__pill'>
+                            <FinIcon name='bolt' size={16} /> Real-time Deriv data
+                        </span>
                     </div>
                 </section>
 
                 {/* why */}
                 <section className='te-landing__panel'>
                     <span className='te-landing__chip'>WHY {getAppName().toUpperCase()}</span>
-                    <h2 className='te-landing__h2'>What you get for signing in</h2>
-                    <p className='te-landing__muted'>Plain advantages, not slogans.</p>
+                    <h2 className='te-landing__h2'>The advantages behind every trade</h2>
+                    <p className='te-landing__muted'>Concrete benefits, not marketing claims.</p>
                     <ul className='te-landing__why'>
                         {WHY_CHOOSE.map(item => (
                             <li key={item}>
-                                <span aria-hidden='true'>✓</span>
+                                <span aria-hidden='true'>
+                                    <FinIcon name='shield' size={18} />
+                                </span>
                                 {item}
                             </li>
                         ))}
@@ -409,8 +402,8 @@ const LandingPage = () => {
                 {/* faq */}
                 <section className='te-landing__panel'>
                     <span className='te-landing__chip'>QUESTIONS</span>
-                    <h2 className='te-landing__h2'>Asked before you sign in</h2>
-                    <p className='te-landing__muted'>Straight answers, including the one about profit.</p>
+                    <h2 className='te-landing__h2'>Questions traders ask first</h2>
+                    <p className='te-landing__muted'>Straight answers, including the one about returns.</p>
                     <div className='te-landing__faq'>
                         {FAQ.map(item => (
                             <details key={item.q} className='te-faq'>
@@ -424,18 +417,27 @@ const LandingPage = () => {
                 {/* cta */}
                 <section className='te-landing__cta'>
                     <span className='te-landing__chip'>GET STARTED</span>
-                    <h2 className='te-landing__h2'>Start on demo, with virtual funds</h2>
+                    <h2 className='te-landing__h2'>Build your track record on demo</h2>
                     <p className='te-landing__muted'>
-                        Opening a Deriv account is free. Practise on the demo account for as long as you like, and move
-                        to real money only when your own results say so.
+                        Opening a Deriv account is free. Prove your strategy with virtual funds for as long as you need,
+                        and commit real capital only when your own results justify it.
                     </p>
-                    <button type='button' className='te-landing__btn te-landing__btn--green' onClick={signup}>
-                        Start Free Demo <span aria-hidden='true'>→</span>
+                    <button type='button' className='fin-btn fin-btn--gold fin-btn--lg' onClick={signup}>
+                        <span>Open a free demo account</span>
+                        <span className='fin-btn__coin' aria-hidden='true'>
+                            →
+                        </span>
                     </button>
                     <div className='te-landing__checks'>
-                        <span>✓ Free to open</span>
-                        <span>✓ Virtual funds from Deriv</span>
-                        <span>✓ Every tool included</span>
+                        <span>
+                            <FinIcon name='shield' size={16} /> Free to open
+                        </span>
+                        <span>
+                            <FinIcon name='coins' size={16} /> Virtual funds from Deriv
+                        </span>
+                        <span>
+                            <FinIcon name='blocks' size={16} /> Every tool included
+                        </span>
                     </div>
                     <p className='te-landing__muted te-landing__small'>
                         Already have a Deriv account?{' '}
@@ -447,7 +449,9 @@ const LandingPage = () => {
 
                 {/* risk */}
                 <section className='te-landing__risk'>
-                    <h2>⚠️ Risk Disclaimer</h2>
+                    <h2>
+                        <FinBadge name='shield' tone='red' size='sm' /> Risk disclosure
+                    </h2>
                     <p>
                         Deriv offers complex derivatives, such as options and contracts for difference. These products
                         may not be suitable for all clients, and trading them puts you at risk. Make sure you

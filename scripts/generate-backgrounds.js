@@ -6,8 +6,8 @@
  * Everything is drawn procedurally from a fixed seed, so the output is stable
  * between runs: change SEED to get a fresh composition with the same style.
  *
- *   cosmos-dark.svg  deep violet night sky: nebulae, silk light-ribbons, a ringed
- *                    planet, a constellation network and a rising market line.
+ *   cosmos-dark.svg  obsidian & gold vault: aurora curtains over a gold perspective
+ *                    floor, a candlestick skyline, a glowing trend line and gold coins.
  *   silk-light.svg   white silk: soft colour washes, flowing line-waves and a faint
  *                    constellation, quiet enough to sit behind forms and tables.
  */
@@ -87,102 +87,110 @@ const constellation = ({ n, x0, x1, y0, y1, maxDist, line, lineOpacity, dot, glo
     return `<g stroke="${line}" stroke-width="1">${lines}</g>${dots}`;
 };
 
-/* ------------------------------------------------------------- dark scene */
+/* ------------------------------------------------------------ vault scene */
 
-const darkScene = () => {
+// Obsidian & gold: aurora curtains over a gold perspective floor, a skyline of
+// candlesticks, a glowing trend line and floating gold coins.
+const vaultScene = () => {
     const defs = [
-        `<linearGradient id="sky-base" x1="0" y1="0" x2="0.35" y2="1">` +
-            `<stop offset="0" stop-color="#05030f"/><stop offset="0.45" stop-color="#0f0a2e"/><stop offset="1" stop-color="#1a0b3d"/></linearGradient>`,
-        radial('neb-purple', C.purple, 0.55),
-        radial('neb-sky', C.sky, 0.38),
-        radial('neb-gold', C.gold, 0.22),
-        radial('neb-red', C.red, 0.2),
-        radial('node-glow', C.gold, 0.55),
+        `<linearGradient id="obsidian" x1="0" y1="0" x2="0" y2="1">` +
+            `<stop offset="0" stop-color="#03040a"/><stop offset="0.55" stop-color="#070b1c"/><stop offset="1" stop-color="#0d0a1f"/></linearGradient>`,
+        `<linearGradient id="aurora-a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.sky}" stop-opacity="0"/><stop offset="0.45" stop-color="${C.sky}" stop-opacity="0.32"/><stop offset="1" stop-color="${C.purple}" stop-opacity="0"/></linearGradient>`,
+        `<linearGradient id="aurora-b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.purple}" stop-opacity="0"/><stop offset="0.5" stop-color="${C.purpleSoft}" stop-opacity="0.3"/><stop offset="1" stop-color="${C.sky}" stop-opacity="0"/></linearGradient>`,
+        `<linearGradient id="floor-fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.gold}" stop-opacity="0"/><stop offset="1" stop-color="${C.gold}" stop-opacity="0.5"/></linearGradient>`,
+        `<linearGradient id="trend" x1="0" x2="1"><stop offset="0" stop-color="${C.gold}" stop-opacity="0"/><stop offset="0.3" stop-color="${C.gold}"/><stop offset="1" stop-color="#fde68a"/></linearGradient>`,
+        `<linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.gold}" stop-opacity="0.16"/><stop offset="1" stop-color="${C.gold}" stop-opacity="0"/></linearGradient>`,
+        `<linearGradient id="coin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset="0.5" stop-color="${C.gold}"/><stop offset="1" stop-color="${C.goldDeep}"/></linearGradient>`,
+        radial('glow-gold', C.gold, 0.45),
+        radial('glow-sky', C.sky, 0.3),
+        radial('glow-purple', C.purple, 0.4),
         radial('star-glow', C.white, 0.9),
-        `<linearGradient id="ribbon" x1="0" x2="1"><stop offset="0" stop-color="${C.sky}"/><stop offset="0.55" stop-color="${C.purpleSoft}"/><stop offset="1" stop-color="${C.gold}"/></linearGradient>`,
-        `<linearGradient id="ribbon-2" x1="0" x2="1"><stop offset="0" stop-color="${C.purple}"/><stop offset="0.5" stop-color="${C.sky}"/><stop offset="1" stop-color="${C.purple}"/></linearGradient>`,
-        `<radialGradient id="planet" cx="0.32" cy="0.28" r="0.85"><stop offset="0" stop-color="#4c1d95"/><stop offset="0.45" stop-color="#1e1250"/><stop offset="1" stop-color="#07041a"/></radialGradient>`,
-        `<radialGradient id="planet-rim" cx="0.5" cy="0.5" r="0.5"><stop offset="0.86" stop-color="${C.sky}" stop-opacity="0"/><stop offset="0.97" stop-color="${C.sky}" stop-opacity="0.55"/><stop offset="1" stop-color="${C.sky}" stop-opacity="0"/></radialGradient>`,
-        `<linearGradient id="ring" x1="0" x2="1"><stop offset="0" stop-color="${C.gold}" stop-opacity="0"/><stop offset="0.3" stop-color="${C.gold}" stop-opacity="0.9"/><stop offset="0.7" stop-color="${C.goldDeep}" stop-opacity="0.7"/><stop offset="1" stop-color="${C.gold}" stop-opacity="0"/></linearGradient>`,
-        `<linearGradient id="market" x1="0" x2="1"><stop offset="0" stop-color="${C.sky}" stop-opacity="0"/><stop offset="0.4" stop-color="${C.sky}"/><stop offset="1" stop-color="${C.gold}"/></linearGradient>`,
-        `<linearGradient id="market-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.sky}" stop-opacity="0.12"/><stop offset="1" stop-color="${C.sky}" stop-opacity="0"/></linearGradient>`,
+        `<filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="18"/></filter>`,
+        `<filter id="line-glow" x="-5%" y="-30%" width="110%" height="160%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`,
     ].join('');
 
-    let body = `<rect width="${W}" height="${H}" fill="url(#sky-base)"/>`;
+    let body = `<rect width="${W}" height="${H}" fill="url(#obsidian)"/>`;
 
-    // Nebulae.
-    body += `<ellipse cx="380" cy="260" rx="760" ry="420" fill="url(#neb-purple)"/>`;
-    body += `<ellipse cx="1560" cy="180" rx="620" ry="360" fill="url(#neb-sky)"/>`;
-    body += `<ellipse cx="1180" cy="860" rx="700" ry="380" fill="url(#neb-purple)"/>`;
-    body += `<ellipse cx="900" cy="520" rx="520" ry="240" fill="url(#neb-gold)"/>`;
-    body += `<ellipse cx="160" cy="940" rx="480" ry="300" fill="url(#neb-red)"/>`;
+    // Ambient glows.
+    body += `<ellipse cx="1500" cy="160" rx="700" ry="380" fill="url(#glow-purple)"/>`;
+    body += `<ellipse cx="300" cy="120" rx="620" ry="320" fill="url(#glow-sky)"/>`;
+    body += `<ellipse cx="960" cy="760" rx="900" ry="300" fill="url(#glow-gold)" opacity="0.55"/>`;
 
-    // Star field.
-    let stars = '';
-    for (let i = 0; i < 260; i++) {
-        const x = rand(0, W);
-        const y = rand(0, H);
-        const r = rng() < 0.92 ? rand(0.4, 1.3) : rand(1.6, 2.4);
-        stars += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${pick([C.white, C.white, '#e0f2fe', '#fdf6dc'])}" opacity="${f(rand(0.35, 0.95))}"/>`;
-        if (r > 1.6) stars += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 4)}" fill="url(#star-glow)" opacity="0.35"/>`;
+    // Aurora curtains: soft vertical bands that wave across the top.
+    let curtains = '';
+    for (let i = 0; i < 9; i++) {
+        const x = 80 + i * 220 + rand(-40, 40);
+        const w = rand(90, 170);
+        const h = rand(380, 560);
+        const sway = rand(-80, 80);
+        const d = `M${f(x)} -20 C ${f(x + sway)} ${f(h * 0.35)}, ${f(x - sway)} ${f(h * 0.7)}, ${f(x + sway * 0.5)} ${f(h)} L ${f(x + w + sway * 0.5)} ${f(h)} C ${f(x + w - sway)} ${f(h * 0.7)}, ${f(x + w + sway)} ${f(h * 0.35)}, ${f(x + w)} -20 Z`;
+        curtains += `<path d="${d}" fill="url(#${i % 2 ? 'aurora-b' : 'aurora-a'})" opacity="${f(rand(0.5, 0.95))}"/>`;
     }
-    body += stars;
+    body += `<g filter="url(#soft)">${curtains}</g>`;
 
-    // Silk light-ribbons sweeping across the middle.
-    body += silk({ y0: 520, amp: 120, count: 34, spread: 120, stroke: 'url(#ribbon)', width: 1.2, opacity: 0.55 });
-    body += silk({ y0: 610, amp: 90, count: 22, spread: 90, stroke: 'url(#ribbon-2)', width: 1, opacity: 0.4, phase: 2 });
+    // Stars, sparse.
+    for (let i = 0; i < 120; i++) {
+        const x = rand(0, W);
+        const y = rand(0, H * 0.62);
+        const r = rng() < 0.9 ? rand(0.4, 1.2) : rand(1.5, 2.2);
+        body += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${pick([C.white, '#fdf6dc', '#e0f2fe'])}" opacity="${f(rand(0.3, 0.9))}"/>`;
+        if (r > 1.5) body += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 4)}" fill="url(#star-glow)" opacity="0.3"/>`;
+    }
 
-    // Ringed planet, lower right (added last, so it sits in front of the market line).
-    const planet =
-        `<g transform="translate(1610 905)">` +
-        `<ellipse rx="430" ry="88" fill="none" stroke="url(#ring)" stroke-width="3" transform="rotate(-14)" opacity="0.55"/>` +
-        `<circle r="250" fill="url(#planet)"/>` +
-        `<circle r="250" fill="url(#planet-rim)"/>` +
-        `<path d="M-430 0 A430 88 0 0 0 430 0" fill="none" stroke="url(#ring)" stroke-width="5" transform="rotate(-14)"/>` +
-        `<ellipse rx="500" ry="104" fill="none" stroke="${C.gold}" stroke-width="1" stroke-dasharray="2 14" transform="rotate(-14)" opacity="0.5"/>` +
-        `</g>`;
+    // Gold perspective floor.
+    const horizon = 700;
+    let floor = '';
+    for (let i = 0; i < 14; i++) {
+        const y = horizon + Math.pow(i / 13, 1.9) * (H - horizon + 40);
+        floor += `<line x1="0" x2="${W}" y1="${f(y)}" y2="${f(y)}"/>`;
+    }
+    for (let i = -18; i <= 18; i++) {
+        floor += `<line x1="${W / 2 + i * 26}" y1="${horizon}" x2="${W / 2 + i * 190}" y2="${H + 40}"/>`;
+    }
+    body += `<g stroke="url(#floor-fade)" stroke-width="1">${floor}</g>`;
+    body += `<rect x="0" y="${horizon - 2}" width="${W}" height="2" fill="${C.gold}" opacity="0.35"/>`;
 
-    // Small moon.
-    body += `<circle cx="1180" cy="330" r="22" fill="url(#planet)"/><circle cx="1180" cy="330" r="22" fill="url(#planet-rim)"/>`;
+    // Candlestick skyline standing on the horizon.
+    let candles = '';
+    let level = 0;
+    for (let x = 30; x < W - 20; x += 34) {
+        level += rand(-26, 30);
+        level = Math.max(-40, Math.min(220, level));
+        const up = rng() < 0.6;
+        const body_h = rand(40, 150) + level * 0.4;
+        const top = horizon - 40 - level - body_h;
+        const color = up ? C.gold : rng() < 0.5 ? C.sky : C.red;
+        candles += `<line x1="${x + 7}" x2="${x + 7}" y1="${f(top - rand(10, 34))}" y2="${f(top + body_h + rand(8, 24))}" stroke="${color}" stroke-width="1.4"/>`;
+        candles += `<rect x="${x}" y="${f(top)}" width="14" height="${f(body_h)}" rx="2" fill="${color}"/>`;
+    }
+    body += `<g opacity="0.2">${candles}</g>`;
 
-    // Constellation network across the top.
-    body += constellation({
-        n: 64,
-        x0: 40,
-        x1: W - 40,
-        y0: 40,
-        y1: 470,
-        maxDist: 190,
-        line: C.sky,
-        lineOpacity: 0.45,
-        dot: '#bae6fd',
-        glowEvery: 9,
-    });
-
-    // Rising market line with a soft area fill.
+    // Rising trend line across the scene, glowing.
     const pts = [];
-    let y = 1000;
-    for (let x = -20; x <= W + 40; x += 40) {
-        y += rand(-30, 16);
-        y = Math.max(600, Math.min(1010, y));
+    let y = 640;
+    for (let x = -20; x <= W + 40; x += 48) {
+        y += rand(-38, 22);
+        y = Math.max(180, Math.min(680, y));
         pts.push([x, y]);
     }
     const line = pts.map(([x, py], i) => `${i ? 'L' : 'M'}${x} ${f(py)}`).join(' ');
     const [lx] = pts[pts.length - 1];
-    body += `<path d="${line} L${lx} ${H} L-20 ${H} Z" fill="url(#market-fill)"/>`;
-    body += `<path d="${line}" fill="none" stroke="url(#market)" stroke-width="2.5" stroke-linejoin="round"/>`;
+    body += `<path d="${line} L${lx} ${horizon} L-20 ${horizon} Z" fill="url(#trend-fill)"/>`;
+    body += `<path d="${line}" fill="none" stroke="url(#trend)" stroke-width="2.6" stroke-linejoin="round" filter="url(#line-glow)"/>`;
+    pts.filter((_, i) => i % 7 === 3).forEach(([px, py]) => {
+        body += `<circle cx="${px}" cy="${f(py)}" r="12" fill="url(#glow-gold)"/><circle cx="${px}" cy="${f(py)}" r="3.4" fill="#fde68a"/>`;
+    });
 
-    // Floating glass hexagons.
-    const hex = (cx, cy, r, stroke, o) => {
-        const p = Array.from({ length: 6 }, (_, i) => {
-            const a = (Math.PI / 3) * i + Math.PI / 6;
-            return `${f(cx + r * Math.cos(a))},${f(cy + r * Math.sin(a))}`;
-        }).join(' ');
-        return `<polygon points="${p}" fill="${stroke}" fill-opacity="0.04" stroke="${stroke}" stroke-opacity="${o}" stroke-width="1.2"/>`;
-    };
-    body += hex(260, 640, 70, C.sky, 0.35) + hex(330, 700, 34, C.gold, 0.45) + hex(1720, 420, 54, C.purpleSoft, 0.4);
-    body += hex(980, 140, 40, C.gold, 0.3) + hex(620, 930, 46, C.sky, 0.3);
-    body += planet;
+    // Floating gold coins, edge-on and face-on.
+    const coin = (cx, cy, r, tilt) =>
+        `<g transform="translate(${cx} ${cy}) scale(1 ${tilt})" opacity="0.8">` +
+        `<circle r="${r * 1.9}" fill="url(#glow-gold)"/>` +
+        `<circle r="${r}" fill="url(#coin)"/>` +
+        `<circle r="${f(r * 0.72)}" fill="none" stroke="#7a5a08" stroke-opacity="0.55" stroke-width="${f(r * 0.08)}"/>` +
+        `<text y="${f(r * 0.32)}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="${f(r * 0.9)}" fill="#7a5a08" fill-opacity="0.7">$</text>` +
+        `</g>`;
+    body += coin(1660, 330, 34, 1) + coin(1780, 470, 20, 0.45) + coin(220, 420, 26, 0.8) + coin(1180, 140, 16, 1) + coin(640, 560, 14, 0.5);
+
     return svg(defs, body);
 };
 
@@ -230,7 +238,7 @@ const lightScene = () => {
 const out = path.join(__dirname, '..', 'public', 'backgrounds');
 fs.mkdirSync(out, { recursive: true });
 for (const [name, make] of [
-    ['cosmos-dark.svg', darkScene],
+    ['cosmos-dark.svg', vaultScene],
     ['silk-light.svg', lightScene],
 ]) {
     const content = make();

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { FinBadge } from '@/components/fin-ui/FinIcon';
 import TradingBackdrop from '@/components/trading-backdrop/TradingBackdrop';
 import { getAppName, LOGO_CANDIDATES } from '@/utils/branding';
 
@@ -9,7 +10,7 @@ import './splash-screen.scss';
 const MIN_MS = 2600;
 const MAX_MS = 8000;
 
-const STEPS = ['Connecting to Deriv markets...', 'Loading live market data...', 'Preparing your workspace...'];
+const STEPS = ['Connecting to Deriv markets...', 'Streaming live prices...', 'Preparing your trading desk...'];
 
 // "Traders Scheem" -> ["Traders", "Scheem"]: split at the first inner capital.
 const splitName = (name: string): [string, string] => {
@@ -19,48 +20,13 @@ const splitName = (name: string): [string, string] => {
     return [name, ''];
 };
 
-/** Line icons for the feature row, stroked in brand colours from the stylesheet. */
-const FeatureIcon = ({ name }: { name: 'chart' | 'bot' | 'copy' }) => {
-    const common = {
-        width: 26,
-        height: 26,
-        viewBox: '0 0 24 24',
-        fill: 'none',
-        stroke: 'currentColor',
-        strokeWidth: 1.8,
-        strokeLinecap: 'round' as const,
-        strokeLinejoin: 'round' as const,
-        'aria-hidden': true,
-    };
-    if (name === 'chart') {
-        return (
-            <svg {...common}>
-                <path d='M3 20h18M6 16l4-5 3 3 5-7' />
-                <path d='M15 7h3v3' />
-            </svg>
-        );
-    }
-    if (name === 'bot') {
-        return (
-            <svg {...common}>
-                <rect x='4' y='8' width='16' height='12' rx='3' />
-                <path d='M12 8V4.5M9 13h.01M15 13h.01M9.5 17h5' />
-            </svg>
-        );
-    }
-    return (
-        <svg {...common}>
-            <rect x='8' y='8' width='12' height='12' rx='2' />
-            <path d='M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2' />
-        </svg>
-    );
-};
-
 const FEATURES = [
-    { icon: 'chart', label: 'Advanced Charts', tone: 'sky' },
-    { icon: 'bot', label: 'Trading Bots', tone: 'purple' },
+    { icon: 'candles', label: 'Market Analytics', tone: 'sky' },
+    { icon: 'bot', label: 'Automated Execution', tone: 'purple' },
     { icon: 'copy', label: 'Copy Trading', tone: 'gold' },
 ] as const;
+
+const STEPS_DONE = ['Market data', 'Pricing engine', 'Your desk'];
 
 export const Ticker = ({ feed }: { feed: TFeedState }) => {
     const items = TICKER_SYMBOLS.filter(({ symbol }) => feed.quotes[symbol]);
@@ -166,20 +132,20 @@ const SplashScreen = ({ onDone, hold = false }: { onDone: () => void; hold?: boo
     return (
         <div className='te-splash' role='status' aria-live='polite'>
             <TradingBackdrop />
-            <div className='te-splash__card'>
+            <div className='te-splash__card fin-frame'>
                 <OrbitEmblem />
 
                 <h1 className='te-splash__title'>
                     <BrandName />
                 </h1>
                 <div className='te-splash__hub'>
-                    <span>AI TRADING HUB</span>
+                    <span>TRADING TERMINAL</span>
                     <span className='te-splash__live'>
                         <i /> LIVE
                     </span>
                 </div>
 
-                <p className='te-splash__sub'>Empowering your trading journey.</p>
+                <p className='te-splash__sub'>Data-driven tools for disciplined capital.</p>
 
                 <div className='te-splash__progress'>
                     <div className='te-splash__bar'>
@@ -199,18 +165,25 @@ const SplashScreen = ({ onDone, hold = false }: { onDone: () => void; hold?: boo
                     ))}
                 </div>
 
+                <ul className='te-splash__checks' aria-label='Start-up checks'>
+                    {STEPS_DONE.map((label, i) => (
+                        <li key={label} className={step > i || progress >= 100 ? 'is-done' : ''}>
+                            <i aria-hidden='true' />
+                            {label}
+                        </li>
+                    ))}
+                </ul>
+
                 <div className='te-splash__features'>
                     {FEATURES.map(({ icon, label, tone }) => (
                         <div key={label} className={`te-splash__feature te-splash__feature--${tone}`}>
-                            <span className='te-splash__feature-icon'>
-                                <FeatureIcon name={icon} />
-                            </span>
+                            <FinBadge name={icon} tone={tone} />
                             <span>{label}</span>
                         </div>
                     ))}
                 </div>
 
-                <p className='te-splash__tagline'>Preparing a seamless trading experience for you</p>
+                <p className='te-splash__tagline'>Live Deriv pricing · Secure Deriv login · Synthetic markets 24/7</p>
             </div>
 
             <Ticker feed={feed} />

@@ -708,3 +708,215 @@
         margin-inline-start: 0.4rem;
     }
 }
+
+/* ==========================================================================
+   Obsidian & gold home page. Later rules here take over from the ones above.
+   ========================================================================== */
+
+.db-hero {
+    background: #05070f !important;
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+    }
+
+    &__greeting {
+        font-size: 3.2rem;
+        letter-spacing: -0.02em;
+
+        @include mobile-or-tablet-screen {
+            font-size: 2.4rem;
+        }
+    }
+
+    &__greeting-word {
+        background: linear-gradient(100deg, #fdf6dc 0%, #f0c040 45%, #b8860b 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    &__quote {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        margin: 0;
+        color: #cbd5e1;
+    }
+
+    &__quote-label {
+        font-size: 1rem;
+        font-style: normal;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #64748b;
+    }
+
+    // Session chips: clock, market hours, account.
+    &__session {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 0.4rem;
+    }
+
+    &__chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.6rem 1.2rem;
+        border: 1px solid rgba(240, 192, 64, 0.25);
+        border-radius: 999px;
+        background: rgba(10, 12, 24, 0.75);
+        backdrop-filter: blur(6px);
+        color: #e2e8f0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+
+        svg {
+            color: #f0c040;
+        }
+    }
+
+    &__divider {
+        margin: 3.6rem 0 2.4rem;
+
+        &::before {
+            border-top: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(240, 192, 64, 0.5), transparent);
+        }
+
+        span {
+            padding: 0.4rem 1.6rem;
+            border: 1px solid rgba(240, 192, 64, 0.35);
+            border-radius: 999px;
+            background: #05070f;
+            color: #f0c040;
+        }
+    }
+}
+
+/* -------------------------------------------- strategy desk cards */
+
+.db-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--db-accent) 30%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--db-accent) 30%, transparent);
+    border-radius: 1.8rem;
+    background:
+        radial-gradient(20rem 10rem at 0% 0%, color-mix(in srgb, var(--db-accent) 14%, transparent), transparent 70%),
+        linear-gradient(170deg, rgba(16, 20, 40, 0.9) 0%, rgba(6, 8, 16, 0.92) 100%);
+    box-shadow:
+        0 1.2rem 3rem rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    // Glow line along the top edge in the card's colour.
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0 2rem auto;
+        height: 0.2rem;
+        border-radius: 0 0 0.2rem 0.2rem;
+        background: var(--db-accent);
+        box-shadow: 0 0 1.4rem var(--db-accent);
+    }
+
+    &:hover,
+    &:focus-visible {
+        transform: translateY(-4px);
+        border-color: var(--db-accent);
+        box-shadow:
+            0 1.6rem 4rem rgba(0, 0, 0, 0.45),
+            0 0 2.4rem color-mix(in srgb, var(--db-accent) 25%, transparent);
+    }
+
+    &--orange {
+        --db-accent: #fb7185;
+    }
+
+    &--green {
+        --db-accent: #e2e8f0;
+    }
+
+    &--purple {
+        --db-accent: #a78bfa;
+    }
+
+    &--yellow {
+        --db-accent: #f0c040;
+    }
+
+    &--cyan {
+        --db-accent: #38bdf8;
+    }
+
+    // The badge brings its own frame.
+    &__icon {
+        width: auto;
+        height: auto;
+        border: 0;
+        border-radius: 0;
+        background: none;
+    }
+
+    &__arrow {
+        border-color: color-mix(in srgb, var(--db-accent) 45%, transparent);
+        border-radius: 50%;
+        color: var(--db-accent);
+        transition: transform 160ms ease;
+    }
+
+    &:hover &__arrow {
+        transform: rotate(-45deg);
+    }
+
+    &__title {
+        font-family: var(--brand-font-display, inherit);
+        font-size: 1.7rem;
+        font-weight: 800;
+    }
+
+    &__description {
+        color: #a3aec2;
+    }
+
+    &__open {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top-color: rgba(255, 255, 255, 0.08);
+        color: var(--db-accent);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    &__open-coin {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 50%;
+        background: color-mix(in srgb, var(--db-accent) 18%, transparent);
+        transition: transform 160ms ease;
+    }
+
+    &:hover &__open-coin {
+        transform: translateX(0.3rem);
+    }
+
+    // Phone: the badges shrink with the card.
+    @include mobile-or-tablet-screen {
+        .fin-badge {
+            --size: 3.8rem;
+        }
+    }
+}
