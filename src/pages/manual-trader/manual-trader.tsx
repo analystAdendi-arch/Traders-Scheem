@@ -8,7 +8,7 @@
  * open positions - and every quote and purchase goes through this site's OAuth app
  * id and the account the site is signed in as. Nothing opens outside the site.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import SceneFx from '@/components/scene-fx/SceneFx';
@@ -25,6 +25,7 @@ import {
     lastDigit,
     TForm,
     TMarket,
+    TRADE_TYPES,
     TTradeTypeId,
 } from './trade-types';
 import TradePanel, { TPosition, TProposal } from './TradePanel';
@@ -191,6 +192,9 @@ const ManualTrader = observer(() => {
     useEffect(() => {
         const [duration, duration_unit] = type.default_duration;
         setFormState(prev => ({ ...prev, side: type.sides[0].key, duration, duration_unit }));
+        // Keep the chosen type visible in the trade-type bar when it scrolls sideways.
+        const chip = document.querySelector('.mt-types__chip.is-active');
+        chip?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }, [type]);
 
     // Keep the choices valid for this market (Deriv's defaults where we have them).
@@ -202,6 +206,10 @@ const ManualTrader = observer(() => {
             // The default barrier for the duration family in use (ticks, intraday or daily).
             const timed_row = offerRow(offer, side.contract_type, prev.duration_unit);
             if (type.uses_barrier && timed_row?.barrier) next.barrier = timed_row.barrier;
+            if (type.uses_two_barriers && timed_row?.high_barrier) {
+                next.barrier_high = timed_row.high_barrier;
+                if (timed_row.low_barrier) next.barrier_low = timed_row.low_barrier;
+            }
             if (type.uses_growth_rate) {
                 const rates: number[] = offerRow(offer, 'ACCU')?.growth_rate_range ?? [];
                 if (rates.length && !rates.includes(prev.growth_rate)) next.growth_rate = rates.includes(0.03) ? 0.03 : rates[0];
@@ -414,6 +422,20 @@ const ManualTrader = observer(() => {
         [picker]
     );
 
+    /** The trade-type bar: switch type on the current market, or pick a market that offers it. */
+    const chooseType = useCallback(
+        (id: TTradeTypeId) => {
+            const next = getTradeType(id);
+            const ok = !offer || next.sides.every(s => offer.types.has(s.contract_type));
+            setTabState(prev => ({
+                ...prev,
+                tabs: prev.tabs.map(t => (t.id === prev.active ? { ...t, trade_type: id } : t)),
+            }));
+            if (!ok) setPicker('edit');
+        },
+        [offer]
+    );
+
     const closeTab = (id: string) =>
         setTabState(prev => {
             if (prev.tabs.length < 2) return prev;
@@ -434,13 +456,20 @@ const ManualTrader = observer(() => {
 
     const chart_lines = useMemo(() => {
         const lines: TChartLine[] = [];
-        if (last_quote !== null && type.uses_barrier) {
-            const offset = Number(form.barrier);
-            if (/^[+-]/.test(form.barrier.trim()) && Number.isFinite(offset)) {
-                lines.push({ value: last_quote + offset, label: 'Barrier', tone: 'barrier' });
-            } else if (Number.isFinite(offset) && offset > 0) {
-                lines.push({ value: offset, label: 'Barrier', tone: 'barrier' });
+        // A barrier is either an offset from the spot (+0.38) or an absolute price.
+        const addBarrier = (text: string, label: string) => {
+            if (last_quote === null) return;
+            const value = Number(text);
+            if (/^[+-]/.test(text.trim()) && Number.isFinite(value)) {
+                lines.push({ value: last_quote + value, label, tone: 'barrier' });
+            } else if (Number.isFinite(value) && value > 0) {
+                lines.push({ value, label, tone: 'barrier' });
             }
+        };
+        if (type.uses_barrier) addBarrier(form.barrier, 'Barrier');
+        if (type.uses_two_barriers) {
+            addBarrier(form.barrier_high, 'High barrier');
+            addBarrier(form.barrier_low, 'Low barrier');
         }
         const details = proposal.details || {};
         if ((type.id === 'turbos' || type.id === 'vanillas') && Number(details.barrier)) {
@@ -461,7 +490,7 @@ const ManualTrader = observer(() => {
                 })
             );
         return lines;
-    }, [form.barrier, last_quote, positions, proposal.details, tab.symbol, type]);
+    }, [form.barrier, form.barrier_high, form.barrier_low, last_quote, positions, proposal.details, tab.symbol, type]);
 
     let trade_hint = '';
     if (!client?.is_logged_in) trade_hint = 'Prices are live. Log in to your Deriv account to buy contracts.';
@@ -539,6 +568,32 @@ const ManualTrader = observer(() => {
                         )}
                     </div>
                 </header>
+
+                <nav className='mt-types' aria-label='Trade types'>
+                    {TRADE_TYPES.map((t, i) => {
+                        const starts_group = i > 0 && TRADE_TYPES[i - 1].group !== t.group;
+                        const ok = !offer || t.sides.every(sd => offer.types.has(sd.contract_type));
+                        return (
+                            <Fragment key={t.id}>
+                                {starts_group && <span className='mt-types__sep' aria-hidden='true' />}
+                                <button
+                                    type='button'
+                                    className={`mt-types__chip ${t.id === type.id ? 'is-active' : ''} ${ok ? '' : 'is-off'}`}
+                                    aria-pressed={t.id === type.id}
+                                    title={ok ? t.label : `${t.label} - not offered on ${market?.name ?? tab.symbol}; choose a market`}
+                                    onClick={() => chooseType(t.id)}
+                                >
+                                    {t.label}
+                                    {t.hot && (
+                                        <span className='mt-types__hot' aria-hidden='true'>
+                                            🔥
+                                        </span>
+                                    )}
+                                </button>
+                            </Fragment>
+                        );
+                    })}
+                </nav>
 
                 <section className='mt-stage'>
                     {chart_error ? <div className='mt-stage__error'>{chart_error}</div> : <TickChart ticks={ticks} decimals={decimals} lines={chart_lines} />}

@@ -25,12 +25,18 @@ export type TTradeTypeId =
     | 'vanillas'
     | 'matches_differs'
     | 'over_under'
-    | 'even_odd';
+    | 'even_odd'
+    | 'asians'
+    | 'high_low_ticks'
+    | 'only_ups_downs'
+    | 'reset'
+    | 'ends_between'
+    | 'stays_between';
 
 export type TTradeType = {
     id: TTradeTypeId;
     label: string;
-    group: 'main' | 'growth' | 'digits';
+    group: 'main' | 'growth' | 'digits' | 'more';
     hot?: boolean;
     sides: TSide[];
     /** Duration units the type accepts; empty for contracts that run until closed. */
@@ -45,6 +51,10 @@ export type TTradeType = {
     uses_strike?: boolean;
     uses_take_profit?: boolean;
     uses_stop_loss?: boolean;
+    /** A high and a low barrier (Ends/Stays Between). */
+    uses_two_barriers?: boolean;
+    /** Which of the five ticks must be the high or low (High/Low Ticks). */
+    uses_selected_tick?: boolean;
     shows_digit_stats?: boolean;
     how: string[];
 };
@@ -221,12 +231,108 @@ export const TRADE_TYPES: TTradeType[] = [
             'Odd: you win if the last digit of the last tick is an odd number (1, 3, 5, 7 or 9).',
         ],
     },
+    {
+        id: 'asians',
+        label: 'Asians',
+        group: 'more',
+        sides: [
+            { key: 'asian_rise', label: 'Asian Rise', contract_type: 'ASIANU', tone: 'up' },
+            { key: 'asian_fall', label: 'Asian Fall', contract_type: 'ASIAND', tone: 'down' },
+        ],
+        units: ['t'],
+        default_duration: [5, 't'],
+        how: [
+            'Asian Rise: you win if the last tick is higher than the average of all the ticks in the contract.',
+            'Asian Fall: you win if the last tick is lower than the average of all the ticks in the contract.',
+        ],
+    },
+    {
+        id: 'high_low_ticks',
+        label: 'High/Low Ticks',
+        group: 'more',
+        sides: [
+            { key: 'high_tick', label: 'High Tick', contract_type: 'TICKHIGH', tone: 'up' },
+            { key: 'low_tick', label: 'Low Tick', contract_type: 'TICKLOW', tone: 'down' },
+        ],
+        units: ['t'],
+        default_duration: [5, 't'],
+        uses_selected_tick: true,
+        how: [
+            'Pick one of the next five ticks.',
+            'High Tick: you win if that tick is the highest of the five.',
+            'Low Tick: you win if that tick is the lowest of the five.',
+        ],
+    },
+    {
+        id: 'only_ups_downs',
+        label: 'Only Ups/Only Downs',
+        group: 'more',
+        sides: [
+            { key: 'only_ups', label: 'Only Ups', contract_type: 'RUNHIGH', tone: 'up' },
+            { key: 'only_downs', label: 'Only Downs', contract_type: 'RUNLOW', tone: 'down' },
+        ],
+        units: ['t'],
+        default_duration: [3, 't'],
+        how: [
+            'Only Ups: you win if every tick is higher than the one before it, for the whole contract.',
+            'Only Downs: you win if every tick is lower than the one before it, for the whole contract.',
+        ],
+    },
+    {
+        id: 'reset',
+        label: 'Reset Call/Reset Put',
+        group: 'more',
+        sides: [
+            { key: 'reset_call', label: 'Reset Call', contract_type: 'RESETCALL', tone: 'up' },
+            { key: 'reset_put', label: 'Reset Put', contract_type: 'RESETPUT', tone: 'down' },
+        ],
+        units: ['t', 's', 'm', 'h'],
+        default_duration: [5, 't'],
+        how: [
+            'Like Rise/Fall, but halfway through the barrier resets to the price at that moment if that helps you.',
+            'Reset Call: you win if the exit spot is higher than the entry spot or the reset spot.',
+            'Reset Put: you win if the exit spot is lower than the entry spot or the reset spot.',
+        ],
+    },
+    {
+        id: 'ends_between',
+        label: 'Ends Between/Ends Outside',
+        group: 'more',
+        sides: [
+            { key: 'ends_between', label: 'Ends Between', contract_type: 'EXPIRYRANGE', tone: 'up' },
+            { key: 'ends_outside', label: 'Ends Outside', contract_type: 'EXPIRYMISS', tone: 'down' },
+        ],
+        units: ['m', 'h', 'd'],
+        default_duration: [2, 'm'],
+        uses_two_barriers: true,
+        how: [
+            'Ends Between: you win if the exit spot is strictly between the high and low barriers.',
+            'Ends Outside: you win if the exit spot is above the high barrier or below the low barrier.',
+        ],
+    },
+    {
+        id: 'stays_between',
+        label: 'Stays Between/Goes Outside',
+        group: 'more',
+        sides: [
+            { key: 'stays_between', label: 'Stays Between', contract_type: 'RANGE', tone: 'up' },
+            { key: 'goes_outside', label: 'Goes Outside', contract_type: 'UPORDOWN', tone: 'down' },
+        ],
+        units: ['m', 'h', 'd'],
+        default_duration: [2, 'm'],
+        uses_two_barriers: true,
+        how: [
+            'Stays Between: you win if the market stays between the high and low barriers for the whole contract.',
+            'Goes Outside: you win if the market touches either barrier at any time during the contract.',
+        ],
+    },
 ];
 
 export const GROUP_LABELS: Record<TTradeType['group'], string> = {
     main: '',
     growth: 'Growth based',
     digits: 'Digit based',
+    more: 'More options',
 };
 
 export const getTradeType = (id: string) => TRADE_TYPES.find(t => t.id === id) ?? TRADE_TYPES[0];
@@ -260,6 +366,9 @@ export type TForm = {
     strike: string;
     take_profit: string;
     stop_loss: string;
+    barrier_high: string;
+    barrier_low: string;
+    selected_tick: number;
 };
 
 export const DEFAULT_FORM: TForm = {
@@ -277,6 +386,9 @@ export const DEFAULT_FORM: TForm = {
     strike: '+0.00',
     take_profit: '',
     stop_loss: '',
+    barrier_high: '+1.84',
+    barrier_low: '-1.84',
+    selected_tick: 1,
 };
 
 /** The contract type actually traded for a side, with Allow equals applied. */
@@ -311,6 +423,11 @@ export const buildParameters = (
     if (type.uses_multiplier) params.multiplier = form.multiplier;
     if (type.uses_payout_per_point) params.payout_per_point = form.payout_per_point;
     if (type.uses_strike) params.barrier = form.strike;
+    if (type.uses_two_barriers) {
+        params.barrier = form.barrier_high.trim();
+        params.barrier2 = form.barrier_low.trim();
+    }
+    if (type.uses_selected_tick) params.selected_tick = Math.max(1, Math.min(5, Math.trunc(form.selected_tick) || 1));
 
     const limit_order: Record<string, number> = {};
     const tp = Number(form.take_profit);

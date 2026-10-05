@@ -265,6 +265,48 @@ const TradePanel = (props: TProps) => {
                     </label>
                 )}
 
+                {type.uses_two_barriers && (
+                    <div className='mt-field-pair'>
+                        <label className='mt-field'>
+                            <span className='mt-field__label'>High barrier</span>
+                            <input
+                                className='mt-field__input'
+                                value={form.barrier_high}
+                                onChange={event => setForm({ barrier_high: event.target.value })}
+                                placeholder='+1.84'
+                            />
+                        </label>
+                        <label className='mt-field'>
+                            <span className='mt-field__label'>Low barrier</span>
+                            <input
+                                className='mt-field__input'
+                                value={form.barrier_low}
+                                onChange={event => setForm({ barrier_low: event.target.value })}
+                                placeholder='-1.84'
+                            />
+                        </label>
+                    </div>
+                )}
+
+                {type.uses_selected_tick && (
+                    <div className='mt-field'>
+                        <span className='mt-field__label'>Tick prediction</span>
+                        <div className='mt-chips mt-chips--ticks'>
+                            {[1, 2, 3, 4, 5].map(n => (
+                                <button
+                                    key={n}
+                                    type='button'
+                                    className={n === form.selected_tick ? 'is-active' : ''}
+                                    onClick={() => setForm({ selected_tick: n })}
+                                    aria-label={`Tick ${n}`}
+                                >
+                                    {n}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {type.uses_growth_rate && (
                     <div className='mt-field'>
                         <span className='mt-field__label'>Growth rate</span>
