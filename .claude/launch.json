@@ -6,6 +6,18 @@
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "dev"],
             "port": 4003
+        },
+        {
+            "name": "production-preview",
+            "runtimeExecutable": "node",
+            "runtimeArgs": ["server.js"],
+            "port": 3000
+        },
+        {
+            "name": "no-login-preview",
+            "runtimeExecutable": "node",
+            "runtimeArgs": ["-e", "process.env.PORT='3100'; require('./out/no-login-preview/server.js')"],
+            "port": 3100
         }
     ]
 }
