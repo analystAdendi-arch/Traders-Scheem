@@ -5,7 +5,7 @@ import { TDescriptionItem } from '../../pages/bot-builder/quick-strategy/types';
 export const D_ALEMBERT = (): TDescriptionItem[] => [
     {
         type: 'subtitle',
-        content: [localize('Exploring the D’Alembert strategy in Traders Scheeme')],
+        content: [localize('Exploring the D’Alembert strategy in Traders Scheem')],
         expanded: true,
         no_collapsible: false,
     },
@@ -23,7 +23,7 @@ export const D_ALEMBERT = (): TDescriptionItem[] => [
     },
     {
         type: 'text',
-        content: [localize('These are the trade parameters used for D’Alembert strategy in Traders Scheeme.')],
+        content: [localize('These are the trade parameters used for D’Alembert strategy in Traders Scheem.')],
     },
     {
         type: 'text',
@@ -71,7 +71,7 @@ export const D_ALEMBERT = (): TDescriptionItem[] => [
                 '3. If the first trade results in profit, the stake for the following trade will not reduce but remain at the initial stake. The strategy minimally trades at the initial stake of 1 USD. See A1.'
             ),
             localize(
-                '4. If the second trade results in a loss, Traders Scheeme will automatically increase your stake for the next trade by 2 USD. Traders Scheeme will continue to add 2 USD to the previous round’s stake after every losing trade. See A2.'
+                '4. If the second trade results in a loss, Traders Scheem will automatically increase your stake for the next trade by 2 USD. Traders Scheem will continue to add 2 USD to the previous round’s stake after every losing trade. See A2.'
             ),
             localize(
                 '5. If the next trades are profitable, the stake for the following trade will be reduced by 2 USD. This can be shown above where the stake of 3 USD is reduced to 1 USD. See A3.'
@@ -86,7 +86,7 @@ export const D_ALEMBERT = (): TDescriptionItem[] => [
         type: 'text',
         content: [
             localize(
-                "With Traders Scheeme, traders can set the profit and loss thresholds to secure potential profits and limit potential losses. This means that the trading bot will automatically stop when either the profit or loss thresholds are reached. It's a form of risk management that can potentially enhance returns. For example, if a trader sets the profit threshold at 100 USD and the strategy exceeds 100 USD of profit from all trades, then the bot will stop running."
+                "With Traders Scheem, traders can set the profit and loss thresholds to secure potential profits and limit potential losses. This means that the trading bot will automatically stop when either the profit or loss thresholds are reached. It's a form of risk management that can potentially enhance returns. For example, if a trader sets the profit threshold at 100 USD and the strategy exceeds 100 USD of profit from all trades, then the bot will stop running."
             ),
         ],
     },
@@ -166,7 +166,7 @@ export const D_ALEMBERT = (): TDescriptionItem[] => [
         type: 'text',
         content: [
             localize(
-                `${localize('The')} D'Alembert ${localize('system offers more balanced trading through controlled stake progression. With prudent risk management like stake limits, it can be effectively automated in Traders Scheeme. However, traders should thoroughly assess their risk appetite, test strategies on a demo account to align with their trading style before trading with real money. This allows optimising the approach and striking a balance between potential gains and losses whilst managing risk.')}`
+                `${localize('The')} D'Alembert ${localize('system offers more balanced trading through controlled stake progression. With prudent risk management like stake limits, it can be effectively automated in Traders Scheem. However, traders should thoroughly assess their risk appetite, test strategies on a demo account to align with their trading style before trading with real money. This allows optimising the approach and striking a balance between potential gains and losses whilst managing risk.')}`
             ),
         ],
     },

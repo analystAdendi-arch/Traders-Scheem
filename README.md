@@ -1,9 +1,9 @@
-# Traders Scheeme
+# Traders Scheem
 
 Trading bots and analysis tools on Deriv, at **https://traderscheem.com**: a visual bot
 builder (Blockly), free bots, auto and bulk trading, copy trading, the market scanner and
 analysis tool, and a built-in Manual Trader in the style of Deriv Trader. Every login,
-quote and trade goes through the Traders Scheeme Deriv app id.
+quote and trade goes through the Traders Scheem Deriv app id.
 
 Support is by WhatsApp only: **+254741030460** (header button and landing page).
 
@@ -17,7 +17,7 @@ none is secret):
 | Variable | Value | What it does |
 |---|---|---|
 | `NEXT_PUBLIC_DERIV_APP_ID` | `34AhEfRe2X1oVGu2p3e0J` | Deriv app id for OAuth login/sign-up and the trading socket. |
-| `NEXT_PUBLIC_DERIV_APP_NAME` | `Traders Scheeme` | App name in the header, tab title, splash and landing page. |
+| `NEXT_PUBLIC_DERIV_APP_NAME` | `Traders Scheem` | App name in the header, tab title, splash and landing page. |
 | `NEXT_PUBLIC_DERIV_REFERRAL_LINK` | `https://t.deriv.link?t=63PLZ8T6L73Q` | Sign-up referral link; its `t=` code is sent with every sign-up. |
 | `NEXT_PUBLIC_DERIV_ENV` | `production` | Live Deriv endpoints (`staging` for the staging ones). |
 

@@ -483,12 +483,12 @@ export const BOT_BUILDER_MOBILE: TMobileTourConfig[] = [
 
 export const DBOT_ONBOARDING_MOBILE: TMobileTourConfig[] = [
     {
-        header: <Localize i18n_default_text='Welcome to Traders Scheeme' />,
+        header: <Localize i18n_default_text='Welcome to Traders Scheem' />,
         content: [
             <span key='get-started-on-deriv-bot-wrapper'>
                 <Localize
                     key='get-started-on-deriv-bot'
-                    i18n_default_text='Let’s take a quick tour to discover how Traders Scheeme works. Press <0>Start</0> to begin.'
+                    i18n_default_text='Let’s take a quick tour to discover how Traders Scheem works. Press <0>Start</0> to begin.'
                     components={[<strong key={0} />]}
                 />
             </span>,
@@ -590,7 +590,7 @@ export const getTourDialogInfo = (is_mobile: boolean) => {
     return is_mobile ? (
         <Localize
             key='tour-dialog-info-mobile'
-            i18n_default_text='Here’s a quick guide on how to use Traders Scheeme on the go.'
+            i18n_default_text='Here’s a quick guide on how to use Traders Scheem on the go.'
         />
     ) : (
         <Localize key='tour-dialog-info-desktop' i18n_default_text='Learn how to build a bot with a simple strategy.' />
@@ -615,7 +615,7 @@ export const getTourDialogAction = (is_mobile: boolean) => {
 };
 
 export const onboarding_tour_header = (
-    <Localize key='onboarding-tour-header' i18n_default_text='Welcome to Traders Scheeme' />
+    <Localize key='onboarding-tour-header' i18n_default_text='Welcome to Traders Scheem' />
 );
 
 export const getBotBuilderTourHeader = (is_mobile: boolean) => {

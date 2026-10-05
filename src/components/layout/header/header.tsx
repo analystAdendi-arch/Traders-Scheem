@@ -17,14 +17,14 @@ import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
 import './header.scss';
 
-/** WhatsApp button that opens a chat with the Traders Scheeme support line. */
+/** WhatsApp button that opens a chat with the Traders Scheem support line. */
 const WhatsAppButton = () => (
     <a
         className='app-header__whatsapp'
         href={WHATSAPP_URL}
         target='_blank'
         rel='noopener noreferrer'
-        aria-label={`Chat with Traders Scheeme on WhatsApp (${WHATSAPP_NUMBER})`}
+        aria-label={`Chat with Traders Scheem on WhatsApp (${WHATSAPP_NUMBER})`}
         title={`WhatsApp us: ${WHATSAPP_NUMBER}`}
     >
         <WhatsAppIcon size={22} />

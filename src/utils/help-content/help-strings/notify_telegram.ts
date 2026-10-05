@@ -20,7 +20,7 @@ export default {
         ),
         localize('- Find the chat ID property in the response, and copy the value of the id property'),
         localize(
-            '4. Come back to Traders Scheeme and add the Notify Telegram block to the workspace. Paste the Telegram API token and chat ID into the block fields accordingly.'
+            '4. Come back to Traders Scheem and add the Notify Telegram block to the workspace. Paste the Telegram API token and chat ID into the block fields accordingly.'
         ),
     ],
 };

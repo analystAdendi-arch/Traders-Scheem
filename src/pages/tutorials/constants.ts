@@ -13,7 +13,7 @@ export const user_guide_content = (): TUserGuideContent[] => [
         id: 1,
         type: 'Tour',
         subtype: 'OnBoard',
-        content: localize('Get started on Traders Scheeme'),
+        content: localize('Get started on Traders Scheem'),
         src: getImageLocation('dbot-onboard-tour.png'),
         search_id: `${USER_GUIDE}-0`,
     },
@@ -31,7 +31,7 @@ export const guide_content = (): TGuideContent[] => [
     {
         id: 1,
         type: 'DBotVideo',
-        content: localize('An introduction to Traders Scheeme'),
+        content: localize('An introduction to Traders Scheem'),
         url: 'https://www.youtube.com/embed/lthEgaIY1uw',
         src: getImageLocation('intro_to_deriv_bot.webp'),
         search_id: `${VIDEOS}-0`,
@@ -39,7 +39,7 @@ export const guide_content = (): TGuideContent[] => [
     {
         id: 2,
         type: 'DBotVideo',
-        content: localize('How to build a basic trading bot with Traders Scheeme'),
+        content: localize('How to build a basic trading bot with Traders Scheem'),
         url: 'https://www.youtube.com/embed/mnpi2g7YakU',
         src: getImageLocation('build_a_bot.webp'),
         search_id: `${VIDEOS}-1`,
@@ -47,7 +47,7 @@ export const guide_content = (): TGuideContent[] => [
     {
         id: 3,
         type: 'DBotVideo',
-        content: `${localize('How to use')} Martingale ${localize('strategy on Traders Scheeme')}`,
+        content: `${localize('How to use')} Martingale ${localize('strategy on Traders Scheem')}`,
         url: 'https://www.youtube.com/embed/FSslvF7P00I',
         src: getImageLocation('how_to_use_martingale.webp'),
         search_id: `${VIDEOS}-2`,
@@ -55,7 +55,7 @@ export const guide_content = (): TGuideContent[] => [
     {
         id: 4,
         type: 'DBotVideo',
-        content: `${localize('Introducing')} ${localizeAccumulators()} ${localize('Options on Traders Scheeme: Available for automated trading')}`,
+        content: `${localize('Introducing')} ${localizeAccumulators()} ${localize('Options on Traders Scheem: Available for automated trading')}`,
         url: 'https://www.youtube.com/embed/uMBBmdNaadU',
         src: getImageLocation('introducing_accumulators_on_deriv_bot.webp'),
         search_id: `${VIDEOS}-3`,
@@ -64,12 +64,12 @@ export const guide_content = (): TGuideContent[] => [
 
 export const faq_content = (): TFaqContent[] => [
     {
-        title: localize('What is Traders Scheeme?'),
+        title: localize('What is Traders Scheem?'),
         description: [
             {
                 type: 'text',
                 content: localize(
-                    "Traders Scheeme is a web-based strategy builder for trading digital options. It’s a platform where you can build your own automated trading bot using drag-and-drop 'blocks'."
+                    "Traders Scheem is a web-based strategy builder for trading digital options. It’s a platform where you can build your own automated trading bot using drag-and-drop 'blocks'."
                 ),
             },
         ],
@@ -150,7 +150,7 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-3',
     },
     {
-        title: localize('Do you offer pre-built trading bots on Traders Scheeme?'),
+        title: localize('Do you offer pre-built trading bots on Traders Scheem?'),
         description: [
             {
                 type: 'text',
@@ -164,7 +164,7 @@ export const faq_content = (): TFaqContent[] => [
         description: [
             {
                 type: 'text',
-                content: `${localize('A quick strategy is a ready-made strategy that you can use in Traders Scheeme. There are 3 quick strategies you can choose from:')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind.`,
+                content: `${localize('A quick strategy is a ready-made strategy that you can use in Traders Scheem. There are 3 quick strategies you can choose from:')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind.`,
             },
             {
                 type: 'text',
@@ -216,7 +216,7 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-6',
     },
     {
-        title: localize('How do I import my own trading bot into Traders Scheeme?'),
+        title: localize('How do I import my own trading bot into Traders Scheem?'),
         description: [
             {
                 type: 'text',
@@ -307,12 +307,12 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-9',
     },
     {
-        title: localize('How do I control my losses with Traders Scheeme?'),
+        title: localize('How do I control my losses with Traders Scheem?'),
         description: [
             {
                 type: 'text',
                 content: localize(
-                    'There are several ways to control your losses with Traders Scheeme. Here’s a simple example of how you can implement loss control in your strategy:'
+                    'There are several ways to control your losses with Traders Scheem. Here’s a simple example of how you can implement loss control in your strategy:'
                 ),
             },
             {
@@ -386,7 +386,7 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-10',
     },
     {
-        title: localize('Can I run Traders Scheeme on multiple tabs in my web browser?'),
+        title: localize('Can I run Traders Scheem on multiple tabs in my web browser?'),
         description: [
             {
                 type: 'text',
@@ -398,11 +398,11 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-11',
     },
     {
-        title: localize('Can I trade cryptocurrencies on Traders Scheeme?'),
+        title: localize('Can I trade cryptocurrencies on Traders Scheem?'),
         description: [
             {
                 type: 'text',
-                content: localize("No, we don't offer cryptocurrencies on Traders Scheeme."),
+                content: localize("No, we don't offer cryptocurrencies on Traders Scheem."),
             },
         ],
         search_id: 'faq-12',
@@ -413,14 +413,14 @@ export const faq_content = (): TFaqContent[] => [
             {
                 type: 'text',
                 content: localize(
-                    "No, we don't. However, you'll find quick strategies on Traders Scheeme that'll help you build your own trading bot for free."
+                    "No, we don't. However, you'll find quick strategies on Traders Scheem that'll help you build your own trading bot for free."
                 ),
             },
         ],
         search_id: 'faq-13',
     },
     {
-        title: localize('In which countries is Traders Scheeme available?'),
+        title: localize('In which countries is Traders Scheem available?'),
         description: [
             {
                 type: 'text',
@@ -432,11 +432,11 @@ export const faq_content = (): TFaqContent[] => [
         search_id: 'faq-14',
     },
     {
-        title: localize('If I close my web browser, will Traders Scheeme continue to run?'),
+        title: localize('If I close my web browser, will Traders Scheem continue to run?'),
         description: [
             {
                 type: 'text',
-                content: localize('No, Traders Scheeme will stop running when your web browser is closed.'),
+                content: localize('No, Traders Scheem will stop running when your web browser is closed.'),
             },
         ],
         search_id: 'faq-15',
@@ -446,7 +446,7 @@ export const faq_content = (): TFaqContent[] => [
         description: [
             {
                 type: 'text',
-                content: `${localize('Three of the most commonly used strategies in automated trading are')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind — ${localize('you can find them all ready-made and waiting for you in Traders Scheeme.')}`,
+                content: `${localize('Three of the most commonly used strategies in automated trading are')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind — ${localize('you can find them all ready-made and waiting for you in Traders Scheem.')}`,
             },
         ],
         search_id: 'faq-16',
@@ -457,7 +457,7 @@ export const faq_content = (): TFaqContent[] => [
             {
                 type: 'text',
                 content: localize(
-                    '<a href="https://www.youtube.com/watch?v=QdI5zCkO4Gk&t=203s" target="_blank">Watch this video</a> to learn how to build a trading bot on Traders Scheeme. Also, <a href="https://deriv.com/academy/blog/posts/how-to-build-a-basic-trading-bot-with-dbot/" target="_blank">check out this blog post</a> on building a trading bot.'
+                    '<a href="https://www.youtube.com/watch?v=QdI5zCkO4Gk&t=203s" target="_blank">Watch this video</a> to learn how to build a trading bot on Traders Scheem. Also, <a href="https://deriv.com/academy/blog/posts/how-to-build-a-basic-trading-bot-with-dbot/" target="_blank">check out this blog post</a> on building a trading bot.'
                 ),
             },
         ],
@@ -470,7 +470,7 @@ export const quick_strategy_content = (): TQuickStrategyContent[] => [
         qs_name: 'MARTINGALE',
         type: `${localize('About')} Martingale`,
         content: [
-            `${localize('Exploring the')} Martingale ${localize('strategy in Traders Scheeme')}`,
+            `${localize('Exploring the')} Martingale ${localize('strategy in Traders Scheem')}`,
             `${localize('An example of')} Martingale ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-0`,
@@ -479,7 +479,7 @@ export const quick_strategy_content = (): TQuickStrategyContent[] => [
         qs_name: 'D_ALEMBERT',
         type: `${localize('About')} D'Alembert`,
         content: [
-            `${localize('Exploring the')} D'Alembert ${localize('strategy in Traders Scheeme')}`,
+            `${localize('Exploring the')} D'Alembert ${localize('strategy in Traders Scheem')}`,
             `${localize('An example of')} D'Alembert ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-1`,
@@ -488,7 +488,7 @@ export const quick_strategy_content = (): TQuickStrategyContent[] => [
         qs_name: 'OSCARS_GRIND',
         type: `${localize('About')} Oscar's Grind`,
         content: [
-            `${localize('Exploring the')} Oscar's Grind ${localize('strategy in Traders Scheeme')}`,
+            `${localize('Exploring the')} Oscar's Grind ${localize('strategy in Traders Scheem')}`,
             `${localize('An example of')} Oscar's Grind ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-2`,
@@ -497,7 +497,7 @@ export const quick_strategy_content = (): TQuickStrategyContent[] => [
         qs_name: 'REVERSE_MARTINGALE',
         type: `${localize('About')} Reverse Martingale`,
         content: [
-            `${localize('Exploring the')} Reverse Martingale ${localize('strategy in Traders Scheeme')}`,
+            `${localize('Exploring the')} Reverse Martingale ${localize('strategy in Traders Scheem')}`,
             `${localize('An example of')} Reverse Martingale ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-3`,
@@ -506,7 +506,7 @@ export const quick_strategy_content = (): TQuickStrategyContent[] => [
         qs_name: 'REVERSE_D_ALEMBERT',
         type: `${localize('About')} Reverse D'Alembert`,
         content: [
-            `${localize('Exploring the')} Reverse D'Alembert ${localize('strategy in Traders Scheeme')}`,
+            `${localize('Exploring the')} Reverse D'Alembert ${localize('strategy in Traders Scheem')}`,
             `${localize('An example of')} Reverse D'Alembert ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-4`,
@@ -515,7 +515,7 @@ export const quick_strategy_content = (): TQuickStrategyContent[] => [
         qs_name: 'STRATEGY_1_3_2_6',
         type: `${localize('About')} 1-3-2-6`,
         content: [
-            `${localize('Exploring the')} 1-3-2-6 ${localize('strategy in Traders Scheeme')}`,
+            `${localize('Exploring the')} 1-3-2-6 ${localize('strategy in Traders Scheem')}`,
             `${localize('An example of')} 1-3-2-6 ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-5`,

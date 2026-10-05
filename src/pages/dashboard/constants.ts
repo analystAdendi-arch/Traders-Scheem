@@ -8,7 +8,7 @@ export type TSidebarItem = {
 
 export const SIDEBAR_INTRO = (): TSidebarItem[] => [
     {
-        label: localize('Welcome to Traders Scheeme!'),
+        label: localize('Welcome to Traders Scheem!'),
         content: [
             {
                 data: localize(
@@ -21,14 +21,14 @@ export const SIDEBAR_INTRO = (): TSidebarItem[] => [
     },
     {
         label: localize('Guide'),
-        content: [{ data: localize('Traders Scheeme - your automated trading partner') }],
+        content: [{ data: localize('Traders Scheem - your automated trading partner') }],
         link: true,
     },
     {
         label: localize('FAQs'),
         content: [
             {
-                data: localize('What is Traders Scheeme?'),
+                data: localize('What is Traders Scheem?'),
                 faq_id: 'faq-0',
             },
             {

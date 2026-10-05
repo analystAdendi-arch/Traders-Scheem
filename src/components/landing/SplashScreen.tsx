@@ -11,7 +11,7 @@ const MAX_MS = 8000;
 
 const STEPS = ['Connecting to Deriv markets...', 'Loading live market data...', 'Preparing your workspace...'];
 
-// "Traders Scheeme" -> ["Traders", "Scheeme"]: split at the first inner capital.
+// "Traders Scheem" -> ["Traders", "Scheem"]: split at the first inner capital.
 const splitName = (name: string): [string, string] => {
     for (let i = 1; i < name.length; i++) {
         if (/[A-Z]/.test(name[i])) return [name.slice(0, i).trim(), name.slice(i)];
@@ -114,7 +114,7 @@ export const OrbitEmblem = ({ size = 'lg' }: { size?: 'lg' | 'md' }) => {
     );
 };
 
-/** "Traders Scheeme" as a two-tone gradient title. */
+/** "Traders Scheem" as a two-tone gradient title. */
 export const BrandName = ({ className = '' }: { className?: string }) => {
     const [first, second] = splitName(getAppName());
     return (

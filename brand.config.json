@@ -1,5 +1,5 @@
 {
-    "brand_name": "Traders Scheeme",
+    "brand_name": "Traders Scheem",
     "brand_domain": "traderscheem.com",
     "brand_hostname": {
         "staging": "staging.traderscheem.com/dashboard",
@@ -93,7 +93,7 @@
         "css_variable_prefix": "--brand"
     },
     "platform": {
-        "name": "Traders Scheeme",
+        "name": "Traders Scheem",
         "footer": {
             "enable_language_settings": false,
             "enable_theme_toggle": true

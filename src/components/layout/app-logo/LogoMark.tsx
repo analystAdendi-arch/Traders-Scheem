@@ -17,7 +17,7 @@ type TLogoMarkProps = {
 };
 
 /**
- * "Traders Scheeme" -> ["Traders ", "Scheeme"]: splits at the first inner capital so
+ * "Traders Scheem" -> ["Traders ", "Scheem"]: splits at the first inner capital so
  * each half gets its own colour and the emblem initials read "TS".
  */
 const splitWordmark = (name: string): [string, string] => {

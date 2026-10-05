@@ -1,5 +1,5 @@
 /**
- * Generates the Traders Scheeme background artwork into public/backgrounds/.
+ * Generates the Traders Scheem background artwork into public/backgrounds/.
  *
  *   node scripts/generate-backgrounds.js
  *

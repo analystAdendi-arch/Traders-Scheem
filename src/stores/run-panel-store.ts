@@ -397,8 +397,8 @@ export default class RunPanelStore {
         this.onOkButtonClick = this.onCloseDialog;
         this.onCancelButtonClick = null;
         this.dialog_options = {
-            title: localize("Traders Scheeme isn't quite ready for real accounts"),
-            message: localize('Please switch to your demo account to run your Traders Scheeme.'),
+            title: localize("Traders Scheem isn't quite ready for real accounts"),
+            message: localize('Please switch to your demo account to run your Traders Scheem.'),
         };
         this.is_dialog_open = true;
     };
@@ -423,7 +423,7 @@ export default class RunPanelStore {
         this.onCancelButtonClick = null;
         this.dialog_options = {
             title: localize('Import error'),
-            message: localize('This strategy is currently not compatible with Traders Scheeme.'),
+            message: localize('This strategy is currently not compatible with Traders Scheem.'),
         };
         this.is_dialog_open = true;
     };

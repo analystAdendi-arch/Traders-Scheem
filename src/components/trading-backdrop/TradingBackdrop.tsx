@@ -3,7 +3,7 @@ import SceneFx from '@/components/scene-fx/SceneFx';
 import './trading-backdrop.scss';
 
 /**
- * Shared dark scene (Dashboard, Free Bots): the Traders Scheeme cosmic artwork
+ * Shared dark scene (Dashboard, Free Bots): the Traders Scheem cosmic artwork
  * (public/backgrounds/cosmos-dark.svg - violet nebulae, silk light-ribbons, a gold
  * ringed planet and a constellation network) with a little life on top: drifting
  * glow orbs, twinkling stars and the odd shooting star. Purely decorative.

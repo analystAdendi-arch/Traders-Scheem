@@ -174,7 +174,7 @@ const AppContent = observer(() => {
                 </Suspense>
             )}
             {is_loading ? (
-                <ChunkLoader message={localize('Initializing your Traders Scheeme account...')} />
+                <ChunkLoader message={localize('Initializing your Traders Scheem account...')} />
             ) : (
                 <AuthLoadingWrapper>
                     <ThemeProvider theme={is_dark_mode_on ? 'dark' : 'light'}>

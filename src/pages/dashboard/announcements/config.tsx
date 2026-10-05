@@ -93,7 +93,7 @@ export const ANNOUNCEMENTS: Record<string, TAnnouncement> = {
     MOVING_STRATEGIES_ANNOUNCE: {
         announcement: {
             id: 'MOVING_STRATEGIES_ANNOUNCE',
-            main_title: localize('Moving strategies to Traders Scheeme'),
+            main_title: localize('Moving strategies to Traders Scheem'),
             confirm_button_text: localize('Import strategy'),
             base_classname: 'announcement-dialog',
             title: (
@@ -105,7 +105,7 @@ export const ANNOUNCEMENTS: Record<string, TAnnouncement> = {
             numbered_content: [
                 {
                     id: 0,
-                    text: localize('Download your strategy in XML format and import it to Traders Scheeme.'),
+                    text: localize('Download your strategy in XML format and import it to Traders Scheem.'),
                 },
                 {
                     id: 1,
@@ -121,7 +121,7 @@ export const ANNOUNCEMENTS: Record<string, TAnnouncement> = {
                     id: 0,
                     text: (
                         <Localize
-                            i18n_default_text='<0>Note</0>: Uploading complex strategies may take some time. Saving them from Traders Scheeme ensures quicker access later. If you have questions, contact us via <1/>.'
+                            i18n_default_text='<0>Note</0>: Uploading complex strategies may take some time. Saving them from Traders Scheem ensures quicker access later. If you have questions, contact us via <1/>.'
                             components={[<strong key={0} />, <OpenLiveChatLink className='' key={1} />]}
                         />
                     ),
@@ -150,7 +150,7 @@ export const ANNOUNCEMENTS: Record<string, TAnnouncement> = {
             base_classname: 'announcement-dialog',
             title: (
                 <Localize
-                    i18n_default_text='We have updated our Blockly system in Traders Scheeme from <0>version 3 to version 10</0>. This brings:'
+                    i18n_default_text='We have updated our Blockly system in Traders Scheem from <0>version 3 to version 10</0>. This brings:'
                     components={[<strong key={0} />]}
                 />
             ),
@@ -186,7 +186,7 @@ export const ANNOUNCEMENTS: Record<string, TAnnouncement> = {
     ACCUMULATOR_ANNOUNCE: {
         announcement: {
             id: 'ACCUMULATOR_ANNOUNCE',
-            main_title: `${localizeAccumulators()} ${localize('now on Traders Scheeme')}`,
+            main_title: `${localizeAccumulators()} ${localize('now on Traders Scheem')}`,
             confirm_button_text: localize('Try now'),
             cancel_button_text: localize('Learn more'),
             base_classname: 'announcement-dialog',
@@ -252,7 +252,7 @@ export const BOT_ANNOUNCEMENTS_LIST: TAnnouncementItem[] = [
     {
         id: 'MOVING_STRATEGIES_ANNOUNCE',
         icon: IconAnnounce,
-        title: localize('Moving strategies to Traders Scheeme'),
+        title: localize('Moving strategies to Traders Scheem'),
         message: localize('Follow these steps to smoothly transfer your strategies'),
         date: '1 August 2024 00:00 UTC',
         buttonAction: BUTTON_ACTION_TYPE.MODAL_BUTTON_ACTION,
@@ -262,7 +262,7 @@ export const BOT_ANNOUNCEMENTS_LIST: TAnnouncementItem[] = [
         id: 'BLOCKLY_ANNOUNCE',
         icon: IconAnnounce,
         title: localize('Google Blockly v10 update'),
-        message: localize('We have updated our Blockly system in Traders Scheeme from version 3 to version 10.'),
+        message: localize('We have updated our Blockly system in Traders Scheem from version 3 to version 10.'),
         date: '24 July 2024 00:00 UTC',
         buttonAction: BUTTON_ACTION_TYPE.MODAL_BUTTON_ACTION,
         actionText: '',
@@ -270,7 +270,7 @@ export const BOT_ANNOUNCEMENTS_LIST: TAnnouncementItem[] = [
     {
         id: 'ACCUMULATOR_ANNOUNCE',
         icon: IconAnnounce,
-        title: `${localizeAccumulators()} ${localize('is now on Traders Scheeme')}`,
+        title: `${localizeAccumulators()} ${localize('is now on Traders Scheem')}`,
         message: `${localize('Boost your trading strategy with')} ${localizeAccumulators()}.`,
         date: '2 July 2024 00:00 UTC',
         buttonAction: BUTTON_ACTION_TYPE.MODAL_BUTTON_ACTION,
