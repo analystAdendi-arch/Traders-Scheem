@@ -376,6 +376,59 @@
     }
 }
 
+// Trade-type bar, in Deriv Trader's pill style.
+.mt-types {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    margin: 0 1.2rem 0.8rem 0;
+    padding: 0.6rem 0.8rem;
+    border-radius: 0 0.8rem 0.8rem 0.8rem;
+    background: var(--mt-card);
+    overflow-x: auto;
+    scrollbar-width: thin;
+
+    &__sep {
+        flex: none;
+        width: 1px;
+        height: 2.2rem;
+        margin: 0 0.4rem;
+        background: var(--mt-line);
+    }
+
+    &__chip {
+        flex: none;
+        padding: 0.7rem 1.4rem;
+        border: 0;
+        border-radius: 999px;
+        background: var(--mt-field);
+        color: var(--mt-ink) !important;
+        font-size: 1.3rem;
+        white-space: nowrap;
+
+        &:hover {
+            background: var(--mt-field-hover);
+        }
+
+        &.is-active {
+            background: var(--mt-strong);
+            color: var(--mt-card) !important;
+            font-weight: 700;
+        }
+
+        // Not offered on this market: still clickable - it opens the market picker.
+        &.is-off:not(.is-active) {
+            color: var(--mt-muted) !important;
+        }
+    }
+
+    @media (max-width: 900px) {
+        margin: 0 0 0.8rem;
+        border-radius: 0.8rem;
+    }
+}
+
 .mt-body {
     display: flex;
     flex: 1;

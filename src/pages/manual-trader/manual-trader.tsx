@@ -10,7 +10,7 @@
  * OAuth app id and the account the site is signed in as. Only Deposit opens Deriv's
  * cashier, in a new tab, since funds can only be added there.
  */
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { generateOAuthURL, standalone_routes } from '@/components/shared';
@@ -30,6 +30,7 @@ import {
     lastDigit,
     TForm,
     TMarket,
+    TRADE_TYPES,
     TTradeTypeId,
 } from './trade-types';
 import TradePanel, { money, PositionsList, TPosition, TProposal } from './TradePanel';
@@ -467,6 +468,27 @@ const ManualTrader = observer(() => {
         [picker]
     );
 
+    /** Trade-type bar: switch type on this market, or pick a market that offers it. */
+    const chooseType = useCallback(
+        (id: TTradeTypeId) => {
+            const next = getTradeType(id);
+            const ok = !offer || next.sides.every(s => offer.types.has(s.contract_type));
+            setTabState(prev => ({
+                ...prev,
+                tabs: prev.tabs.map(t => (t.id === prev.active ? { ...t, trade_type: id } : t)),
+            }));
+            if (!ok) setPicker('edit');
+        },
+        [offer]
+    );
+
+    // Keep the chosen type in view when the bar scrolls sideways.
+    useEffect(() => {
+        document
+            .querySelector('.mt-types__chip.is-active')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }, [tab.trade_type]);
+
     const closeTab = (id: string) =>
         setTabState(prev => {
             if (prev.tabs.length < 2) return prev;
@@ -688,6 +710,28 @@ const ManualTrader = observer(() => {
                         )}
                     </div>
                 </header>
+
+                {/* Every trade type in view: Rise/Fall, Over/Under, Even/Odd and the rest. */}
+                <nav className='mt-types' aria-label='Trade types'>
+                    {TRADE_TYPES.map((t, i) => {
+                        const starts_group = i > 0 && TRADE_TYPES[i - 1].group !== t.group;
+                        const ok = !offer || t.sides.every(sd => offer.types.has(sd.contract_type));
+                        return (
+                            <Fragment key={t.id}>
+                                {starts_group && <span className='mt-types__sep' aria-hidden='true' />}
+                                <button
+                                    type='button'
+                                    className={`mt-types__chip ${t.id === type.id ? 'is-active' : ''} ${ok ? '' : 'is-off'}`}
+                                    aria-pressed={t.id === type.id}
+                                    title={ok ? t.label : `${t.label} is not offered on ${market?.name ?? tab.symbol} - choose a market`}
+                                    onClick={() => chooseType(t.id)}
+                                >
+                                    {t.label}
+                                </button>
+                            </Fragment>
+                        );
+                    })}
+                </nav>
 
                 <div className='mt-body'>
                     <section className='mt-stage'>
