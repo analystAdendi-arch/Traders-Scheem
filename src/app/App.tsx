@@ -3,7 +3,7 @@ import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { cleanupUrl, handleOAuthCallback } from '@/external/deriv-core';
 import ChunkLoader from '@/components/loader/chunk-loader';
-import { getOAuthRedirectUri } from '@/components/shared/utils/config/config';
+import { getOAuthRedirectUri, takeReturnTab } from '@/components/shared/utils/config/config';
 import LocalStorageSyncWrapper from '@/components/localStorage-sync-wrapper';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { useAccountSwitching } from '@/hooks/useAccountSwitching';
@@ -114,10 +114,17 @@ function App() {
                 console.error('OAuth callback error:', error);
             } finally {
                 cleanupUrl(window.location.origin);
-                // cleanupUrl only rewrites the address, so a login that returned
-                // to /callback would sit on a dead route. Land on the app root.
+                // Back to the tab the user logged in from (e.g. #manual_trader), else the
+                // app root. cleanupUrl only rewrites the address, so a login that returned
+                // to /callback would otherwise sit on a dead route.
+                const return_tab = takeReturnTab();
+                const target = `${window.location.origin}/${return_tab ? `#${return_tab}` : ''}`;
                 if (window.location.pathname !== '/') {
-                    window.location.replace(`${window.location.origin}/`);
+                    window.location.replace(target);
+                } else if (return_tab) {
+                    // Already on '/': a hash-only change would not reload, so set it and reload.
+                    window.history.replaceState(null, '', target);
+                    window.location.reload();
                 }
             }
         };

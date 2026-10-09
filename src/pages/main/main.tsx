@@ -84,19 +84,21 @@ const AppWrapper = observer(() => {
     const { clear } = summary_card;
     const { DASHBOARD, BOT_BUILDER } = DBOT_TABS;
     const init_render = React.useRef(true);
+    // One name per tab, in DBOT_TABS order (constants/bot-contents.ts): the address
+    // #name opens tabs[index], and login returns to a tab by this name.
     const hash = [
         'dashboard',
         'bot_builder',
         'chart',
         'tutorial',
         'free_bots',
+        'auto_trader',
         'analysis_tool',
         'scanner',
-        'auto_trader',
         'manual_trader',
-        'trading_view',
         'bulk_trader',
         'copy_trader',
+        'trading_view',
     ];
     const { isDesktop } = useDevice();
     const location = useLocation();

@@ -99,6 +99,38 @@ export const getDebugServiceWorker = () => {
  */
 export const getOAuthRedirectUri = (): string => `${window.location.origin}/callback`;
 
+/*
+ * Return-to-tab after login. Deriv always comes back to /callback, so the tab the
+ * user was on (its #hash, e.g. #manual_trader) is noted just before leaving for
+ * Deriv and restored once the login completes. Kept for 30 minutes at most.
+ */
+const RETURN_TAB_KEY = 'ts-login-return-tab';
+const RETURN_TAB_TTL_MS = 30 * 60 * 1000;
+
+export const rememberReturnTab = () => {
+    try {
+        const hash = window.location.hash.replace(/^#/, '');
+        if (hash) localStorage.setItem(RETURN_TAB_KEY, JSON.stringify({ hash, at: Date.now() }));
+        else localStorage.removeItem(RETURN_TAB_KEY);
+    } catch {
+        /* storage blocked: the user lands on the home page as before */
+    }
+};
+
+/** The tab to reopen after login (without '#'), read once and then forgotten. */
+export const takeReturnTab = (): string => {
+    try {
+        const saved = JSON.parse(localStorage.getItem(RETURN_TAB_KEY) || 'null');
+        localStorage.removeItem(RETURN_TAB_KEY);
+        if (saved?.hash && Date.now() - Number(saved.at) < RETURN_TAB_TTL_MS && /^[a-z_]+$/.test(saved.hash)) {
+            return saved.hash;
+        }
+    } catch {
+        /* nothing saved */
+    }
+    return '';
+};
+
 /**
  * Generates the OAuth login or sign-up URL using vendored deriv-core
  *
@@ -109,6 +141,9 @@ export const generateOAuthURL = async (prompt?: string): Promise<string> => {
     try {
         const clientId = process.env.NEXT_PUBLIC_DERIV_APP_ID;
         if (!clientId) return '';
+
+        // Every login and sign-up passes through here, so note the tab to come back to.
+        rememberReturnTab();
 
         const config: AuthConfig = {
             clientId,
