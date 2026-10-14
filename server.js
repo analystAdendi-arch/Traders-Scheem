@@ -40,6 +40,24 @@ const TYPES = {
     '.symbols': 'text/plain; charset=utf-8',
 };
 
+/** Replaces DTrader's old service worker: clear its caches, unregister, reload. */
+const DTRADER_SW_KILL_SWITCH = `
+const DTRADER_CACHES = ['google-fonts-stylesheets', 'google-fonts-webfonts', 'cdn-resources', 'assets',
+    'core-js-files', 'smartchart-files', 'core-css-files', 'packages-files'];
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', event => {
+    event.waitUntil((async () => {
+        const names = await caches.keys();
+        await Promise.all(names
+            .filter(name => DTRADER_CACHES.includes(name) || name.startsWith('workbox-'))
+            .map(name => caches.delete(name)));
+        await self.registration.unregister();
+        const pages = await self.clients.matchAll({ type: 'window' });
+        pages.forEach(page => page.navigate(page.url));
+    })());
+});
+`;
+
 const COMPRESSIBLE = /^(text\/|application\/(json|xml|javascript|wasm))/;
 
 const send = (res, status, body, headers = {}) => {
@@ -160,8 +178,37 @@ const server = http.createServer((req, res) => {
         return send(res, 405, 'Method not allowed', { Allow: 'GET, HEAD' });
     }
 
+    // The embedded DTrader may be framed by Traders Scheem itself and nothing
+    // else - the server-side replacement for its old script anti-clickjack.
+    if (/^\/dtrader(\/|$)/.test((req.url || '/').split('?')[0])) {
+        res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
+        res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    }
+
+    // DTrader's template installed a service worker at /dtrader/ whose
+    // cache-first rule also matched its pages; this self-removing worker
+    // clears it from any browser that still has one.
+    if ((req.url || '').split('?')[0] === '/dtrader/service-worker.js') {
+        res.writeHead(200, {
+            'Content-Type': 'text/javascript; charset=utf-8',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+        });
+        return res.end(DTRADER_SW_KILL_SWITCH);
+    }
+
     const file = resolveFile(req.url || '/');
     if (file) return serve(req, res, file);
+
+    // The embedded DTrader (Manual Trader tab) is a second SPA at /dtrader/,
+    // with its own router: its unknown paths get its own entry point. A path
+    // ending in a file extension is a missing file (a real 404).
+    const url_path = (req.url || '/').split('?')[0];
+    if (/^\/dtrader(\/|$)/.test(url_path)) {
+        const is_asset = /\.[a-z0-9]+$/i.test(url_path);
+        const dtrader_index = path.join(ROOT, 'dtrader', 'index.html');
+        if (!is_asset && fs.existsSync(dtrader_index)) return serve(req, res, dtrader_index, 200);
+        return send(res, 404, 'Not found', { 'Content-Type': 'text/plain; charset=utf-8' });
+    }
 
     // Unknown path: hand the SPA its entry point so the router can take over.
     const index = path.join(ROOT, 'index.html');

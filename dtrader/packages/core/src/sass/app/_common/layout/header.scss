@@ -1,0 +1,309 @@
+/** @define header; weak */
+.header {
+    position: absolute;
+    box-sizing: border-box;
+    height: $HEADER_HEIGHT;
+    width: 100%;
+    top: 0;
+    transition: opacity 0.3s;
+    backface-visibility: hidden;
+    background-color: var(--color-surface-primary);
+    border-bottom: 1px solid var(--color-surface-border);
+
+    @include tablet-or-desktop-screen {
+        display: none; // Hide header on tablet and desktop
+    }
+
+    &--is-disabled:after {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    &--is-hidden {
+        display: none;
+    }
+
+    &__menu-mobile-body-wrapper {
+        position: relative;
+        overflow-y: auto;
+        height: calc(100% - 5.6rem);
+    }
+    &__menu-section {
+        display: flex;
+        flex-direction: column;
+        padding: 1.6rem 0 2.4rem;
+    }
+    &__menu-section-header {
+        padding: 0 1.6rem;
+    }
+    &__menu-section-title {
+        color: var(--color-text-primary);
+    }
+    &__menu-logout {
+        height: 7.2rem;
+        .header__menu-mobile-link-text {
+            border-bottom: none;
+
+            // Target the Text component inside
+            * {
+                color: var(--color-text-danger);
+            }
+        }
+    }
+    &__menu-mobile-theme {
+        border-bottom: 1px solid var(--color-surface-border);
+        padding-right: 0;
+
+        &--responsible-trading {
+            border-bottom: 1px solid var(--color-surface-border);
+        }
+    }
+
+    &__menu--separator {
+        border-right: 1px solid var(--color-surface-border);
+        width: 2rem;
+        height: 3.2rem;
+        margin-right: 1rem;
+    }
+    &__menu--dtrader--separator {
+        border-right: 1px solid var(--color-surface-border);
+        margin-top: 0.8rem;
+        height: 3.2rem;
+
+        &--account {
+            margin-right: 1rem;
+        }
+    }
+
+    &__menu__redirect {
+        display: flex;
+
+        &--link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            text-decoration: none;
+        }
+    }
+
+    &__redirect--dtratder {
+        display: flex;
+        margin-left: 50rem;
+
+        &--link {
+            display: flex;
+            align-items: center;
+            margin-right: 5rem;
+            padding: 0.5rem;
+            text-decoration: none;
+        }
+    }
+
+    &__menu-mobile-link {
+        text-decoration: none;
+        display: flex;
+        flex: 1;
+        height: 100%;
+        align-items: center;
+
+        &--active {
+            .header__menu-mobile-link-text {
+                font-weight: bold;
+            }
+        }
+        &-text {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--color-surface-border);
+        }
+        &-icon {
+            margin-right: 16px;
+        }
+        &-suffix-icon {
+            @include rtl {
+                rotate: 180deg;
+            }
+        }
+        &-flag-icon {
+            margin-right: 16px;
+        }
+    }
+    &__menu-items {
+        display: flex;
+        position: relative;
+        box-sizing: border-box;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__menu-divider {
+        margin-left: 20rem;
+    }
+
+    &__menu-toggle {
+        align-self: center;
+        display: flex;
+    }
+    &__menu-links {
+        height: 100%;
+        align-self: center;
+
+        @include mobile-or-tablet-screen {
+            display: none;
+        }
+    }
+    &__menu-link {
+        height: 100%;
+        padding: 0 1.6em;
+        text-decoration: none;
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-evenly;
+        transition: background-color 0.3s;
+        cursor: pointer;
+
+        &-text {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            @include typeface(--title-left-normal-black);
+            padding: 0.5em 0;
+            position: relative;
+            color: var(--color-text-primary);
+            @include colorIcon(var(--color-text-primary), none, var(--color-text-primary));
+        }
+        &:hover:not(&--active) {
+            background-color: var(--color-interactive-hover);
+        }
+        &--active {
+            & > .header__menu-link-text[title] {
+                font-weight: bold;
+                color: var(--color-text-primary);
+
+                &:after {
+                    color: var(--color-text-primary);
+                }
+            }
+            .header__icon {
+                @extend %inline-icon-active;
+            }
+        }
+    }
+    &__logo {
+        padding: 0 1.6rem;
+    }
+
+    &__title {
+        display: inline-block;
+        font-weight: bold;
+        color: var(--color-text-primary);
+    }
+    &__icon {
+        vertical-align: middle;
+    }
+    @include mobile-or-tablet-screen {
+        height: $MOBILE_HEADER_HEIGHT;
+
+        .header__menu-left,
+        .header__menu-right {
+            height: #{$MOBILE_HEADER_HEIGHT - 1px};
+        }
+    }
+
+    &__divider {
+        width: 0.1rem;
+        height: 3rem;
+        background: var(--color-surface-primary);
+
+        @include mobile {
+            height: 2.4rem;
+        }
+    }
+}
+
+.header-v2 {
+    height: $MOBILE_HEADER_DTRADER_V2_HEIGHT;
+    border-bottom: none;
+
+    &--with-banner {
+        height: $MOBILE_HEADER_DTRADER_V2_WITH_BANNER_HEIGHT;
+    }
+
+    &__acc-info {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+
+        &__name {
+            display: flex;
+            align-items: center;
+            gap: var(--core-spacing-200);
+        }
+
+        &__balance:is(h5) {
+            color: var(--core-color-opacity-black-600);
+        }
+
+        &__container {
+            height: $MOBILE_HEADER_DTRADER_V2_HEIGHT;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-inline: var(--core-spacing-800);
+
+            .notifications {
+                &__icon {
+                    fill: var(--core-color-opacity-black-600);
+                }
+                &__wrapper {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: var(--core-size-1800);
+                    height: var(--core-size-1800);
+                }
+            }
+        }
+
+        &__wrapper {
+            all: unset;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--core-spacing-400);
+        }
+
+        &__select-arrow {
+            pointer-events: none;
+            transform: rotate(0);
+            transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+            &--up {
+                transform: rotate(180deg);
+            }
+        }
+    }
+    &__loader {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--core-spacing-300) var(--semantic-spacing-general-md);
+    }
+}
+
+.contract-details-header-v2 {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: $MOBILE_HEADER_DTRADER_V2_HEIGHT;
+    padding: var(--core-spacing-400) var(--core-spacing-50);
+    .arrow {
+        position: absolute;
+        cursor: pointer;
+        left: var(--core-size-1200);
+    }
+}

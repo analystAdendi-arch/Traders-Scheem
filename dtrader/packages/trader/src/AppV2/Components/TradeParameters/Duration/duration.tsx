@@ -1,0 +1,254 @@
+import React, { useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+
+import { getUnitMap, isMobile, mapErrorMessage } from '@deriv/shared';
+import { useStore } from '@deriv/stores';
+import { ActionSheet, TextField, useSnackbar } from '@deriv-com/quill-ui';
+import { Localize, useTranslations } from '@deriv-com/translations';
+
+import { getSmallestDuration, isValidPersistedDuration } from 'AppV2/Utils/trade-params-utils';
+import { getDisplayedContractTypes } from 'AppV2/Utils/trade-types-utils';
+import { useTraderStore } from 'Stores/useTraderStores';
+
+import { TTradeParametersProps } from '../trade-parameters';
+
+import DurationActionSheetContainer from './container';
+import DurationDesktop from './duration-desktop';
+
+const Duration = observer(({ is_minimized }: TTradeParametersProps) => {
+    const is_mobile = isMobile();
+    const {
+        contract_type,
+        duration_min_max,
+        duration_unit,
+        duration_units_list,
+        duration,
+        expiry_epoch,
+        expiry_time,
+        expiry_type,
+        is_market_closed,
+        onChangeMultiple,
+        proposal_info,
+        saved_expiry_date_v2: saved_expiry_date,
+        setSavedExpiryDateV2: setSavedExpiryDate,
+        setUnsavedExpiryDateV2: setSelectedExpiryDate,
+        symbol,
+        trade_type_tab,
+        trade_types,
+        unsaved_expiry_date_v2: selected_expiry_date,
+        validation_errors,
+    } = useTraderStore();
+    const { addSnackbar } = useSnackbar();
+    const { name_plural, name, name_singular } = getUnitMap()[duration_unit] ?? {};
+    const duration_unit_text = (duration === 1 ? name_singular : name_plural) ?? name;
+    const [is_open, setOpen] = useState(false);
+    const [saved_expiry_time, setSavedExpiryTime] = useState<string>('');
+    const [selected_expiry_time, setSelectedExpiryTime] = useState<string>('');
+    const [unit, setUnit] = useState(expiry_type === 'endtime' ? 'd' : duration_unit);
+    const contract_type_object = getDisplayedContractTypes(trade_types, contract_type, trade_type_tab);
+    const has_error =
+        (proposal_info[contract_type_object[0]]?.has_error &&
+            proposal_info[contract_type_object[0]]?.error_field === 'duration') ||
+        (validation_errors.duration?.length ?? 0) > 0;
+    const isInitialMount = useRef(true);
+    const prevExpiryEpoch = useRef<string | number | null>(null);
+    const { client } = useStore();
+    const { is_logged_in } = client;
+    const { localize } = useTranslations();
+
+    // Initialize saved date/time from expiry_epoch or set defaults
+    useEffect(() => {
+        if (!expiry_epoch) return;
+
+        // Only sync from expiry_epoch if it actually changed (not from our own update)
+        if (prevExpiryEpoch.current === expiry_epoch) return;
+
+        prevExpiryEpoch.current = expiry_epoch;
+
+        const epoch_date = new Date((expiry_epoch as number) * 1000);
+        const date_string = epoch_date.toISOString().split('T')[0];
+        const time_string = epoch_date.toISOString().split('T')[1].substring(0, 8);
+
+        // Only update if the date actually changed
+        if (saved_expiry_date !== date_string) {
+            setSavedExpiryDate(date_string);
+            setSavedExpiryTime(time_string || '23:59:59');
+        }
+    }, [expiry_epoch]);
+
+    // When switching to days unit, set tomorrow as default
+    useEffect(() => {
+        if (duration_unit === 'd' && !saved_expiry_date) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const formatted_date = tomorrow.toISOString().split('T')[0];
+
+            setSavedExpiryDate(formatted_date);
+            setSavedExpiryTime('23:59:59');
+
+            onChangeMultiple({
+                expiry_date: `${formatted_date}T23:59:59Z`,
+                expiry_type: 'endtime',
+            });
+        }
+    }, [duration_unit, saved_expiry_date]);
+
+    useEffect(() => {
+        if (isInitialMount.current) {
+            const timer = setTimeout(() => {
+                isInitialMount.current = false;
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+
+        // Check if current persisted duration values are valid for the new contract constraints
+        const isPersistedDurationValid = isValidPersistedDuration(
+            duration,
+            duration_unit,
+            duration_min_max,
+            duration_units_list
+        );
+
+        // Only reset to smallest duration if persisted values are invalid
+        if (!isPersistedDurationValid) {
+            const result = getSmallestDuration(duration_min_max, duration_units_list);
+
+            const start_duration = setTimeout(() => {
+                onChangeMultiple({
+                    duration_unit: result?.unit,
+                    duration: result?.value,
+                    expiry_time: null,
+                    expiry_type: 'duration',
+                });
+            }, 10);
+
+            return () => clearTimeout(start_duration);
+        }
+    }, [symbol, contract_type, duration_min_max, duration_units_list, duration, duration_unit]);
+
+    const onClose = React.useCallback(() => setOpen(false), []);
+
+    const getInputValues = () => {
+        const formatted_date = saved_expiry_date
+            ? new Date(saved_expiry_date).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+              })
+            : '';
+
+        // Check if selected date is today
+        const formatted_current_date = new Date().toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        });
+        const is_today = formatted_date === formatted_current_date;
+
+        if (expiry_type == 'duration') {
+            if (duration_unit === 'm' && duration > 59) {
+                const hours = Math.floor(duration / 60);
+                const minutes = duration % 60;
+                return `${hours} ${hours > 1 ? localize('hours') : localize('hour')} ${minutes ? `${minutes} ${minutes > 1 ? localize('minutes') : localize('minute')}` : ''} `;
+            } else if (duration_unit === 'd') {
+                if (!formatted_date) {
+                    return '';
+                }
+                // For today: show HH:mm, for future: show HH:mm:ss
+                const time_display = is_today
+                    ? saved_expiry_time.substring(0, 5) // HH:mm
+                    : saved_expiry_time; // HH:mm:ss
+                return `${localize('Ends on')} ${formatted_date}, ${time_display} GMT`;
+            }
+            return `${duration} ${duration_unit_text}`;
+        }
+        if (expiry_time) {
+            // For today: show HH:mm, for future: show HH:mm:ss
+            const time_display = is_today
+                ? expiry_time.substring(0, 5) // HH:mm
+                : `${expiry_time}`; // HH:mm:ss
+            return `${localize('Ends on')} ${formatted_date}, ${time_display} GMT`;
+        }
+    };
+
+    useEffect(() => {
+        if (has_error && !is_minimized) {
+            const error_obj = proposal_info[contract_type_object[0]] || validation_errors?.duration?.[0];
+            if (error_obj?.error_field === 'duration') {
+                addSnackbar({
+                    message: mapErrorMessage(error_obj),
+                    status: 'fail',
+                    hasCloseButton: true,
+                    hasFixedHeight: false,
+                    style: {
+                        marginBottom: is_logged_in ? '48px' : '-8px',
+                        width: 'calc(100% - var(--core-spacing-800)',
+                    },
+                });
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [has_error, contract_type_object[0]]);
+
+    useEffect(() => {
+        if (is_open) {
+            // Initialize selected values from saved values when opening
+            setSelectedExpiryDate(saved_expiry_date);
+            setSelectedExpiryTime(saved_expiry_time);
+
+            if (expiry_time) {
+                setUnit('d');
+            } else if (duration_unit === 'm' && duration > 59) {
+                setUnit('h');
+            } else {
+                setUnit(duration_unit);
+            }
+        }
+    }, [is_open, saved_expiry_date, saved_expiry_time]);
+
+    // Render desktop version for desktop devices
+    if (!is_mobile) {
+        return <DurationDesktop is_minimized={is_minimized} />;
+    }
+
+    // Render mobile version (ActionSheet) for mobile devices
+    return (
+        <>
+            <TextField
+                variant='fill'
+                key={`${duration}-$${duration_unit}`}
+                readOnly
+                label={<Localize i18n_default_text='Duration' key={`duration${is_minimized ? '-minimized' : ''}`} />}
+                value={getInputValues()}
+                noStatusIcon
+                disabled={is_market_closed}
+                className={clsx('trade-params__option', is_minimized && 'trade-params__option--minimized')}
+                onClick={() => setOpen(true)}
+                status={has_error ? 'error' : 'neutral'}
+            />
+            <ActionSheet.Root
+                isOpen={is_open}
+                onClose={onClose}
+                position='left'
+                expandable={false}
+                shouldBlurOnClose={is_open}
+            >
+                <ActionSheet.Portal shouldCloseOnDrag>
+                    <DurationActionSheetContainer
+                        unit={unit}
+                        setUnit={setUnit}
+                        selected_expiry_time={selected_expiry_time}
+                        selected_expiry_date={selected_expiry_date}
+                        setSelectedExpiryTime={setSelectedExpiryTime}
+                        setSavedExpiryTime={setSavedExpiryTime}
+                        setSelectedExpiryDate={setSelectedExpiryDate}
+                        setSavedExpiryDate={setSavedExpiryDate}
+                    />
+                </ActionSheet.Portal>
+            </ActionSheet.Root>
+        </>
+    );
+});
+
+export default Duration;

@@ -1,0 +1,116 @@
+// [VolaTrades] Last-digit circles with a moving arrow, over the foot of the chart.
+.trade__chart {
+    position: relative;
+}
+
+.digit-circles {
+    --dc-size: 4.4rem;
+    --dc-gap: 0.8rem;
+    --dc-up: #4bb4b3;
+    --dc-down: #ec3f3f;
+    --dc-arrow: #ff6444;
+
+    position: absolute;
+    left: 50%;
+    bottom: 4.8rem;
+    z-index: 2;
+    transform: translateX(-50%);
+    pointer-events: none; // display only: the chart underneath stays usable
+
+    @media (max-width: 767px) {
+        --dc-size: 2.8rem;
+        --dc-gap: 0.4rem;
+        bottom: 3.2rem;
+    }
+
+    &__row {
+        position: relative;
+        display: flex;
+        gap: var(--dc-gap);
+        padding-bottom: 1.2rem; // room for the arrow
+    }
+
+    &__item {
+        position: relative;
+        width: var(--dc-size);
+        height: var(--dc-size);
+        border-radius: 50%;
+        background: var(--color-surface-primary, #ffffff);
+        box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.15);
+        transition: transform 150ms ease;
+
+        &--last {
+            transform: scale(1.08);
+        }
+    }
+
+    &__ring {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__track {
+        fill: none;
+        stroke: var(--color-surface-border, #d6dadb);
+        stroke-width: 3;
+    }
+
+    &__arc {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+
+        &--up {
+            stroke: var(--dc-up);
+        }
+
+        &--down {
+            stroke: var(--dc-down);
+        }
+    }
+
+    &__value {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        line-height: 1.05;
+        color: var(--color-text-primary, #333333);
+
+        b {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        small {
+            font-size: 0.9rem;
+            opacity: 0.75;
+        }
+
+        @media (max-width: 767px) {
+            b {
+                font-size: 1.1rem;
+            }
+
+            small {
+                font-size: 0.7rem;
+            }
+        }
+    }
+
+    // The arrow under the digit of the latest tick; it slides to each new digit.
+    &__pointer {
+        position: absolute;
+        bottom: 0;
+        left: calc(var(--digit-index) * (var(--dc-size) + var(--dc-gap)) + var(--dc-size) / 2 - 0.6rem);
+        width: 0;
+        height: 0;
+        border-inline: 0.6rem solid transparent;
+        border-bottom: 0.9rem solid var(--dc-arrow);
+        transition: left 250ms ease;
+    }
+}

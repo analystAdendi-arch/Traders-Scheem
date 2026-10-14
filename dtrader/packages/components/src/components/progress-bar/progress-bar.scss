@@ -1,0 +1,36 @@
+/** @define dc-progress-bar */
+.dc-progress-bar {
+    &__container {
+        height: 2.4rem;
+        width: 12rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 1.2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    &--danger {
+        background-color: var(--color-status-danger);
+    }
+    &--warning {
+        background-color: var(--color-status-warning);
+    }
+    &--normal {
+        background-color: var(--color-status-success);
+    }
+    &__bar {
+        height: 100%;
+        position: absolute;
+        left: 0;
+    }
+    &__empty {
+        width: 100%;
+        position: absolute;
+        opacity: 0.16;
+        height: 100%;
+    }
+    &__label {
+        z-index: 2;
+    }
+}

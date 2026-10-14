@@ -1,0 +1,42 @@
+/**
+ * Brand Tokens - Core White-Label Variables (Auto-Generated)
+ *
+ * This file is auto-generated from brand.config.json
+ * Do not edit manually - run 'npm run generate:colors' instead
+ *
+ * Partners only need to customize colors in brand.config.json
+ */
+
+:root {
+  // Core Brand Colors (White-Label Targets)
+  // These are the primary variables that control the entire theme
+  --brand-primary: #{$color-primary};           // Main brand color (buttons, links, highlights)
+  --brand-secondary: #{$color-secondary};       // Success color (rise trades, success states)
+  --brand-tertiary: #{$color-tertiary};         // Accent color (highlights, call-to-actions)
+  --brand-success: #{$color-success};           // Success color (profit trades, success states)
+  --brand-danger: #{$color-danger};             // Error color (fall trades, error states)
+  --brand-warning: #{$color-warning};           // Warning color (warning states)
+  --brand-info: #{$color-info};                 // Information color (info states, highlights)
+  --brand-neutral: #{$color-neutral};           // Neutral color (disabled states, secondary text)
+
+  // Derived Brand Colors (Auto-generated from core colors)
+  // These provide lighter/darker variants for hover states, etc.
+  --brand-primary-light: #{$color-primary-light};
+  --brand-primary-dark: #{$color-primary-dark};
+  --brand-secondary-light: #{$color-secondary-light};
+  --brand-secondary-dark: #{$color-secondary-dark};
+  --brand-tertiary-light: #{$color-tertiary-light};
+  --brand-tertiary-dark: #{$color-tertiary-dark};
+  --brand-danger-light: #{$color-danger-light};
+  --brand-danger-dark: #{$color-danger-dark};
+  --brand-success-light: #{$color-success-light};
+  --brand-success-dark: #{$color-success-dark};
+  --brand-warning-light: #{$color-warning-light};
+  --brand-warning-dark: #{$color-warning-dark};
+  --brand-info-light: #{$color-info-light};
+  --brand-info-dark: #{$color-info-dark};
+
+  // Brand Assets
+  --brand-white: #{$color-white};               // Pure white for contrast
+  --brand-black: #{$color-black};               // Pure black for contrast
+}

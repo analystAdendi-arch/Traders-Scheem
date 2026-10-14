@@ -17,3 +17,6 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# DTrader build (made by scripts/build-dtrader.js)
+dtrader-dist/

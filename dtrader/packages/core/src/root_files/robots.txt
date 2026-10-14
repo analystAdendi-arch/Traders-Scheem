@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: */appstore/*
+Disallow: */cashier/*
+Disallow: */p2p/*
+Disallow: */reports/*
+Disallow: */account/*
+Disallow: */endpoint*

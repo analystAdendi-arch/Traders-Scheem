@@ -1,0 +1,34 @@
+/*
+    to use styles without modifier class on .inline-icon
+    use @extend
+
+    e.g. style icon on parent hover:
+        a:hover .inline-icon {
+            @extend %inline-icon-active;
+        }
+*/
+
+%inline-icon {
+    @include colorIcon(var(--color-text-secondary), none);
+
+    &.active,
+    &-active {
+        @include colorIcon(var(--color-text-primary), none);
+    }
+    &.disabled,
+    &-disabled {
+        @include colorIcon(var(--color-text-disabled), none);
+    }
+    &.white,
+    &-white {
+        @include colorIcon(var(--color-text-primary));
+    }
+    &.border_hover_color,
+    &-border_hover_color {
+        @include colorIcon(var(--color-text-primary));
+    }
+    &.secondary,
+    &-secondary {
+        @include colorIcon(var(--color-text-secondary));
+    }
+}

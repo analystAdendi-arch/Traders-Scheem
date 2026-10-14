@@ -1,0 +1,133 @@
+/** @define sidebar */
+.sidebar {
+    height: 100vh;
+    width: 7.2rem;
+    min-width: 7.2rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-nav-bg);
+    border-right: 1px solid var(--color-nav-border);
+    transition: opacity 0.3s;
+    backface-visibility: hidden;
+
+    @include mobile-screen {
+        display: none; // Hide sidebar on mobile
+    }
+
+    &--highlighted {
+        z-index: 10001;
+        position: relative;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 6.4rem;
+        padding: 1.6rem;
+    }
+
+    &__nav {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 0 0 1.6rem;
+        justify-content: space-between;
+    }
+
+    &__nav-main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__separator {
+        height: 1px;
+        margin: 0 0.8rem 0.8rem;
+        background-color: var(--color-surface-border);
+    }
+
+    &__nav-utility {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__item {
+        height: 7.2rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.8rem 0;
+        margin: 0 0.8rem;
+        border: none;
+        border-radius: 0.8rem;
+        background-color: transparent;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        outline: none;
+
+        &:hover {
+            .sidebar__item-icon {
+                background-color: var(--color-nav-item-hover);
+                border-radius: 0.8rem;
+            }
+        }
+
+        &--active {
+            .sidebar__item-label {
+                color: var(--color-nav-item-active);
+            }
+        }
+
+        .dc-btn__text {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    &__item-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 4rem;
+        width: 4rem;
+    }
+
+    &__item-badge {
+        position: absolute;
+        top: 0.4rem;
+        right: 0rem;
+        width: 2rem;
+        height: 2rem;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9.6rem;
+        background-color: var(--color-status-danger);
+        color: var(--color-text-white);
+        font-size: var(--text-size-xxxs);
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    &__item-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--text-size-xxs);
+    }
+
+    &__tooltip {
+        .dc-popover__bubble {
+            margin-left: 0.8rem;
+        }
+    }
+
+    &__hidden {
+        display: none;
+    }
+}

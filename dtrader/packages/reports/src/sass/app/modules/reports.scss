@@ -1,0 +1,1180 @@
+@import '../_common/components/composite-calendar';
+
+$side-padding: 1.2em;
+
+/** @define reports; weak */
+.reports {
+    height: 100%;
+
+    &__meta {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column-reverse;
+
+        &-filter {
+            position: relative;
+            display: flex;
+            width: 100%;
+            @include desktop-screen {
+                max-width: 36rem;
+                margin-left: auto;
+            }
+            &--statement {
+                @include desktop-screen {
+                    max-width: 50rem;
+                }
+            }
+        }
+
+        @include desktop-screen {
+            padding: 0 2.4rem 0 0;
+            align-items: center;
+        }
+
+        @include tablet-screen {
+            max-width: 568px;
+            margin: 0 auto;
+            flex-direction: column;
+            padding-bottom: 1.6rem;
+        }
+
+        @include mobile-screen {
+            flex-direction: column;
+            padding-inline: 1.6rem;
+            padding-bottom: 0;
+
+            &-filter {
+                padding: 0 0 1.6rem;
+            }
+            #dt_calendar_input {
+                text-align: left;
+                padding-left: 3rem;
+            }
+        }
+    }
+    &__mobile-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    &__route-selection {
+        @include mobile-screen {
+            padding-inline: 1.6rem;
+        }
+        padding-block: 0.8rem;
+        width: 100%;
+        max-width: 568px;
+        margin: 0 auto;
+    }
+    &__content {
+        width: 100%;
+        max-width: 100vw;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        overflow: auto;
+        @include mobile-screen {
+            padding-bottom: 1.6rem;
+        }
+    }
+    .unknown-icon {
+        margin-left: 8px;
+        fill: var(--color-text-secondary);
+        border-radius: $BORDER_RADIUS;
+    }
+    /* postcss-bem-linter: ignore */
+    .dc-tabs--open-positions {
+        flex: 1;
+        grid-template-rows: 36px calc(100% - 36px);
+        grid-template-columns: 100%;
+
+        .dc-tabs__content {
+            display: flex;
+            height: 100%;
+        }
+    }
+    /* postcss-bem-linter: ignore */
+    .statement__row--detail {
+        overflow: hidden;
+        min-height: 63px;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        justify-content: center;
+        background-color: var(--color-surface-primary);
+
+        /* postcss-bem-linter: ignore */
+        &-text {
+            padding: 1.12em;
+            word-break: break-all;
+
+            .dc-popover__wrapper {
+                display: inline-block;
+                margin-left: 1rem;
+            }
+        }
+    }
+    .dc-vertical-tab__content--floating {
+        margin-inline-end: 0;
+    }
+    .table__head {
+        height: auto;
+        .table__cell {
+            @include tablet-up {
+                white-space: break-spaces;
+            }
+        }
+    }
+}
+
+/** @define reports-page-wrapper; weak */
+.reports-page-wrapper {
+    height: 100%;
+}
+
+/** @define statement; weak */
+.statement {
+    .table__head {
+        font-weight: bold;
+        align-items: flex-start;
+        height: auto;
+
+        .table__cell {
+            height: auto;
+        }
+        @include desktop-screen {
+            white-space: normal;
+        }
+    }
+
+    @include desktop-screen {
+        height: 100%;
+    }
+    @include mobile-or-tablet-screen {
+        flex: 1;
+
+        &__data-list-body {
+            height: 100%;
+
+            .action_type {
+                display: flex;
+                flex: none;
+                align-items: center;
+
+                &__row-title {
+                    display: none;
+                }
+            }
+            .balance {
+                display: flex;
+
+                &__row-title {
+                    flex: 50%;
+                }
+            }
+        }
+    }
+
+    &__content {
+        width: 100%;
+        max-height: 100%;
+    }
+    /*
+        TABLE STYLES
+    */
+    &__table {
+        height: calc(100% - 42px);
+        flex: 1;
+        min-width: 85rem;
+    }
+    &__row {
+        /* icon refId currency tr_time transaction cred/debt balance */
+        /* stylelint-disable-next-line declaration-colon-space-after */
+        grid-template-columns:
+            minmax(120px, 0.8fr) minmax(85px, 1.4fr) minmax(110px, 1.2fr) minmax(85px, 1.2fr) minmax(85px, 1fr)
+            minmax(85px, 1.2fr) minmax(85px, 1fr);
+
+        .date {
+            text-align: left;
+        }
+    }
+    .amount,
+    .balance {
+        justify-content: flex-end;
+    }
+    .amount {
+        font-weight: bold;
+
+        &--profit {
+            color: var(--color-text-success);
+        }
+        &--loss {
+            color: var(--color-text-danger);
+        }
+    }
+    .market-symbol-icon {
+        @include mobile-or-tablet-screen {
+            width: 80px;
+        }
+    }
+    /*
+        MOBILE CARDS
+    */
+    &--card-view {
+        background: var(--color-surface-primary);
+        overflow: hidden;
+
+        .statement__filter {
+            padding: 0 $side-padding;
+            border-bottom: 1px solid var(--color-surface-border);
+
+            &-content {
+                padding: 0;
+                margin: 0 auto;
+                max-width: 450px;
+                display: grid;
+                grid-template-columns: 1fr 3em 1fr;
+                text-align: center;
+
+                .datepicker__input-field {
+                    width: 100%;
+                }
+            }
+            &-label {
+                display: none;
+            }
+        }
+        .statement__content {
+            padding: 0;
+        }
+        .statement__card-list {
+            padding: 0 $side-padding;
+            height: 100%;
+        }
+    }
+    &__statement-header {
+        justify-content: flex-end;
+    }
+    &__account-statistics {
+        background-color: var(--color-surface-primary);
+        @include desktop-screen {
+            margin: 1.6rem 0;
+            width: 100%;
+        }
+        @include mobile-or-tablet-screen {
+            margin: 0.8rem 0 1.6rem;
+            order: 1;
+        }
+        height: 4.8rem;
+        display: flex;
+        flex-direction: row;
+        text-align: left;
+
+        &-item {
+            flex: 1;
+            display: flex;
+
+            &:last-child {
+                border-right: unset;
+            }
+            &:first-child {
+                .statement__account-statistics--is-rectangle {
+                    padding-left: 0;
+                }
+            }
+            &:not(:first-child) {
+                justify-content: center;
+            }
+        }
+        &-total-withdrawal {
+            @include desktop-screen {
+                min-width: 19rem;
+            }
+            @include mobile-or-tablet-screen {
+                min-width: 12.3rem;
+            }
+        }
+        &--is-rectangle {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            margin: auto;
+
+            @include desktop-screen {
+                padding: 0.4rem 1.6rem;
+            }
+            @include mobile-or-tablet-screen {
+                flex-direction: column;
+            }
+        }
+        &-title {
+            margin: auto;
+
+            @include mobile-or-tablet-screen {
+                font-size: 1rem;
+                margin-bottom: 0;
+            }
+        }
+        &-amount {
+            margin: auto;
+
+            @include desktop-screen {
+                margin-left: 1rem;
+            }
+            @include mobile-or-tablet-screen {
+                font-size: 1.4rem;
+                margin-top: 1rem;
+            }
+        }
+    }
+}
+
+/** @define statement-card */
+.statement-card {
+    &__header {
+        font-size: 1em;
+        padding: 0.5em;
+        border-bottom: 1px solid var(--color-surface-border);
+        display: flex;
+        justify-content: space-between;
+    }
+    /* postcss-bem-linter: ignore */
+    &__refid a {
+        color: var(--color-text-link);
+        text-decoration: none;
+    }
+    &__body {
+        padding: 0.5em;
+        font-size: 1.2em;
+    }
+    &__desc {
+        margin-bottom: 0.7em;
+    }
+    &__row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        font-weight: bold;
+    }
+    &__cell-text {
+        vertical-align: middle;
+    }
+    &__amount {
+        &--sell,
+        &--deposit {
+            color: var(--color-text-success);
+        }
+        &--buy,
+        &--withdrawal {
+            color: var(--color-text-danger);
+        }
+    }
+    &__icon {
+        display: inline-block;
+        height: 1.6em;
+        width: 1.6em;
+        background-size: 1.6em 1.6em;
+        vertical-align: middle;
+        margin-right: 0.5em;
+    }
+}
+
+/** @define statement-empty */
+.statement-empty {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    &__icon {
+        height: 6.4em;
+        width: 6.4em;
+        margin-bottom: 1.4em;
+    }
+    &__text {
+        font-size: 1.4em;
+    }
+}
+
+/** @define profit-table; weak */
+.profit-table {
+    .table__cell {
+        display: grid;
+    }
+
+    .table__head,
+    .table__foot {
+        font-weight: bold;
+    }
+    .table__head {
+        white-space: normal;
+        .table__cell {
+            align-items: flex-start;
+        }
+    }
+
+    .table__cell.action_type,
+    .table__cell.currency,
+    .table__cell.transaction_id {
+        display: flex;
+        justify-self: flex-start;
+    }
+
+    @include desktop-screen {
+        height: 100%;
+    }
+
+    @include mobile-or-tablet-screen {
+        flex: 1;
+
+        &__data-list-body {
+            height: calc(100% - 50px);
+
+            .sell_time__row-title {
+                display: flex;
+                align-items: center;
+            }
+        }
+        &__data-list-footer {
+            height: 50px;
+            min-height: 50px;
+            font-weight: bold;
+
+            .data-list__row__content {
+                font-size: 1.2rem;
+                color: var(--color-text-primary);
+            }
+            .data-list__row {
+                padding: 0;
+            }
+
+            @include tablet-screen {
+                .data-list__row {
+                    max-width: 568px;
+                    margin: 0 auto;
+                }
+            }
+        }
+    }
+
+    &__content {
+        width: 100%;
+        max-height: 100%;
+    }
+    /*
+        TABLE STYLES
+    */
+    &__table {
+        height: calc(100% - 42px);
+        flex: 1;
+        min-width: 90rem;
+    }
+    &__row {
+        /* icon refId currency buy_time buy_price sell_time sell_price profit/loss */
+        /* stylelint-disable-next-line declaration-colon-space-after */
+        grid-template-columns:
+            minmax(105px, 0.6fr) minmax(130px, 1fr) minmax(85px, 1fr) minmax(85px, 1fr) minmax(85px, 1fr)
+            minmax(85px, 1.2fr) minmax(105px, 1.2fr) minmax(130px, 1fr);
+    }
+    .buy_price,
+    .sell_price,
+    .profit_loss {
+        justify-content: center;
+        @include desktop-screen {
+            text-align: right;
+        }
+    }
+    .sell_time,
+    .sell_time_unix,
+    .purchase_time,
+    .purchase_time_unix {
+        text-align: left;
+        min-width: 120px;
+    }
+    .profit_loss {
+        font-weight: bold;
+        @include desktop-screen {
+            word-break: break-word;
+        }
+        @include mobile-or-tablet-screen {
+            display: flex;
+
+            &__row-title {
+                flex: 50%;
+            }
+        }
+        .amount {
+            &--profit {
+                color: var(--color-text-success);
+            }
+            &--loss {
+                color: var(--color-text-danger);
+            }
+        }
+    }
+    .market-symbol-icon {
+        @include mobile-or-tablet-screen {
+            width: 80px;
+        }
+    }
+    .duration-type {
+        flex: none;
+        position: relative;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0px 16px;
+        font-size: 1.4rem;
+        font-weight: bold;
+
+        &__background {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            opacity: 0.16;
+            border-radius: 16px;
+        }
+        &__ticks {
+            color: var(--brand-warning);
+
+            &__background {
+                background: var(--brand-warning);
+            }
+        }
+        &__seconds {
+            color: var(--brand-secondary);
+
+            &__background {
+                background: var(--brand-secondary);
+            }
+        }
+        &__minutes {
+            color: var(--brand-info);
+
+            &__background {
+                background: var(--brand-info);
+            }
+        }
+        &__hours {
+            color: var(--brand-info);
+
+            &__background {
+                background: var(--brand-info);
+            }
+        }
+        &__days {
+            color: var(--brand-info);
+
+            &__background {
+                background: var(--brand-info);
+            }
+        }
+    }
+}
+
+/** @define open-positions; weak */
+.open-positions {
+    height: 100%;
+
+    @include mobile-or-tablet-screen {
+        flex: 1;
+        padding-top: 0.8rem;
+
+        &-multiplier,
+        &-accumulator {
+            /* postcss-bem-linter: ignore */
+            & .data-list__item {
+                background-color: var(--color-surface-section);
+                border-radius: $BORDER_RADIUS;
+                border: 1px solid var(--color-interactive-disabled);
+                padding: 0 !important;
+
+                /* postcss-bem-linter: ignore */
+                & .dc-progress-slider--completed {
+                    display: none;
+                }
+                /* postcss-bem-linter: ignore */
+                & .dc-contract-card {
+                    background-color: var(--color-surface-primary);
+                    /* postcss-bem-linter: ignore */
+                    &__wrapper {
+                        background-color: var(--color-surface-primary);
+                        max-width: unset;
+                        margin: 0;
+                    }
+                    /* postcss-bem-linter: ignore */
+                    &-item__footer {
+                        background-color: var(--color-surface-primary);
+                        border-radius: $BORDER_RADIUS;
+                    }
+                    /* postcss-bem-linter: ignore */
+                    &__grid-underlying-trade {
+                        border-bottom: 1px solid var(--color-interactive-disabled);
+                        margin-bottom: 5px;
+                    }
+                    /* postcss-bem-linter: ignore */
+                    &__grid-items {
+                        grid-template-columns: 1fr 1fr 1fr;
+                        margin-top: 0.4rem;
+                        margin-bottom: 0.4rem;
+                    }
+                    /* postcss-bem-linter: ignore */
+                    &__sell-button {
+                        border-top: 1px solid var(--color-interactive-disabled);
+                    }
+                    /* postcss-bem-linter: ignore */
+                    &-item {
+                        /* postcss-bem-linter: ignore */
+                        &__total-profit-loss {
+                            border-color: var(--color-interactive-disabled);
+                        }
+                        /* postcss-bem-linter: ignore */
+                        &:nth-child(1) {
+                            order: 0;
+                        }
+                        /* postcss-bem-linter: ignore */
+                        &:nth-child(3),
+                        &:nth-child(5) {
+                            order: 2;
+                        }
+                        /* postcss-bem-linter: ignore */
+                        &:nth-child(6) {
+                            order: 6;
+                        }
+                    }
+                }
+                /* postcss-bem-linter: ignore */
+                & .dc-contract-card-dialog-toggle {
+                    border-color: var(--color-interactive-disabled);
+                }
+            }
+            /* postcss-bem-linter: ignore */
+            & .open-positions__data-list-body {
+                padding: 0;
+                height: calc(100% - 48px);
+            }
+            /* postcss-bem-linter: ignore */
+            & .open-positions__data-list-footer {
+                height: 48px;
+                min-height: 48px;
+                font-weight: bold;
+                align-items: center;
+                padding: 0;
+
+                @include tablet-screen {
+                    display: flex;
+                    justify-content: center;
+                }
+
+                /* postcss-bem-linter: ignore */
+                &--content {
+                    flex: 1;
+                    padding: 0.8rem 1.6rem 0;
+                    display: flex;
+                    justify-content: space-between;
+
+                    @include tablet-screen {
+                        max-width: 568px;
+                        padding: 0;
+                    }
+
+                    /* postcss-bem-linter: ignore */
+                    .profit {
+                        align-items: flex-start;
+                    }
+                }
+            }
+        }
+        &__data-list {
+            margin-top: 0.8rem;
+        }
+        &__data-list-body {
+            height: calc(100% - 95px);
+
+            .dc-progress-bar__container {
+                max-width: 120px;
+                align-self: center;
+            }
+        }
+        &__data-list-footer {
+            height: 95px;
+            min-height: 95px;
+            font-weight: bold;
+            align-items: flex-start;
+            padding: 0.8rem 4rem 0 1rem;
+
+            @include tablet-screen {
+                display: flex;
+                justify-content: center;
+            }
+
+            &--title {
+                font-size: 1.4rem;
+                font-weight: bold;
+                color: var(--color-text-primary);
+            }
+            &--content {
+                flex: 1;
+                padding: 0.8rem 1.6rem 0;
+                display: flex;
+                justify-content: space-between;
+
+                @include tablet-screen {
+                    max-width: 568px;
+                    padding-inline: 0;
+                }
+
+                .purchase,
+                .indicative {
+                    padding-bottom: 8px;
+                }
+            }
+            .data-list__row-title {
+                font-size: 1rem;
+                line-height: 1.4rem;
+            }
+            .data-list__row-content {
+                font-size: 1rem;
+                line-height: 1.4rem;
+                color: var(--color-text-primary);
+            }
+        }
+        .dc-contract-card__no-resale-msg {
+            display: flex;
+            font-size: 1.4rem;
+            color: var(--color-text-secondary);
+            justify-content: center;
+            padding: 0.8rem 0rem;
+        }
+    }
+
+    &__contract-types-selector-container {
+        max-width: 22.4rem;
+
+        &--mobile {
+            width: 100%;
+            padding: 0 1.6rem;
+
+            @include tablet-screen {
+                max-width: 568px;
+                margin: 0 auto;
+                padding: 0;
+            }
+        }
+    }
+    &__accumulator-container {
+        display: flex;
+        max-width: 45.6rem;
+        gap: 0.8rem;
+
+        &__contract-dropdown,
+        &__rates-dropdown {
+            width: 100%;
+        }
+        &--mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            padding: 0 1.6rem;
+
+            @include tablet-screen {
+                width: 100%;
+                max-width: 568px;
+                margin: 0 auto;
+                padding: 0;
+            }
+
+            &__contract-dropdown,
+            &__rates-dropdown {
+                width: 100%;
+            }
+        }
+    }
+
+    &__content {
+        width: fit-content;
+        max-height: 100%;
+    }
+    &__indicative {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+
+        &--amount {
+            display: flex;
+            align-items: center;
+            @include desktop-screen {
+                line-height: 2;
+            }
+        }
+        .dc-btn--sell {
+            height: 2.4rem;
+        }
+        &-no-resale-msg {
+            clear: both;
+            text-align: center;
+            font-size: smaller;
+        }
+    }
+    &__profit-loss {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+
+        &--movement {
+            width: 16px;
+            height: 16px;
+
+            &-complete,
+            &-complete:after {
+                display: none;
+            }
+            &:after {
+                content: '';
+                width: 16px;
+            }
+        }
+        &--negative {
+            color: var(--color-text-danger);
+
+            &:before {
+                content: '-';
+                color: inherit;
+            }
+        }
+        &--positive {
+            color: var(--color-text-success);
+
+            &:before {
+                content: '+';
+                color: inherit;
+            }
+        }
+    }
+    /*
+        TABLE STYLES
+    */
+    &__table {
+        height: calc(100% - 24px);
+        flex: 1;
+        margin-top: 20px;
+
+        .table__head {
+            height: auto;
+            white-space: normal;
+            @include tablet-up {
+                .profit,
+                .indicative {
+                    white-space: break-spaces;
+                }
+            }
+
+            .table__cell {
+                font-weight: bold;
+                align-items: flex-start;
+                justify-content: center;
+            }
+        }
+        .table__body {
+            .open-positions__row_wrapper {
+                border-bottom: 1px solid var(--color-surface-border);
+            }
+        }
+        .table__foot {
+            font-weight: bold;
+            white-space: normal;
+
+            .table__cell {
+                justify-content: center;
+            }
+        }
+    }
+    &__row {
+        /* type refId currency buy_price payout_limit indicative_profit/loss indicative_price rem_time */
+        /* stylelint-disable-next-line declaration-colon-space-after */
+        grid-template-columns:
+            minmax(110px, 0.7fr) minmax(130px, 0.8fr) minmax(100px, 1.1fr) minmax(90px, 1.1fr) minmax(90px, 1.1fr)
+            minmax(150px, 1.1fr) minmax(120px, 1.1fr) minmax(85px, 1.1fr);
+        width: 100%;
+        grid-auto-rows: 100%;
+        padding-left: 0;
+
+        &_wrapper {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+        }
+    }
+    &__reports-meta {
+        @include mobile-or-tablet-screen {
+            padding-bottom: 0px;
+        }
+    }
+    .growth_rate,
+    .buy_price,
+    .payout,
+    .indicative,
+    .purchase,
+    .multiplier,
+    .currency,
+    .profit {
+        @include desktop-screen {
+            justify-content: center;
+        }
+    }
+    .type {
+        padding-right: 0;
+    }
+    .dc-progress-slider {
+        border: none;
+        margin: 0;
+
+        &__ticks {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &-step {
+                background: var(--color-interactive-hover);
+            }
+            &-wrapper {
+                margin-top: 6px;
+            }
+            &-caption {
+                padding: 0;
+                margin-right: 8px;
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+/** market-symbol-icon.scss doesn't get applied in reports */
+.market-symbol-icon {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+
+    .color1-fill {
+        fill: var(--brand-primary);
+    }
+    .color2-fill {
+        fill: var(--brand-secondary);
+    }
+    &:is(.open-positions .market-symbol-icon) {
+        @include desktop-screen {
+            justify-content: center;
+        }
+    }
+    &-name,
+    &-category {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        @include typeface(--paragraph-left-bold-primary);
+        color: var(--color-text-primary);
+
+        svg {
+            width: 2.4rem;
+            height: 2.4rem;
+        }
+    }
+    &-name {
+        width: 3.2rem;
+        margin-right: 0.8rem;
+    }
+    &__multiplier {
+        color: var(--color-text-secondary);
+        font-size: 1rem;
+        display: flex;
+        align-items: flex-end;
+        margin: 0 0 0.4rem 0.4rem;
+    }
+}
+
+/** @define open-positions-multiplier & open-positions-accumulator; weak */
+.open-positions-multiplier,
+.open-positions-accumulator {
+    .open-positions {
+        &__row {
+            /* icon multiplier currency stake cancellation buy_price limit_order current_stake total_profit_loss action */
+            /* stylelint-disable-next-line declaration-colon-space-after */
+            grid-template-columns:
+                minmax(85px, 1fr) minmax(125px, 1fr) minmax(65px, 1fr) minmax(105px, 1fr) minmax(100px, 1fr)
+                minmax(105px, 1fr) minmax(105px, 1fr) minmax(105px, 1fr) minmax(125px, 1fr) minmax(120px, 1fr);
+
+            &-action {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+
+                .dc-remaining-time {
+                    margin-left: 0.4rem;
+                    font-size: inherit;
+                }
+                .dc-btn {
+                    height: 2.4rem;
+                    padding: 0 0.8rem;
+                    min-width: 93px;
+
+                    &--cancel {
+                        padding: 0 0.2rem;
+                    }
+
+                    .dc-btn__text {
+                        font-size: 1.2rem;
+                    }
+                    &:first-child:not(:only-child) {
+                        margin-bottom: 0.4rem;
+                    }
+                }
+            }
+            .limit_order,
+            .cancellation,
+            .bid_price {
+                @include desktop-screen {
+                    justify-content: center;
+                    text-align: center;
+                    width: 100%;
+                    white-space: break-spaces;
+                }
+            }
+            .limit_order:not(.table__head *) {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .action {
+                justify-content: center;
+            }
+        }
+        &__bid_price {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+
+            &--movement {
+                width: 1.6rem;
+                height: 1.6rem;
+
+                &-complete,
+                &-complete:after {
+                    display: none;
+                }
+                &:after {
+                    content: '';
+                    width: 1.6rem;
+                }
+            }
+            &--negative {
+                color: var(--color-text-danger);
+            }
+            &--positive {
+                color: var(--color-text-success);
+            }
+        }
+    }
+}
+
+.open-positions-accumulator {
+    .open-positions {
+        &__row {
+            /* icon accumulator currency stake take_profit bid_price total_profit_loss action */
+            /* stylelint-disable-next-line declaration-colon-space-after */
+            grid-template-columns:
+                minmax(85px, 1fr) minmax(125px, 1fr) minmax(65px, 1fr) minmax(105px, 1fr) minmax(105px, 1fr)
+                minmax(112px, 1fr) minmax(149px, 1fr) minmax(90px, 1fr);
+        }
+        & .dc-contract-card-item {
+            &:nth-child(3),
+            &:nth-child(5) {
+                order: unset;
+            }
+        }
+    }
+}
+
+.open-positions,
+.statement,
+.profit-table {
+    /* postcss-bem-linter: ignore */
+    .data-list__body,
+    .data-list__footer {
+        padding: 0 1.6rem;
+
+        @include tablet-screen {
+            padding: 0;
+        }
+    }
+    /* postcss-bem-linter: ignore */
+    .data-list__item {
+        background-color: var(--color-surface-section);
+        padding: 1.6rem 0;
+
+        &--multiplier {
+            padding: 0;
+        }
+    }
+    .currency {
+        &__wrapper {
+            background: var(--brand-secondary-dark);
+            border-radius: $BORDER_RADIUS;
+            padding: 0 0.4rem;
+        }
+    }
+
+    @include tablet-screen {
+        /* postcss-bem-linter: ignore */
+        .data-list__body {
+            padding-inline: 0;
+            width: 100%;
+            max-width: 568px;
+            margin: 0 auto;
+        }
+    }
+}
+
+/** @define empty-trade-history; weak*/
+.empty-trade-history {
+    position: absolute;
+    top: 20%;
+    inset-inline-start: 10%;
+    width: 50%;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+
+    @include mobile-or-tablet-screen {
+        position: static;
+        width: 50%;
+    }
+
+    &__icon {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 16px;
+        @include colorIcon(var(--color-text-disabled));
+    }
+    &__text {
+        line-height: 20px;
+    }
+    .dc-btn {
+        width: 100%;
+        height: 40px;
+        border: 1px solid var(--color-button-secondary-border);
+        color: var(--color-text-secondary);
+        background: transparent;
+
+        &:hover {
+            background: var(--color-button-secondary-hover);
+        }
+    }
+}

@@ -1,0 +1,71 @@
+import React from 'react';
+
+import { useLocalStorageData } from '@deriv/api';
+import { Localize } from '@deriv-com/translations';
+import { Modal } from '@deriv-com/quill-ui';
+import { useDevice } from '@deriv-com/ui';
+
+import { DESCRIPTION_VIDEO_ID } from 'AppV2/Utils/video-config';
+
+import StreamIframe from '../../StreamIframe';
+
+type TTradeTypeSelectionGuideProps = {
+    is_dark_mode_on?: boolean;
+};
+
+const TradeTypesSelectionGuide: React.FC<TTradeTypeSelectionGuideProps> = ({ is_dark_mode_on }) => {
+    const { isDesktop } = useDevice();
+    const [is_modal_open, setIsModalOpen] = React.useState(false);
+    const guide_timeout_ref = React.useRef<ReturnType<typeof setTimeout>>();
+
+    const [guide_dtrader_v2, setGuideDtraderV2] = useLocalStorageData<Record<string, boolean>>('guide_dtrader_v2', {
+        trade_types_selection: false,
+        trade_page: false,
+        positions_page: false,
+    });
+    const { trade_types_selection } = guide_dtrader_v2 || {};
+
+    const video_src = is_dark_mode_on
+        ? DESCRIPTION_VIDEO_ID.trade_type_selection.dark
+        : DESCRIPTION_VIDEO_ID.trade_type_selection.light;
+
+    const onFinishGuide = () => {
+        setIsModalOpen(false);
+        setGuideDtraderV2({ ...guide_dtrader_v2, trade_types_selection: true });
+    };
+
+    React.useEffect(() => {
+        // Only show onboarding for mobile users
+        if (isDesktop) return;
+
+        if (!trade_types_selection) guide_timeout_ref.current = setTimeout(() => setIsModalOpen(true), 800);
+
+        return () => clearTimeout(guide_timeout_ref.current);
+    }, [trade_types_selection, isDesktop]);
+
+    // Only show onboarding for mobile users or if already seen
+    if (isDesktop || trade_types_selection) return null;
+
+    return (
+        <Modal
+            isOpened={is_modal_open}
+            isNonExpandable
+            isMobile
+            showHandleBar
+            shouldCloseModalOnSwipeDown
+            toggleModal={onFinishGuide}
+            primaryButtonLabel={<Localize i18n_default_text='Got it' />}
+            primaryButtonCallback={onFinishGuide}
+        >
+            <Modal.Header
+                image={<StreamIframe src={video_src} title='trade_types_selection' />}
+                title={<Localize i18n_default_text='Manage your trade types' />}
+            />
+            <Modal.Body>
+                <Localize i18n_default_text='Pin, rearrange, or remove your favorite trade types for easy access.' />
+            </Modal.Body>
+        </Modal>
+    );
+};
+
+export default React.memo(TradeTypesSelectionGuide);

@@ -108,7 +108,8 @@ const config: Config = {
     },
 
     // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
-    // modulePathIgnorePatterns: [],
+    // DTrader is a separate app with its own tests and packages.
+    modulePathIgnorePatterns: ['<rootDir>/dtrader/', '<rootDir>/dtrader-dist/'],
 
     // Activates notifications for test results
     // notify: false,
@@ -173,9 +174,7 @@ const config: Config = {
     testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
 
     // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
-    // testPathIgnorePatterns: [
-    //   "/node_modules/"
-    // ],
+    testPathIgnorePatterns: ['/node_modules/', '<rootDir>/dtrader/', '<rootDir>/dtrader-dist/'],
 
     // The regexp pattern or array of patterns that Jest uses to detect test files
     // testRegex: [],

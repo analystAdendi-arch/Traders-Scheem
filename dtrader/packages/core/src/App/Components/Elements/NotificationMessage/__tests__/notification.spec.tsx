@@ -1,0 +1,33 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import Notification from '../notification.jsx';
+
+jest.mock('../../../Routes', () => ({
+    BinaryLink: 'mockedBinaryLink',
+}));
+
+describe('Notification component', () => {
+    it('should render the NotificationBanner component when "data.type" is "news"', () => {
+        render(<Notification data={{ type: 'news' }} />);
+        const element = screen.getByTestId('dt_notification_banner');
+        expect(element).toBeInTheDocument();
+    });
+
+    it('should render the NotificationBanner component when "data.type" is "trustpilot"', () => {
+        render(<Notification data={{ type: 'trustpilot' }} />);
+        const element = screen.getByTestId('dt_notification_banner');
+        expect(element).toBeInTheDocument();
+    });
+
+    it('should render the NotificationPromo component when "data.type" is "promotions"', () => {
+        render(<Notification data={{ type: 'promotions' }} />);
+        const element = screen.getByTestId('dt_notification_promo');
+        expect(element).toBeInTheDocument();
+    });
+
+    it('should render the default component when "data.type" is not one of the above', () => {
+        render(<Notification data={{ type: 'warning' }} />);
+        const element = screen.getByTestId('dt_default_component');
+        expect(element).toBeInTheDocument();
+    });
+});

@@ -1,0 +1,112 @@
+/** @define settings-language */
+.settings-language {
+    margin-left: 1.6rem;
+    width: fit-content;
+
+    @include mobile-or-tablet-screen {
+        display: flex;
+        flex-direction: column;
+        padding: 1.6rem 2.2rem 8rem;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    &__language-container {
+        display: grid;
+        grid-template-columns: repeat(4, min-content);
+        grid-gap: 0.8rem;
+        margin: 1.6rem 0;
+
+        @include mobile-or-tablet-screen {
+            grid-template-columns: repeat(2, minmax(40%, 1fr));
+            grid-template-rows: auto;
+            grid-gap: initial;
+            margin: 0 auto;
+            padding: 0 0.8rem;
+
+            @include mobile-or-tablet-screen {
+                &--disabled {
+                    opacity: 0.5;
+                    pointer-events: none;
+                }
+            }
+        }
+    }
+    &__language {
+        &-button_wrapper {
+            display: flex;
+            align-items: center;
+            svg {
+                fill: var(--color-text-primary);
+            }
+
+            .ic-settings-language__text {
+                margin-left: 0.4rem;
+            }
+        }
+
+        &-link {
+            color: var(--color-text-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: $BORDER_RADIUS;
+            padding: 16px;
+            height: 8.8rem;
+
+            @include mobile-or-tablet-screen {
+                padding: 8px;
+
+                &--pre-appstore {
+                    padding: 1.6rem;
+                }
+            }
+            text-decoration: none;
+            background-color: var(--color-surface-primary);
+
+            & * {
+                cursor: pointer;
+            }
+
+            &--active {
+                border: 1px solid var(--color-interactive-active);
+                color: var(--color-text-primary);
+                @include mobile-or-tablet-screen {
+                    order: -1;
+                }
+                & * {
+                    cursor: not-allowed;
+                }
+            }
+        }
+        &-flag {
+            width: 3.6rem;
+            height: 2.8rem;
+
+            @include mobile-or-tablet-screen {
+                margin-top: 1rem;
+            }
+        }
+        &-name {
+            @include typeface(--paragraph-left-normal-black);
+            color: var(--color-text-primary);
+            margin: auto; // Center text vertically when flag is hidden
+
+            &--active {
+                font-weight: bold;
+                color: var(--color-text-primary);
+            }
+
+            @include mobile-or-tablet-screen {
+                font-size: 1.4rem;
+            }
+        }
+        &--radio-button {
+            display: none;
+        }
+        &--center-label {
+            text-align: center;
+        }
+    }
+}

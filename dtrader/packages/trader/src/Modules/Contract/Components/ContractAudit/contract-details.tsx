@@ -1,0 +1,419 @@
+import React from 'react';
+import classNames from 'classnames';
+
+import { Button, MobileDialog, Money, Text, ThemedScrollbars } from '@deriv/components';
+import {
+    IllustrativePayoutIcon,
+    LabelPairedCircleMdBoldIcon,
+    LabelPairedCircleMdFillIcon,
+    LabelPairedFlagCheckeredMdFillIcon,
+    LabelPairedStopwatchMdRegularIcon,
+    LegacyBarrierIcon,
+    LegacyBarrierResetIcon,
+    LegacyCommissionIcon,
+    LegacyDealCancellationIcon,
+    LegacyIdIcon,
+    LegacyResetIcon,
+    LegacyTargetIcon,
+    LegacyTimeIcon,
+} from '@deriv/quill-icons';
+import {
+    addComma,
+    CONTRACT_TYPES,
+    epochToMoment,
+    formatResetDuration,
+    getCancellationPrice,
+    getCurrencyDisplayCode,
+    getEntrySpotTooltipMessage,
+    getLocalizedBasis,
+    hasTwoBarriers,
+    isAccumulatorContract,
+    isAsiansContract,
+    isEndedBeforeCancellationExpired,
+    isLookBacksContract,
+    isMultiplierContract,
+    isResetContract,
+    isSmartTraderContract,
+    isTicksContract,
+    isTurbosContract,
+    isUserCancelled,
+    isUserSold,
+    isVanillaContract,
+    isVanillaFxContract,
+    TContractInfo,
+    toGMTFormat,
+} from '@deriv/shared';
+import { Localize, useTranslations } from '@deriv-com/translations';
+import { useDevice } from '@deriv-com/ui';
+
+import { getBarrierLabel, getBarrierValue, isDigitType } from './positions-helper';
+import { isCancellationExpired } from 'Stores/Modules/Trading/Helpers/logic';
+
+import ContractAuditItem from './contract-audit-item';
+
+import { getEntrySpotTooltipText } from '_common/utils/contract-entry-spot-helper';
+
+type TContractDetails = {
+    contract_end_time?: number;
+    contract_info: TContractInfo;
+    duration: number | string;
+    duration_unit: string;
+    exit_spot?: string;
+    is_vanilla?: boolean;
+};
+
+const ContractDetails = ({
+    contract_end_time,
+    contract_info,
+    duration,
+    duration_unit,
+    exit_spot,
+    is_vanilla,
+}: TContractDetails) => {
+    const {
+        barrier,
+        commission,
+        contract_type,
+        currency,
+        date_start,
+        display_number_of_contracts,
+        entry_spot,
+        entry_spot_time,
+        exit_spot: exit_spot_value,
+        exit_spot_time,
+        high_barrier,
+        is_sold,
+        low_barrier,
+        profit,
+        selected_tick,
+        status,
+        tick_count,
+        tick_passed,
+        transaction_ids: { buy, sell } = {},
+        reset_barrier,
+        reset_time,
+        underlying_symbol,
+    } = contract_info;
+    const { isMobile } = useDevice();
+    const { localize } = useTranslations();
+    const [showEntrySpotDialog, setShowEntrySpotDialog] = React.useState<boolean>(false);
+    const entry_spot_tooltip = getEntrySpotTooltipMessage(contract_type);
+
+    const is_profit = Number(profit) >= 0;
+    const cancellation_price = getCancellationPrice(contract_info);
+    const show_barrier = !is_vanilla && !isAccumulatorContract(contract_type) && !isSmartTraderContract(contract_type);
+    const show_duration = !isAccumulatorContract(contract_type) || !isNaN(Number(contract_end_time));
+    const show_payout_per_point = isTurbosContract(contract_type) || is_vanilla;
+    const ticks_label = Number(tick_count) < 2 ? localize('tick') : localize('ticks');
+    const show_strike_barrier = is_vanilla || isAsiansContract(contract_type) || isResetContract(contract_type);
+    const ticks_duration_text = isAccumulatorContract(contract_type)
+        ? `${tick_passed} ${ticks_label}`
+        : `${tick_count} ${ticks_label}`;
+
+    const INDICATIVE_HIGH = 'H';
+    const INDICATIVE_LOW = 'L';
+
+    const additional_info = isResetContract(contract_type) ? (
+        <Localize
+            i18n_default_text='The reset time is {{ reset_time }}'
+            values={{
+                reset_time:
+                    Number(tick_count) > 0
+                        ? `${Math.floor(Number(tick_count) / 2)} ${ticks_label}`
+                        : formatResetDuration(contract_info),
+            }}
+        />
+    ) : (
+        ''
+    );
+
+    const createLookBacksMarker = (abbreviation?: string) => {
+        const low_spot_text = is_sold ? (
+            <Localize i18n_default_text='Low spot' />
+        ) : (
+            <Localize i18n_default_text='Indicative low spot' />
+        );
+        const high_spot_text = is_sold ? (
+            <Localize i18n_default_text='High spot' />
+        ) : (
+            <Localize i18n_default_text='Indicative high spot' />
+        );
+        return {
+            label: abbreviation === INDICATIVE_LOW ? low_spot_text : high_spot_text,
+            icon: (
+                <div className='lookbacks-marker__wrapper'>
+                    <Text color='inverse' size='xxxs' className='lookbacks-marker__asset'>
+                        {abbreviation}
+                    </Text>
+                </div>
+            ),
+        };
+    };
+
+    const lookbacks_marker = createLookBacksMarker(
+        contract_type === CONTRACT_TYPES.LB_PUT ? INDICATIVE_HIGH : INDICATIVE_LOW
+    );
+
+    const vanilla_payout_text = isVanillaFxContract(contract_type, underlying_symbol)
+        ? getLocalizedBasis().payout_per_pip
+        : getLocalizedBasis().payout_per_point;
+
+    const getLabel = () => {
+        if (isUserSold(contract_info) && isEndedBeforeCancellationExpired(contract_info))
+            return localize('Deal cancellation');
+        if (isUserCancelled(contract_info)) return localize('Deal cancellation (executed)');
+        if (isCancellationExpired(contract_info)) return localize('Deal cancellation (expired)');
+        return localize('Deal cancellation (active)');
+    };
+
+    return (
+        <ThemedScrollbars is_bypassed={isMobile}>
+            <div className='contract-audit__tabs-content'>
+                <ContractAuditItem
+                    id='dt_id_label'
+                    icon={<LegacyIdIcon iconSize='xs' fill='var(--color-text-primary)' />}
+                    label={localize('Reference ID')}
+                    value={localize('{{buy_value}} (Buy)', { buy_value: buy })}
+                    value2={sell ? localize('{{sell_value}} (Sell)', { sell_value: sell }) : undefined}
+                />
+                {isMultiplierContract(contract_type) ? (
+                    <React.Fragment>
+                        <ContractAuditItem
+                            id='dt_commission_label'
+                            icon={<LegacyCommissionIcon iconSize='xs' fill='var(--color-text-primary)' />}
+                            label={localize('Commission')}
+                            value={<Money amount={commission ?? ''} currency={currency} show_currency />}
+                        />
+                        {!!cancellation_price && (
+                            <ContractAuditItem
+                                id='dt_cancellation_label'
+                                icon={<LegacyDealCancellationIcon iconSize='xs' fill='var(--color-text-primary)' />}
+                                label={getLabel()}
+                                value={<Money amount={cancellation_price} currency={currency} />}
+                            />
+                        )}
+                    </React.Fragment>
+                ) : (
+                    <React.Fragment>
+                        {show_duration && (
+                            <ContractAuditItem
+                                id='dt_duration_label'
+                                icon={<LegacyTimeIcon iconSize='xs' fill='var(--color-text-primary)' />}
+                                label={localize('Duration')}
+                                value={Number(tick_count) > 0 ? ticks_duration_text : `${duration} ${duration_unit}`}
+                                additional_info={additional_info}
+                            />
+                        )}
+                        {show_strike_barrier && (
+                            <React.Fragment>
+                                <ContractAuditItem
+                                    id='dt_bt_label'
+                                    icon={<LegacyBarrierIcon iconSize='xs' fill='var(--color-text-primary)' />}
+                                    label={getBarrierLabel(contract_info)}
+                                    value={
+                                        (isResetContract(contract_type)
+                                            ? addComma(entry_spot?.toString() || '')
+                                            : getBarrierValue(contract_info)) || ' - '
+                                    }
+                                />
+                                {reset_time && (
+                                    <React.Fragment>
+                                        <ContractAuditItem
+                                            id='dt_reset_barrier_label'
+                                            icon={
+                                                <LegacyBarrierResetIcon
+                                                    iconSize='xs'
+                                                    fill='var(--color-text-primary)'
+                                                />
+                                            }
+                                            label={localize('Reset barrier')}
+                                            value={reset_barrier ? addComma(reset_barrier) : ' - '}
+                                        />
+                                        <ContractAuditItem
+                                            id='dt_reset_time_label'
+                                            icon={<LegacyResetIcon iconSize='xs' fill='var(--color-text-primary)' />}
+                                            label={localize('Reset time')}
+                                            value={toGMTFormat(epochToMoment(reset_time))}
+                                        />
+                                    </React.Fragment>
+                                )}
+                            </React.Fragment>
+                        )}
+                        {show_barrier && (
+                            <ContractAuditItem
+                                id='dt_bt_label'
+                                icon={
+                                    isDigitType(contract_type) ? (
+                                        <LegacyTargetIcon iconSize='xs' fill='var(--color-text-primary)' />
+                                    ) : (
+                                        <LegacyBarrierIcon iconSize='xs' fill='var(--color-text-primary)' />
+                                    )
+                                }
+                                label={getBarrierLabel(contract_info)}
+                                value={getBarrierValue(contract_info) || ' - '}
+                            />
+                        )}
+                        {hasTwoBarriers(contract_type) && (
+                            <React.Fragment>
+                                {[high_barrier, low_barrier].map((barrier, index) => (
+                                    <ContractAuditItem
+                                        id={`dt_bt_label_${index + 1}`}
+                                        icon={<LegacyBarrierIcon iconSize='xs' fill='var(--color-text-primary)' />}
+                                        key={barrier}
+                                        label={
+                                            high_barrier === barrier
+                                                ? localize('High barrier')
+                                                : localize('Low barrier')
+                                        }
+                                        value={barrier}
+                                    />
+                                ))}
+                            </React.Fragment>
+                        )}
+                        {show_payout_per_point && (
+                            <ContractAuditItem
+                                id='dt_bt_label'
+                                icon={<IllustrativePayoutIcon iconSize='xs' fill='var(--color-text-primary)' />}
+                                label={vanilla_payout_text}
+                                value={
+                                    display_number_of_contracts
+                                        ? `${display_number_of_contracts} ${getCurrencyDisplayCode(currency)}`
+                                        : ' - '
+                                }
+                            />
+                        )}
+                    </React.Fragment>
+                )}
+                {isTicksContract(contract_type) && (
+                    <ContractAuditItem
+                        id='dt_entry_spot_label'
+                        icon={
+                            <div className='contract-audit__selected-tick'>
+                                <div
+                                    className={classNames(
+                                        'contract-audit__selected-tick--marker',
+                                        `contract-audit__selected-tick--marker--${status}`
+                                    )}
+                                >
+                                    {selected_tick}
+                                </div>
+                            </div>
+                        }
+                        label={localize('Selected tick')}
+                        value={barrier || '----'}
+                    />
+                )}
+                <ContractAuditItem
+                    id='dt_start_time_label'
+                    icon={<LabelPairedStopwatchMdRegularIcon fill='var(--color-text-primary)' />}
+                    label={localize('Start time')}
+                    value={toGMTFormat(epochToMoment(Number(date_start))) || ' - '}
+                />
+                {isLookBacksContract(contract_type) && (
+                    <React.Fragment>
+                        {contract_type === CONTRACT_TYPES.LB_HIGH_LOW ? (
+                            <React.Fragment>
+                                {[high_barrier, low_barrier].map((barrier, index) => {
+                                    const high_low_marker = createLookBacksMarker(
+                                        index === 0 ? INDICATIVE_HIGH : INDICATIVE_LOW
+                                    );
+
+                                    return (
+                                        <ContractAuditItem
+                                            id={`dt_bt_label_${index + 1}`}
+                                            icon={high_low_marker.icon}
+                                            key={barrier}
+                                            label={high_low_marker.label}
+                                            value={barrier}
+                                        />
+                                    );
+                                })}
+                            </React.Fragment>
+                        ) : (
+                            <ContractAuditItem
+                                id='dt_indicative_high_spot'
+                                icon={lookbacks_marker.icon}
+                                label={lookbacks_marker.label}
+                                value={contract_info?.barrier}
+                            />
+                        )}
+                    </React.Fragment>
+                )}
+                {!isDigitType(contract_type) && (
+                    <React.Fragment>
+                        <ContractAuditItem
+                            id='dt_entry_spot_label'
+                            icon={<LabelPairedCircleMdBoldIcon fill='var(--color-text-primary)' />}
+                            label={localize('Entry spot')}
+                            value={entry_spot ? addComma(entry_spot.toString()) : ' - '}
+                            value2={entry_spot_time ? toGMTFormat(epochToMoment(entry_spot_time)) : ' - '}
+                            additional_info={
+                                isTicksContract(contract_type) &&
+                                localize('The entry spot is the first tick for High/Low Ticks.')
+                            }
+                            tooltip_message={entry_spot_tooltip}
+                            onLabelClick={() => setShowEntrySpotDialog(true)}
+                        />
+                        {isMobile && entry_spot_tooltip && (
+                            <MobileDialog
+                                portal_element_id='modal_root'
+                                visible={showEntrySpotDialog}
+                                onClose={() => setShowEntrySpotDialog(false)}
+                                has_full_height={false}
+                                title={localize('Entry spot')}
+                            >
+                                <div className='contract-audit__entry-spot-dialog'>
+                                    <Text size='s' className='contract-audit__entry-spot-dialog-text'>
+                                        {entry_spot_tooltip}
+                                    </Text>
+                                    <Button
+                                        className='contract-audit__entry-spot-dialog-button'
+                                        onClick={() => setShowEntrySpotDialog(false)}
+                                        has_effect
+                                        text={localize('Got it')}
+                                        primary
+                                        large
+                                    />
+                                </div>
+                            </MobileDialog>
+                        )}
+                    </React.Fragment>
+                )}
+                {(!isNaN(Number(exit_spot)) || exit_spot_value) && (
+                    <ContractAuditItem
+                        id='dt_exit_spot_label'
+                        icon={<LabelPairedCircleMdFillIcon fill='var(--color-text-primary)' />}
+                        label={localize('Exit spot')}
+                        value={
+                            exit_spot
+                                ? addComma(exit_spot)
+                                : exit_spot_value
+                                  ? addComma(exit_spot_value.toString())
+                                  : ' - '
+                        }
+                        value2={toGMTFormat(epochToMoment(Number(exit_spot_time))) || ' - '}
+                    />
+                )}
+                {!isNaN(Number(contract_end_time)) && (
+                    <ContractAuditItem
+                        id='dt_exit_time_label'
+                        icon={
+                            <LabelPairedFlagCheckeredMdFillIcon
+                                fill='var(--color-text-primary)'
+                                className={
+                                    is_profit
+                                        ? 'contract-audit__exit-time--success'
+                                        : 'contract-audit__exit-time--danger'
+                                }
+                            />
+                        }
+                        label={localize('Exit time')}
+                        value={toGMTFormat(epochToMoment(Number(contract_end_time))) || ' - '}
+                    />
+                )}
+            </div>
+        </ThemedScrollbars>
+    );
+};
+
+export default ContractDetails;

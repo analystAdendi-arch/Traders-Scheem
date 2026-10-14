@@ -1,0 +1,669 @@
+/** @define chart-spot */
+// Equal to --core-color-solid-red-700, --core-color-solid-green-700 and --core-color-solid-blue-700 form Quill.
+// Can not use Quill token here.
+$solid-red-700: #e6190e;
+$solid-green-700: #008832;
+$solid-blue-700: #2c9aff;
+
+.chart-spot {
+    display: flex;
+    flex-direction: column;
+
+    &__spot {
+        position: absolute;
+        top: -1.1rem;
+        margin-left: -11.5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        color: var(--color-text-primary);
+        background-color: var(--color-surface-primary);
+        border: 1px solid var(--color-text-secondary);
+
+        &--lost {
+            border-color: $solid-red-700;
+            background: $solid-red-700;
+        }
+        &--won {
+            background-color: $solid-green-700;
+            border-color: $solid-green-700;
+        }
+        &--won,
+        &--lost {
+            color: var(--brand-white);
+        }
+        &--last {
+            background-color: var(--color-text-primary);
+            color: var(--component-textIcon-inverse-prominent, #fff);
+        }
+        @include mobile {
+            bottom: -9.5px;
+            margin-left: -8px;
+            font-size: 0.8rem;
+        }
+    }
+    &__entry {
+        align-items: center;
+        background-color: var(--color-surface-primary);
+        border: 2px solid var(--color-text-primary);
+        display: flex;
+        justify-content: center;
+        left: -12px;
+        position: relative;
+        top: -12px;
+        color: var(--color-text-secondary);
+
+        @include mobile {
+            border-width: 3px;
+            left: -9px;
+            top: -9px;
+        }
+    }
+    &__spot,
+    &__entry {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+
+        @include mobile {
+            width: 16px;
+            height: 16px;
+        }
+        &--accumulator,
+        &--smarttrader-contract {
+            &-middle,
+            &-middle--preexit {
+                width: 6px;
+                height: 6px;
+                top: -3px;
+                margin-left: -4px;
+                background-color: var(--color-text-secondary);
+
+                &--preexit {
+                    background-color: $solid-blue-700;
+                    border: 2px solid $solid-blue-700;
+                }
+                @include mobile {
+                    width: 4px;
+                    height: 4px;
+                    top: -2px;
+                    margin-left: -3px;
+                }
+            }
+            &-exit {
+                width: 2rem;
+                height: 2rem;
+                margin-left: -1.05rem;
+                top: -0.95rem;
+                background-color: var(--color-surface-primary);
+                &:after {
+                    content: '';
+                    width: 0.6rem;
+                    height: 0.6rem;
+                    border-radius: 50%;
+                    background-color: $solid-green-700;
+                    @include mobile {
+                        width: 0.4rem;
+                        height: 0.4rem;
+                    }
+                }
+                @include mobile {
+                    width: 1.6rem;
+                    height: 1.6rem;
+                    margin-left: -0.85rem;
+                    top: -0.85rem;
+                    border-width: 0.1rem;
+                }
+            }
+        }
+    }
+    &__sell {
+        border-radius: 50%;
+        width: 2px;
+        height: 2px;
+        margin-left: -2px;
+        margin-top: -2px;
+        background-color: var(--color-text-primary);
+        border: 2px solid var(--color-surface-border);
+    }
+}
+
+/** @define chart-spot-label */
+.chart-spot-label {
+    &-profit {
+        position: relative;
+        top: -2.8rem;
+        left: 2.5rem;
+
+        .chart-spot-label__value-container {
+            padding: 0.8rem;
+            line-height: normal;
+            border-radius: 0.6rem;
+        }
+
+        &--lost {
+            &:before {
+                border-bottom: 0.5rem solid $solid-red-700;
+            }
+        }
+
+        &--won {
+            &:before {
+                border-bottom: 0.5rem solid $solid-green-700;
+            }
+        }
+
+        &:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -1rem;
+            border-top: 0.5rem solid transparent;
+            border-right: 0.5rem solid transparent;
+            border-left: 0.5rem solid transparent;
+            transform: translateY(-50%) rotate(270deg);
+        }
+    }
+    &__info-container {
+        width: 100%;
+        position: relative;
+    }
+    &__time-value-container {
+        position: absolute;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+
+        &--top {
+            bottom: 21px;
+
+            .chart-spot-label__time-container {
+                margin-bottom: 2px;
+            }
+            @include mobile {
+                bottom: 1.35rem;
+            }
+        }
+        &--middle {
+            bottom: 3.8rem;
+
+            .chart-spot-label__time-container {
+                margin-bottom: 0.2rem;
+            }
+        }
+        &--bottom {
+            top: 18px;
+            flex-direction: column-reverse;
+
+            .chart-spot-label__time-container {
+                margin-top: 2px;
+            }
+            @include mobile {
+                top: 7.5px;
+            }
+        }
+    }
+    &__time-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0px 8px;
+
+        /* postcss-bem-linter: ignore */
+        svg {
+            /* postcss-bem-linter: ignore */
+            g {
+                stroke: var(--color-text-primary);
+            }
+        }
+    }
+    &__time-icon {
+        margin-right: 2px;
+        height: 16px;
+        width: 16px;
+        fill: var(--color-text-primary);
+    }
+    &__value-container {
+        background: color-mix(in srgb, var(--color-surface-inverse) 24%, transparent);
+        text-align: center;
+        backdrop-filter: blur(10px);
+        font-size: 1.4rem;
+        padding: 4px 8px;
+        border-radius: 11px;
+        font-weight: var(--semantic-typography-caption-bold-default-fontWeight, 700);
+        color: var(--component-textIcon-inverse-prominent);
+
+        /* postcss-bem-linter: ignore */
+        p {
+            margin-top: 2px;
+        }
+        &--lost {
+            background-color: $solid-red-700;
+        }
+        &--won {
+            background-color: $solid-green-700;
+        }
+        &--won,
+        &--lost {
+            color: var(--component-textIcon-static-prominentDark, #fff);
+        }
+        @include mobile {
+            font-size: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.5rem;
+        }
+    }
+}
+
+.ciq-chart > .cq-inchart-subholder {
+    z-index: 1;
+    .chart-marker-line {
+        &__icon {
+            position: absolute;
+            bottom: 0;
+            left: -7px;
+            white-space: nowrap;
+            background-color: var(--color-surface-primary);
+            border-radius: 50%;
+
+            @include mobile {
+                left: -7px;
+            }
+
+            &--success rect {
+                fill: var(--color-text-success);
+            }
+            &--danger rect {
+                fill: var(--color-text-danger);
+            }
+        }
+    }
+}
+
+/** @define chart-marker-line */
+.chart-marker-line {
+    height: 94.5%;
+    margin-bottom: 0.8em;
+    z-index: 0 !important;
+    bottom: -100%;
+    transition: none;
+
+    &__wrapper {
+        border-left-width: 2px;
+        padding-left: 0.5em;
+        height: 100%;
+        border-color: var(--color-text-secondary);
+
+        &:after {
+            background: linear-gradient(to bottom, var(--color-surface-primary) 3%, transparent 10%);
+            position: absolute;
+            content: ' ';
+            top: 0px;
+            left: -1px;
+            height: 100%;
+            width: 3px;
+        }
+    }
+
+    &__icon {
+        position: absolute;
+        bottom: 0;
+        left: -11px;
+        white-space: nowrap;
+        background-color: var(--color-surface-primary);
+
+        &--time {
+            /* postcss-bem-linter: ignore */
+            path {
+                fill: var(--color-text-secondary);
+            }
+        }
+        &--won {
+            /* postcss-bem-linter: ignore */
+            circle {
+                fill: $solid-green-700;
+            }
+        }
+        &--lost {
+            /* postcss-bem-linter: ignore */
+            circle {
+                fill: $solid-red-700;
+            }
+        }
+        @include mobile {
+            bottom: -15px;
+            left: -7px;
+            width: 16px;
+            height: 16px;
+        }
+    }
+    &--solid {
+        border-left-style: solid;
+    }
+    &--dash {
+        border-left-style: dashed;
+    }
+}
+
+/** @define sc-toolbar-widget; weak */
+.sc-toolbar-widget {
+    &--bottom {
+        .ciq-menu {
+            margin: 0px;
+        }
+    }
+}
+
+/** @define smartcharts-mobile; weak */
+.smartcharts-mobile {
+    .ciq-chart {
+        padding: unset;
+
+        .barrier-area {
+            right: -16px;
+        }
+    }
+    .cq-modal-dropdown {
+        left: 0px;
+        top: 0px;
+    }
+    .sc-chart-type,
+    .sc-interval {
+        .sc-tooltip__inner {
+            display: none;
+        }
+    }
+    .cq-chart-title .sc-dialog__body {
+        height: 100% !important;
+    }
+    .sc-categorical-display {
+        height: calc(100% - 38px) !important;
+    }
+    .cq-menu-dropdown .title .title-text {
+        display: inline;
+    }
+}
+
+.smartcharts {
+    .cq-chart-title {
+        top: unset;
+    }
+}
+
+.sc-accumulators-profit-loss {
+    &-text {
+        width: fit-content;
+        padding-left: 3rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        @include mobile {
+            padding-left: 2.3rem;
+        }
+
+        &.won div {
+            color: $solid-green-700;
+        }
+        &.lost div {
+            color: $solid-red-700;
+        }
+        &__profit {
+            display: flex;
+            transform: translateY(-54%);
+            position: relative;
+
+            &--won {
+                color: $solid-green-700 !important;
+            }
+            &--lost {
+                color: $solid-red-700 !important;
+            }
+            &--fading-in {
+                @keyframes fade-profit-in {
+                    from {
+                        opacity: 0;
+                    }
+                    to {
+                        opacity: 1;
+                    }
+                }
+                animation: 0.6s ease-in fade-profit-in;
+            }
+        }
+        &__sliding-tenth {
+            @keyframes slide-decimal {
+                0%,
+                100% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                25%,
+                27% {
+                    transform: translateY(-15px);
+                    opacity: 0.2;
+                }
+                50% {
+                    transform: translateY(-30px);
+                    opacity: 0;
+                }
+            }
+            animation: 0.1s cubic-bezier(0.49, -0.4, 0.11, 0.65) 3 both slide-decimal;
+        }
+        &__currency {
+            padding-left: 0.2rem;
+            transform: translateY(-83%);
+            @include mobile {
+                transform: translateY(-78%);
+            }
+        }
+        &:before {
+            content: '';
+            position: absolute;
+            width: calc(100% - 3rem);
+            height: 8%;
+            top: -4%;
+            z-index: -2;
+            background-color: var(--color-surface-primary);
+
+            @include mobile {
+                width: calc(100% - 2.3rem);
+            }
+        }
+        &:after {
+            content: '';
+            position: absolute;
+            width: calc(100% - 3rem);
+            height: 8%;
+            top: -4%;
+            z-index: -1;
+            background-color: rgba(0, 167, 158, 0.1);
+            box-shadow:
+                0 -8px 11px 0 rgba(0, 167, 158, 0.08),
+                0 8px 11px 0 rgba(0, 167, 158, 0.08),
+                0 0 11px -5px rgba(0, 167, 158, 0.08),
+                0 0 11px -5px rgba(0, 167, 158, 0.08);
+
+            @include mobile {
+                width: calc(100% - 2.3rem);
+            }
+        }
+    }
+    &-tooltip {
+        $self: &;
+        width: 17.2rem;
+        height: 6.55rem;
+
+        &.lost {
+            #{$self}__spot-circle,
+            #{$self}__content {
+                background-color: $solid-red-700;
+
+                &.arrow-top:after {
+                    border-bottom: 4px solid $solid-red-700;
+                }
+                &.arrow-bottom:before {
+                    border-top: 4px solid $solid-red-700;
+                }
+                &.arrow-left:after {
+                    border-right: 4px solid $solid-red-700;
+                }
+                &.arrow-right:before {
+                    border-left: 4px solid $solid-red-700;
+                }
+            }
+        }
+        &.won {
+            #{$self}__spot-circle,
+            #{$self}__content {
+                background-color: $solid-green-700;
+
+                &.arrow-top:after {
+                    border-bottom: 4px solid $solid-green-700;
+                }
+                &.arrow-bottom:before {
+                    border-top: 4px solid $solid-green-700;
+                }
+                &.arrow-left:after {
+                    border-right: 4px solid $solid-green-700;
+                }
+                &.arrow-right:before {
+                    border-left: 4px solid $solid-green-700;
+                }
+            }
+        }
+        &__spot-circle {
+            position: absolute;
+            border-radius: 100%;
+            width: 0.5rem;
+            height: 0.5rem;
+            top: -2.5px;
+            left: -2.5px;
+            cursor: pointer;
+        }
+        &__content {
+            position: absolute;
+            min-width: 10.5rem;
+            height: 5.8rem;
+            border-radius: $BORDER_RADIUS;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            padding: 0.8rem;
+            opacity: 0.72;
+            transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.1, 0.25);
+
+            @include mobile {
+                min-width: 7.5rem;
+                height: 4.6rem;
+            }
+            &-enter,
+            &-exit {
+                opacity: 0;
+            }
+
+            &-enter-done {
+                opacity: 0.72;
+            }
+
+            &:after,
+            &:before {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 0;
+                display: none;
+            }
+            &.arrow-top:after,
+            &.arrow-bottom:before {
+                left: calc(50% - 4px);
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+                display: block;
+            }
+            &.arrow-left:after,
+            &.arrow-right:before {
+                top: calc(50% - 4px);
+                border-top: 4px solid transparent;
+                border-bottom: 4px solid transparent;
+                display: block;
+            }
+            &.arrow-top {
+                transform: translateX(-50%) translateY(8.5px);
+
+                &:after {
+                    top: -4px;
+                }
+            }
+            &.arrow-bottom {
+                transform: translateX(-50%) translateY(calc(-100% - 8.5px));
+
+                &:before {
+                    top: 100%;
+                }
+            }
+            &.arrow-left {
+                transform: translateX(8.5px) translateY(-50%);
+
+                &:after {
+                    left: -4px;
+                }
+            }
+            &.arrow-right {
+                transform: translateX(calc(-100% - 8.5px)) translateY(-50%);
+
+                &:before {
+                    left: 100%;
+                }
+            }
+
+            #{$self}__text {
+                color: var(--color-surface-primary);
+            }
+        }
+    }
+}
+
+.sc-current-spot-emphasizer {
+    position: relative;
+
+    &:before {
+        content: '';
+        position: absolute;
+        width: 3.2rem;
+        height: 3.2rem;
+        transform: translateX(-50%) translateY(-50%);
+        border-radius: 50%;
+        animation: 0.5s spot-emphasizer 0.2s;
+    }
+}
+.sc-reset_barrier {
+    width: 100vw;
+    height: 0.1rem;
+    border-bottom: 1px dashed $solid-blue-700;
+}
+
+.sc-barrier_gradient {
+    width: 100vw;
+    height: 12rem;
+    position: absolute;
+    opacity: 0.3;
+
+    &--to-bottom {
+        background-image: linear-gradient(to bottom, transparent, $solid-green-700);
+        bottom: 0;
+    }
+    &--to-top {
+        background-image: linear-gradient(to top, transparent, $solid-green-700);
+    }
+}
+
+//Vanilla specific styles
+.vanilla-trade-chart {
+    @include mobile {
+        height: calc(100% - #{$MOBILE_HEADER_HEIGHT});
+    }
+}

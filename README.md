@@ -94,3 +94,14 @@ not Next.js config:
 
 When assembled by the App Builder, these are configured for you (logo upload, color,
 font, and app name are injected at deploy time).
+
+## Manual Trader (embedded DTrader)
+
+The Manual Trader tab runs Deriv's DTrader, kept in [`dtrader/`](dtrader/) as its own app.
+
+- `npm run build` builds it automatically (the `prebuild` step runs `scripts/build-dtrader.js`), and the result is served at `/dtrader/`.
+- For local development, run `npm run build:dtrader` once before `npm run dev`.
+- DTrader needs **Node 22.14 or newer**. Its first build installs its own dependencies, so a full build takes noticeably longer.
+- Set `SKIP_DTRADER_BUILD=1` to reuse an existing `dtrader-dist/` build.
+
+DTrader uses the Traders Scheem session. It hands login, token renewal, account switching and logout back to the site (`src/pages/manual-trader/`). Its branding and colours are in `dtrader/brand.config.json`; after changing the colours run `node scripts/generate-colors.js` inside `dtrader/`.

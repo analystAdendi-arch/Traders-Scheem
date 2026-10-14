@@ -1,0 +1,307 @@
+.trade-params {
+    background-color: var(--semantic-color-slate-solid-surface-frame-low);
+    border-radius: var(--core-borderRadius-400);
+    display: flex;
+    flex-direction: column;
+    gap: var(--core-spacing-800);
+    padding: var(--core-spacing-800);
+    height: 100%;
+    position: relative;
+    padding-bottom: 0;
+
+    @include mobile-screen {
+        background-color: unset;
+        padding: unset;
+        gap: unset;
+    }
+
+    &__container {
+        position: fixed;
+        width: 100%;
+        bottom: 5.6rem; // HEIGHT.BOTTOM_NAV
+        left: 0;
+        right: 0;
+        background: var(--semantic-color-slate-solid-surface-frame-mid);
+        transition: all 0.3s ease-in-out;
+        padding: 0 var(--core-spacing-400);
+        border-radius: var(--core-spacing-800) var(--core-spacing-800) 0 0;
+        box-shadow: 0 -2px 4px 0 rgba(0, 0, 0, 0.08);
+        border-top: 1px solid var(--color-surface-border);
+        z-index: 20;
+        touch-action: manipulation; // Prevents double-tap zoom and hover states on touch
+
+        &-handle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 3.2rem; // HEIGHT.TRADE_PARAM_HANDLER
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            z-index: 2;
+            touch-action: manipulation; // Extra specificity for handle
+
+            &-bar {
+                transition: transform 0.3s ease-in-out;
+                pointer-events: none; // Make icon click-through
+
+                svg {
+                    pointer-events: none; // Ensure SVG doesn't capture events
+                }
+            }
+        }
+
+        &-content {
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        &--collapsed {
+            .trade-params__container-handle-bar {
+                transform: rotate(0deg);
+            }
+        }
+
+        &--expanded {
+            .trade-params__container-handle-bar {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    &__options {
+        &-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: var(--core-spacing-400);
+
+            &--horizontal {
+                align-items: center;
+                flex-direction: row;
+                justify-content: unset;
+                flex-wrap: nowrap;
+                overflow-x: scroll;
+                white-space: nowrap;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+                // if container has 2 children, then apply style to children
+                &:has(> :last-child:nth-child(2)) {
+                    .trade-params__option--minimized {
+                        width: unset;
+                    }
+                }
+
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+            }
+
+            &--minimized {
+                max-height: 104px;
+
+                .quill-input__container {
+                    width: unset;
+                }
+            }
+        }
+    }
+    &__option {
+        border: 1px solid var(--color-surface-border);
+        touch-action: manipulation; // Prevent hover states on touch devices
+
+        &--minimized {
+            width: 16rem;
+            flex-shrink: 0;
+        }
+        @include mobile-screen {
+            padding: var(--core-spacing-400);
+            background-color: var(--semantic-color-slate-solid-surface-frame-low);
+            &:not(.trade-params__option--minimized) {
+                height: var(--core-size-2800);
+            }
+        }
+        .input {
+            padding-inline-start: 0;
+            padding-block: 1px;
+            padding-inline-end: 2px;
+            height: unset;
+        }
+
+        // Custom styling for trade type segmented control (Rise/Fall, Higher/Lower, etc.)
+        &.segmented-control-single {
+            border-radius: 2rem !important; // Pill-shaped wrapper
+
+            button {
+                border-radius: 2rem !important; // Pill-shaped rounded corners
+                transition: all 0.2s ease; // Smooth transitions
+
+                // Selected state - target the actual button with .selected class
+                &.selected {
+                    // Target the span (quill-typography) inside the button
+                    span,
+                    .quill-typography {
+                        color: var(--component-button-bg-buy-primary-default) !important; // Buy button green (brighter)
+                        font-weight: 700 !important; // Bold font weight
+                    }
+                }
+
+                // Selected state for last button (Fall/Lower/Put/etc.) - red
+                &:last-child.selected {
+                    span,
+                    .quill-typography {
+                        color: var(
+                            --color-trade-sell-text
+                        ) !important; // Brighter red/pink (#FF4D6E) for better visibility
+                        font-weight: 700 !important; // Bold font weight
+                    }
+                }
+            }
+
+            // Ensure border-radius applies to both mobile and desktop sizes
+            &--md {
+                border-radius: 2rem !important;
+                background-color: var(--semantic-color-monochrome-surface-normal-lowest);
+
+                button {
+                    border-radius: 1.2rem !important;
+                }
+            }
+            &--sm {
+                border-radius: 2rem !important;
+
+                button {
+                    border-radius: 1.6rem !important;
+                }
+            }
+        }
+
+        @include mobile-or-tablet-screen {
+            &.quill-input__wrapper__variant--fill--neutral:hover {
+                background-color: var(--semantic-color-slate-solid-surface-frame-low);
+            }
+        }
+    }
+    &--minimized {
+        min-height: var(--core-size-3600);
+        width: 100%;
+
+        &:has(.trade-params__options-wrapper--horizontal:only-child) {
+            padding-bottom: 0;
+        }
+    }
+
+    &__text--disabled {
+        color: var(--component-textIcon-normal-disabled);
+    }
+
+    &__field-with-info {
+        position: relative;
+    }
+
+    &__info-icon-wrapper {
+        position: absolute;
+        right: var(--core-spacing-800);
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+        pointer-events: auto;
+    }
+
+    &__info-icon {
+        cursor: pointer;
+        display: block;
+        fill: var(--component-textIcon-normal-prominent);
+
+        &:hover {
+            fill: var(--component-textIcon-normal-default);
+        }
+    }
+
+    &__tooltip-trigger {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    &__parameter-tooltip {
+        // Override TooltipPortal content styles for proper theming
+        .dc-tooltip-portal__content {
+            background-color: var(--color-surface-inverse);
+            color: var(--color-text-inverse);
+            padding: var(--core-spacing-400) var(--core-spacing-800);
+            font-size: var(--core-fontSize-75);
+            line-height: var(--core-lineHeight-100);
+            max-width: 320px;
+            box-shadow: var(--core-shadow-200);
+
+            // Override Quill UI Text component styles in tooltip
+            .quill-typography {
+                color: var(--color-text-inverse);
+                font-size: var(--core-fontSize-75);
+                line-height: var(--core-lineHeight-100);
+                margin-bottom: var(--core-spacing-400);
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+
+            // Override SectionMessage styles in tooltip
+            .quill-section-message {
+                background-color: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+                margin-top: var(--core-spacing-400);
+
+                .quill-typography {
+                    color: var(--color-text-inverse);
+                }
+            }
+        }
+
+        // Override TooltipPortal arrow styles
+        .dc-tooltip-portal__arrow--left {
+            border-left-color: var(--color-surface-inverse);
+        }
+    }
+
+    &__parameter-tooltip-content {
+        position: relative;
+    }
+
+    &__parameter-tooltip-arrow {
+        position: absolute;
+        right: -6px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 6px solid var(--color-surface-inverse);
+    }
+}
+
+.text-field--custom {
+    .quill-input {
+        &-no-label__wrapper {
+            position: relative;
+            .input {
+                padding-inline: var(--core-spacing-1700);
+            }
+        }
+        &-label__label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            inset-inline-start: 0;
+            z-index: 2;
+        }
+    }
+}

@@ -1,0 +1,22 @@
+.multipliers-information {
+    &__container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--core-spacing-400);
+        padding: 0 var(--core-spacing-400);
+    }
+
+    &__row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &--collapsible {
+            @media (max-width: 768px) {
+                .trade-params__options-wrapper:not(.trade-params__options-wrapper--expanded) & {
+                    display: none;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,120 @@
+import React, { useEffect, useMemo } from 'react';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+
+import { mapErrorMessage } from '@deriv/shared';
+import { ActionSheet, TextField, useSnackbar } from '@deriv-com/quill-ui';
+import { Localize } from '@deriv-com/translations';
+import { useDevice } from '@deriv-com/ui';
+
+import Carousel from 'AppV2/Components/Carousel';
+import CarouselHeader from 'AppV2/Components/Carousel/carousel-header';
+import { useTraderStore } from 'Stores/useTraderStores';
+
+import { TTradeParametersProps } from '../trade-parameters';
+
+import BarrierDescription from './barrier-description';
+import BarrierDesktop from './barrier-desktop';
+import BarrierInput from './barrier-input';
+
+const Barrier = observer(({ is_minimized }: TTradeParametersProps) => {
+    const {
+        barrier_1,
+        duration_unit,
+        expiry_type,
+        is_market_closed,
+        validation_errors,
+        proposal_info,
+        trade_type_tab,
+    } = useTraderStore();
+    const { isDesktop } = useDevice();
+    const [is_open, setIsOpen] = React.useState(false);
+    // Barriers should be absolute when using end time (expiry_type === 'endtime') or days duration
+    const isDays = duration_unit === 'd' || expiry_type === 'endtime';
+
+    const has_error =
+        (validation_errors.barrier_1?.length ?? 0) > 0 ||
+        (proposal_info?.[trade_type_tab]?.has_error && proposal_info?.[trade_type_tab]?.error_field === 'barrier');
+
+    const { addSnackbar } = useSnackbar();
+    const [barrier_error_shown, setBarrierErrorShown] = React.useState(false);
+
+    const onClose = React.useCallback(() => {
+        setIsOpen(false);
+    }, []);
+
+    // Show error snackbar when there's a barrier error
+    React.useEffect(() => {
+        const proposal_error = proposal_info?.[trade_type_tab];
+        const has_error = proposal_error?.has_error;
+        const error_field = proposal_error?.error_field;
+
+        if (has_error && error_field === 'barrier' && !barrier_error_shown && !is_open && !is_minimized) {
+            addSnackbar({
+                message: mapErrorMessage(proposal_error),
+                hasCloseButton: true,
+                status: 'fail',
+                style: { marginBottom: '48px' },
+            });
+            setBarrierErrorShown(true);
+        }
+    }, [proposal_info, barrier_error_shown, is_open, is_minimized, trade_type_tab, addSnackbar]);
+
+    // Reset error shown flag when modal opens
+    React.useEffect(() => {
+        if (is_open) {
+            setBarrierErrorShown(false);
+        }
+    }, [is_open]);
+
+    const barrier_carousel_pages = useMemo(
+        () => [
+            {
+                id: 1,
+                component: <BarrierInput isDays={isDays} onClose={onClose} is_open={is_open} />,
+            },
+            {
+                id: 2,
+                component: <BarrierDescription isDays={isDays} />,
+            },
+        ],
+        [isDays, onClose, is_open]
+    );
+
+    if (isDesktop) {
+        return <BarrierDesktop is_minimized={is_minimized} isDays={isDays} />;
+    }
+
+    return (
+        <>
+            <TextField
+                className={clsx('trade-params__option', is_minimized && 'trade-params__option--minimized')}
+                disabled={is_market_closed}
+                variant='fill'
+                readOnly
+                noStatusIcon
+                label={<Localize i18n_default_text='Barrier' key={`barrier${is_minimized ? '-minimized' : ''}`} />}
+                value={barrier_1}
+                onClick={() => setIsOpen(true)}
+                status={has_error && !is_open ? 'error' : undefined}
+            />
+            <ActionSheet.Root
+                isOpen={is_open}
+                onClose={onClose}
+                position='left'
+                expandable={false}
+                shouldBlurOnClose={is_open}
+            >
+                <ActionSheet.Portal shouldCloseOnDrag>
+                    <Carousel
+                        header={CarouselHeader}
+                        title={<Localize i18n_default_text='Barrier' />}
+                        pages={barrier_carousel_pages}
+                    />
+                </ActionSheet.Portal>
+            </ActionSheet.Root>
+        </>
+    );
+});
+
+export default Barrier;

@@ -1,0 +1,136 @@
+/** @define notification-messages; */
+.notification-messages {
+    width: 40rem;
+    z-index: 6;
+    position: absolute;
+    /*rtl:ignore*/
+    right: 0;
+    margin-top: 1.6rem;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    @include mobile {
+        max-width: calc(100% - 3.2rem);
+        left: 1.6rem;
+        right: 1.6rem;
+    }
+}
+
+/** @define notification; weak */
+.notification {
+    position: relative;
+    display: flex;
+    border-radius: $BORDER_RADIUS;
+    width: 100%;
+    max-width: 40rem;
+    padding: 1.6rem;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-primary);
+    box-shadow:
+        0 4px 6px 0 var(--color-shadow-medium),
+        0 4px 6px 0 var(--color-shadow-medium);
+    overflow: hidden;
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s linear;
+    direction: ltr;
+
+    &--enter-done {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    &--enter,
+    &--exit {
+        opacity: 0;
+        transform: translateY(-16px);
+    }
+    &--small {
+        max-width: 28rem;
+    }
+    &__cta-button {
+        padding: 0 0.8rem;
+        margin-top: 1.6rem;
+        height: 24px;
+        width: fit-content;
+        max-width: 27rem;
+        align-self: flex-end;
+    }
+    &__text-container {
+        display: flex;
+        flex-direction: column;
+        z-index: 2;
+        width: 100%;
+    }
+    &__text-body {
+        font-size: 1.4rem;
+        line-height: 1.43;
+    }
+    &__action {
+        display: flex;
+        justify-content: flex-end;
+    }
+    &__header {
+        margin-bottom: 0.8rem;
+        margin-right: 3.2rem;
+    }
+    &__close-button {
+        position: absolute;
+        top: 1.05rem;
+        right: 1.6rem;
+        visibility: visible;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        z-index: 2;
+
+        &:focus,
+        &:active {
+            outline: none;
+        }
+        &:after {
+            content: '\0000D7';
+            font-size: 30px;
+            font-weight: 400;
+            color: var(--color-text-primary);
+            font-family: monospace;
+        }
+    }
+    &__icon {
+        &-type {
+            margin-right: 1.6rem;
+            margin-top: 0.4rem;
+            width: 1.6rem;
+            height: 1.6rem;
+
+            &--is-background {
+                width: 21rem;
+                height: 21rem;
+            }
+        }
+        &-background {
+            position: absolute;
+            left: -25px;
+            bottom: -5px;
+            pointer-events: none;
+            opacity: 0.08;
+            z-index: 0;
+
+            &--header-only {
+                bottom: -10.5rem;
+            }
+        }
+    }
+    &:not(:last-child) {
+        margin-bottom: 16px;
+    }
+    @include mobile {
+        max-width: 328px;
+        width: calc(100% - 0.8rem);
+        margin-right: 0.4rem;
+    }
+}

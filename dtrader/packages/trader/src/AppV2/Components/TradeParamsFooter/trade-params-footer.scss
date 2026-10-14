@@ -1,0 +1,65 @@
+.trade-params-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--core-spacing-800);
+    border-top: 1px solid var(--semantic-color-slate-solid-surface-frame-mid);
+    background-color: var(--color-surface-primary);
+    gap: var(--core-spacing-400);
+    min-height: 4rem;
+    width: 100%;
+    box-sizing: border-box;
+
+    // [AI]
+    .network-status__wrapper {
+        align-content: center;
+    }
+
+    &__datetime {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        justify-content: space-between;
+    }
+
+    &__date,
+    &__time {
+        font-size: 1.4rem;
+        line-height: 1.8rem;
+        color: var(--color-text-primary);
+        white-space: nowrap;
+        font-weight: 400;
+    }
+
+    &__fullscreen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+        text-decoration: none;
+        flex-shrink: 0;
+        margin-left: auto;
+
+        &:hover {
+            opacity: 0.8;
+        }
+
+        &--active {
+            .trade-params-footer__icon {
+                fill: var(--semantic-color-slate-solid-brand-primary);
+            }
+        }
+    }
+
+    &__icon {
+        width: 16px;
+        height: 16px;
+        fill: var(--color-text-primary);
+    }
+}
+/* [/AI] */

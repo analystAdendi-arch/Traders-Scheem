@@ -1,0 +1,478 @@
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+
+import { TPriceProposalResponse, TSocketError } from '@deriv/api';
+import { formatMoney, getCurrencyDisplayCode, getDecimalPlaces, mapErrorMessage } from '@deriv/shared';
+import { Button, TextField } from '@deriv-com/quill-ui';
+import { Localize, useTranslations } from '@deriv-com/translations';
+
+import useIsVirtualKeyboardOpen from 'AppV2/Hooks/useIsVirtualKeyboardOpen';
+import { useProposal } from 'AppV2/Hooks/useProposal';
+import { getPayoutInfo } from 'AppV2/Utils/trade-params-utils';
+import { getDisplayedContractTypes } from 'AppV2/Utils/trade-types-utils';
+import { ExpandedProposal, getProposalInfo } from 'Stores/Modules/Trading/Helpers/proposal';
+import { useTraderStore } from 'Stores/useTraderStores';
+
+import StakeDetails from './stake-details';
+
+type TStakeInput = {
+    onClose: () => void;
+    is_open?: boolean;
+};
+type TNewValues = {
+    amount?: string | number;
+    payout_per_point?: string | number;
+    barrier_1?: string | number;
+};
+type TStakeState = {
+    proposal_request_values: TNewValues;
+    stake_error: string;
+    fe_stake_error: string;
+    max_length: number;
+    details: {
+        commission?: string | number;
+        error_1: string;
+        error_2: string;
+        first_contract_payout: number;
+        second_contract_payout: number;
+        is_first_payout_exceeded: boolean;
+        is_second_payout_exceeded: boolean;
+        max_payout: string | number;
+        max_stake: string | number;
+        min_stake: string | number;
+        stop_out?: string | number;
+    };
+};
+type TStakeAction =
+    | { type: 'SET_PROPOSAL_VALUES'; payload: Partial<TNewValues> }
+    | { type: 'SET_STAKE_ERROR'; payload: string }
+    | { type: 'SET_FE_STAKE_ERROR'; payload: string }
+    | { type: 'UPDATE_DETAILS'; payload: Partial<TStakeState['details']> }
+    | { type: 'SET_MAX_LENGTH'; payload: number }
+    | { type: 'RESET_ERRORS' };
+
+const reducer = (state: TStakeState, action: TStakeAction): TStakeState => {
+    switch (action.type) {
+        case 'SET_PROPOSAL_VALUES':
+            return {
+                ...state,
+                proposal_request_values: {
+                    ...state.proposal_request_values,
+                    ...action.payload,
+                },
+            };
+        case 'SET_STAKE_ERROR':
+            return {
+                ...state,
+                stake_error: action.payload,
+            };
+        case 'SET_FE_STAKE_ERROR':
+            return {
+                ...state,
+                fe_stake_error: action.payload,
+            };
+        case 'UPDATE_DETAILS':
+            return {
+                ...state,
+                details: {
+                    ...state.details,
+                    ...action.payload,
+                },
+            };
+        case 'SET_MAX_LENGTH':
+            return {
+                ...state,
+                max_length: action.payload,
+            };
+        case 'RESET_ERRORS':
+            return {
+                ...state,
+                stake_error: '',
+                fe_stake_error: '',
+            };
+        default:
+            return state;
+    }
+};
+
+const createInitialState = (trade_store: ReturnType<typeof useTraderStore>, decimals: number) => {
+    const {
+        amount,
+        commission,
+        contract_type,
+        trade_type_tab,
+        trade_types,
+        proposal_info,
+        validation_params,
+        stop_out,
+    } = trade_store;
+
+    const contract_types = getDisplayedContractTypes(trade_types, contract_type, trade_type_tab);
+    const {
+        contract_payout: first_contract_payout,
+        max_payout,
+        error: first_payout_error,
+    } = getPayoutInfo(proposal_info[contract_types[0]]);
+    const { contract_payout: second_contract_payout, error: second_payout_error } = getPayoutInfo(
+        proposal_info[contract_types[1]]
+    );
+
+    const { stake } = (validation_params[contract_types[0]] || validation_params[contract_types[1]]) ?? {};
+    const { max: max_stake = 0, min: min_stake = 0 } = stake ?? {};
+
+    return {
+        proposal_request_values: { amount },
+        stake_error: '',
+        fe_stake_error: '',
+        max_length: calculateMaxLength(amount, decimals),
+        details: {
+            commission,
+            error_1: first_payout_error,
+            error_2: second_payout_error,
+            first_contract_payout,
+            second_contract_payout,
+            is_first_payout_exceeded: !!first_payout_error && first_contract_payout > Number(max_payout),
+            is_second_payout_exceeded: !!second_payout_error && second_contract_payout > Number(max_payout),
+            max_payout,
+            max_stake,
+            min_stake,
+            stop_out,
+        },
+    };
+};
+
+const calculateMaxLength = (amount: number | string, decimals: number): number => {
+    const is_decimal = String(amount).includes('.') || String(amount).includes(',');
+    return is_decimal ? 11 + decimals : 10;
+};
+
+const StakeInput = observer(({ onClose, is_open }: TStakeInput) => {
+    const { localize } = useTranslations();
+    const trade_store = useTraderStore();
+    const {
+        contract_type,
+        currency,
+        barrier_1,
+        has_stop_loss,
+        is_accumulator,
+        is_multiplier,
+        is_turbos,
+        is_vanilla,
+        onChange,
+        trade_type_tab,
+        trade_types,
+    } = trade_store;
+
+    const decimals = getDecimalPlaces(currency);
+    const [state, dispatch] = React.useReducer(reducer, null, () => createInitialState(trade_store, decimals));
+    const { proposal_request_values, stake_error, fe_stake_error, details } = state;
+
+    const contract_types = React.useMemo(
+        () => getDisplayedContractTypes(trade_types, contract_type, trade_type_tab),
+        [trade_types, contract_type, trade_type_tab]
+    );
+
+    const should_show_payout_details = !is_accumulator && !is_multiplier && !is_turbos && !is_vanilla;
+
+    // scroll the page when a virtual keyboard pops up
+    const input_id = 'stake_input';
+    const { is_key_board_visible: should_scroll } = useIsVirtualKeyboardOpen(input_id);
+
+    React.useEffect(() => {
+        if (should_scroll) window?.scrollTo({ top: 225, behavior: 'smooth' });
+    }, [should_scroll]);
+
+    React.useEffect(() => {
+        const initial_state = createInitialState(trade_store, decimals);
+        dispatch({ type: 'SET_PROPOSAL_VALUES', payload: initial_state.proposal_request_values });
+        dispatch({ type: 'UPDATE_DETAILS', payload: initial_state.details });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Parallel proposal without subscription
+    // For Rise/Fall and all Digits we should do 2 proposal requests
+    const should_send_multiple_proposals = contract_types.length > 1 && !is_multiplier;
+    const has_both_errors = !!details.error_1 && !!details.error_2;
+    // Need for cases with Rise/Fall and Digits, when only one response contains error and we should allow to save the value
+    const should_show_stake_error =
+        !should_send_multiple_proposals || (should_send_multiple_proposals && has_both_errors);
+
+    const {
+        data: response_1,
+        error: error_1,
+        isFetching: is_fetching_1,
+    } = useProposal({
+        trade_store,
+        proposal_request_values,
+        contract_type: contract_types[0],
+        is_enabled: is_open && proposal_request_values.amount !== '',
+    });
+    const {
+        data: response_2,
+        error: error_2,
+        isFetching: is_fetching_2,
+    } = useProposal({
+        trade_store,
+        proposal_request_values,
+        contract_type: contract_types[1],
+        is_enabled: is_open && should_send_multiple_proposals && proposal_request_values.amount !== '',
+    });
+
+    const is_loading_proposal = is_fetching_1 || (should_send_multiple_proposals && is_fetching_2);
+
+    const handleProposalResponse = (
+        data: TPriceProposalResponse | undefined,
+        queryError: TSocketError<'proposal'>['error'] | undefined,
+        contractType: 'first' | 'second'
+    ) => {
+        const proposal = data?.proposal;
+
+        // In case if the value is empty we are showing custom error text from FE (in onSave function)
+        if (proposal_request_values.amount === '') {
+            dispatch({ type: 'SET_STAKE_ERROR', payload: '' });
+            return;
+        }
+
+        // Handle edge cases for Vanilla contracts
+        if (is_vanilla && queryError?.details?.barrier_choices && Array.isArray(queryError.details.barrier_choices)) {
+            const { barrier_choices } = queryError.details;
+            if (!barrier_choices?.includes(barrier_1)) {
+                const index = Math.floor(barrier_choices.length / 2);
+                dispatch({
+                    type: 'SET_PROPOSAL_VALUES',
+                    payload: { barrier_1: barrier_choices[index] as number },
+                });
+                return;
+            }
+        }
+
+        // Handle edge cases for Turbo contracts
+        if (
+            is_turbos &&
+            queryError?.details?.payout_per_point_choices &&
+            Array.isArray(queryError.details.payout_per_point_choices) &&
+            queryError?.details?.field === 'payout_per_point'
+        ) {
+            const { payout_per_point_choices } = queryError.details;
+            const index = Math.floor(payout_per_point_choices.length / 2);
+            dispatch({
+                type: 'SET_PROPOSAL_VALUES',
+                payload: { payout_per_point: payout_per_point_choices[index] as number },
+            });
+            return;
+        }
+
+        // Set proposal error
+        const new_error = queryError ? mapErrorMessage(queryError) : '';
+        const is_error_field_match =
+            ['amount', 'stake'].includes(queryError?.details?.field ?? '') || !queryError?.details?.field;
+        dispatch({ type: 'SET_STAKE_ERROR', payload: is_error_field_match ? new_error : '' });
+
+        // Handle old contracts with payout (Rise/Fall, Higher/Lower, Touch/No Touch, Digits)
+        if (should_show_payout_details) {
+            // Combine data and error to match getProposalInfo expected format
+            const combined_response = {
+                ...data,
+                error: queryError || undefined,
+            };
+            const new_proposal = getProposalInfo(trade_store, combined_response);
+            const { contract_payout, max_payout, error } = getPayoutInfo(new_proposal);
+
+            dispatch({
+                type: 'UPDATE_DETAILS',
+                payload: {
+                    ...(max_payout ? { max_payout } : {}),
+                    [`${contractType}_contract_payout`]: contract_payout || 0,
+                    [`is_${contractType}_payout_exceeded`]: !!error && contract_payout > Number(max_payout),
+                    [`error_${contractType === 'first' ? 1 : 2}`]: error,
+                },
+            });
+        } else {
+            // Recovery for minimum and maximum allowed values in case of errors
+            if ((!details.min_stake || !details.max_stake) && queryError?.details) {
+                const { max_stake, min_stake } = queryError.details;
+                if (max_stake && min_stake) {
+                    dispatch({
+                        type: 'UPDATE_DETAILS',
+                        payload: {
+                            max_stake: max_stake as string | number,
+                            min_stake: min_stake as string | number,
+                        },
+                    });
+                }
+            }
+
+            // Update proposal details after a successful API call
+            if (proposal) {
+                const { commission, limit_order, validation_params } = proposal as ExpandedProposal;
+                const { max, min } = validation_params?.stake ?? {};
+                const { order_amount } = limit_order?.stop_out ?? {};
+
+                dispatch({
+                    type: 'UPDATE_DETAILS',
+                    payload: {
+                        ...(is_multiplier && commission && order_amount ? { commission, stop_out: order_amount } : {}),
+                        ...(details.max_stake || details.min_stake ? {} : { max_stake: max, min_stake: min }),
+                    },
+                });
+            } else if (!proposal && is_multiplier) {
+                dispatch({
+                    type: 'UPDATE_DETAILS',
+                    payload: { commission: 0, stop_out: 0 },
+                });
+            }
+        }
+    };
+
+    React.useEffect(() => {
+        if (response_1 || error_1) handleProposalResponse(response_1, error_1 || undefined, 'first');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [response_1, error_1]);
+
+    React.useEffect(() => {
+        if (response_2 || error_2) handleProposalResponse(response_2, error_2 || undefined, 'second');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [response_2, error_2]);
+
+    const getInputMessage = () =>
+        !!details.min_stake &&
+        !!details.max_stake && (
+            <Localize
+                i18n_default_text='Range: {{min_stake}} to {{max_stake}} {{currency}}'
+                values={{
+                    currency: getCurrencyDisplayCode(currency),
+                    min_stake: formatMoney(currency, +details.min_stake, true),
+                    max_stake: formatMoney(currency, +details.max_stake, true),
+                }}
+            />
+        );
+
+    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const new_value = String(e.target.value);
+        dispatch({
+            type: 'SET_MAX_LENGTH',
+            payload: calculateMaxLength(new_value, decimals),
+        });
+        if (new_value.endsWith('.') || new_value.endsWith(',')) {
+            dispatch({
+                type: 'SET_FE_STAKE_ERROR',
+                payload: localize('Should be a valid number.'),
+            });
+            return;
+        }
+        // If a new value is equal to a previous one, then we won't send API request
+        const is_equal = new_value === String(proposal_request_values.amount);
+        if (is_equal) return;
+
+        // If both old and new values are numerically zero (e.g. "0" → "0.0" → "0.00"),
+        // update the display value without resetting the existing API error, since the
+        // proposal query key is identical (parseFloat produces 0 for all) and React Query
+        // returns a cached response that won't re-trigger the error-handling useEffect.
+        const current_amount = String(proposal_request_values.amount);
+        if (new_value !== '' && current_amount !== '' && Number(new_value) === 0 && Number(current_amount) === 0) {
+            dispatch({ type: 'SET_FE_STAKE_ERROR', payload: '' });
+            dispatch({ type: 'SET_PROPOSAL_VALUES', payload: { amount: new_value } });
+            return;
+        }
+
+        dispatch({ type: 'RESET_ERRORS' });
+        dispatch({
+            type: 'SET_PROPOSAL_VALUES',
+            payload: { amount: new_value },
+        });
+    };
+
+    const onBeforeInputChange = (e: React.FormEvent<HTMLInputElement>) => {
+        if (
+            ['.', ','].includes((e.nativeEvent as InputEvent)?.data ?? '') &&
+            (String(proposal_request_values.amount)?.length ?? 0) <= 10
+        ) {
+            dispatch({
+                type: 'SET_MAX_LENGTH',
+                payload: decimals ? 11 + decimals : 10,
+            });
+        }
+    };
+
+    const onSave = () => {
+        // Prevent from saving if user clicks before we get theAPI response or if we get an error in response or the field is empty
+        if (
+            is_fetching_1 ||
+            (should_send_multiple_proposals && is_fetching_2) ||
+            (should_show_stake_error && stake_error) ||
+            fe_stake_error
+        )
+            return;
+        if (proposal_request_values.amount === '') {
+            dispatch({
+                type: 'SET_FE_STAKE_ERROR',
+                payload: localize('Amount is a required field.'),
+            });
+            return;
+        }
+        // Setting new stake value to the store and send it in streaming proposal
+        onChange({ target: { name: 'amount', value: proposal_request_values.amount } });
+        onClose();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            const isSaveDisabled =
+                is_loading_proposal || !!fe_stake_error || !!(should_show_stake_error && stake_error);
+            if (!isSaveDisabled) {
+                onSave();
+            }
+        }
+    };
+
+    return (
+        <div className='stake-input-desktop__wrapper'>
+            <TextField
+                id={input_id}
+                label={`${localize('Stake')} (${getCurrencyDisplayCode(currency)})`}
+                name='amount'
+                value={proposal_request_values.amount}
+                onChange={onInputChange}
+                onBeforeInput={onBeforeInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder={localize('Amount')}
+                variant='fill'
+                inputMode='decimal'
+                customType='commaRemoval'
+                allowDecimals
+                decimals={decimals}
+                regex={/[^0-9.,]/g}
+                maxLength={state.max_length}
+                message={fe_stake_error || (should_show_stake_error && stake_error) || getInputMessage()}
+                status={fe_stake_error || (should_show_stake_error && stake_error) ? 'error' : 'neutral'}
+                noStatusIcon
+                data-testid='dt_stake_input_desktop'
+            />
+            <div className='stake-input-desktop__details'>
+                <StakeDetails
+                    contract_type={contract_type}
+                    contract_types={contract_types}
+                    currency={currency}
+                    details={details}
+                    has_stop_loss={has_stop_loss}
+                    is_loading_proposal={is_loading_proposal}
+                    is_multiplier={is_multiplier}
+                    is_empty={!proposal_request_values.amount}
+                    should_show_payout_details={should_show_payout_details}
+                />
+                <Button
+                    fullWidth
+                    size='lg'
+                    variant='primary'
+                    color='black-white'
+                    onClick={onSave}
+                    disabled={is_loading_proposal || !!fe_stake_error || !!(should_show_stake_error && stake_error)}
+                    className='stake-input-desktop__save-button'
+                    label={localize('Save')}
+                />
+            </div>
+        </div>
+    );
+});
+
+export default StakeInput;

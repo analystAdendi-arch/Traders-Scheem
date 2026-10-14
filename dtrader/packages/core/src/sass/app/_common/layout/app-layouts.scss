@@ -1,0 +1,295 @@
+@keyframes closeDrawerWrapper {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@include mobile-or-tablet-screen {
+    /** disabling pull to refresh on iOS / Android browsers */
+    /* postcss-bem-linter: ignore */
+    body,
+    .derivatives-trader,
+    .modal-root,
+    .body {
+        /* Sending body at the bottom of the stack */
+        z-index: 1;
+    }
+    .derivatives-trader {
+        /* Making the wrapper stack above the body */
+        overscroll-behavior: none;
+
+        .trade-notifications {
+            position: absolute;
+            width: 40rem;
+            max-width: calc(100% - 1.6rem);
+            z-index: 6;
+            inset: 0.8rem 0.8rem auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .notification-messages {
+            .trade-notifications {
+                position: relative;
+                inset: unset;
+                max-width: 32.8rem;
+                width: calc(100% - 0.8rem);
+                margin-right: 0.4rem;
+                top: -0.8rem;
+            }
+        }
+    }
+    .modal-root {
+        height: 100% !important;
+    }
+    .popup-root {
+        > .dc-toast {
+            top: #{$HEADER_HEIGHT};
+            z-index: 3;
+            margin: auto;
+            position: absolute;
+        }
+        .dc-toast-popup {
+            max-width: calc(100vw - 1.6rem);
+            left: 1.6rem;
+            width: calc(100vw - 3.2rem);
+            top: #{$HEADER_HEIGHT};
+            position: absolute;
+            right: 1.6rem;
+        }
+    }
+}
+
+/** @define app-contents; weak */
+.app-contents {
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    backface-visibility: hidden;
+    background-color: var(--color-surface-primary);
+
+    &--is-disabled:after {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    &--is-route-modal {
+        background-color: var(--color-modal-backdrop);
+    }
+    &--is-hidden {
+        margin-top: 0;
+    }
+    &--is-onboarding {
+        padding: 0;
+        margin: 0 !important;
+        height: inherit;
+    }
+
+    @include mobile-screen {
+        // no sidebar on mobile:
+        margin-left: 0;
+        margin-bottom: 0;
+        height: calc(100% - #{$MOBILE_HEADER_HEIGHT});
+        position: relative;
+        margin-top: $MOBILE_HEADER_HEIGHT;
+
+        &--is-scrollable {
+            overflow-y: auto;
+        }
+        &--is-dashboard {
+            height: calc(100% - #{$MOBILE_HEADER_HEIGHT_DASHBOARD});
+            margin-top: $MOBILE_HEADER_HEIGHT_DASHBOARD;
+        }
+        &--is-hidden {
+            margin-top: 0;
+        }
+        &--is-dtrader-v2 {
+            height: calc(100% - #{$MOBILE_HEADER_DTRADER_V2_HEIGHT});
+            margin-block-start: $MOBILE_HEADER_DTRADER_V2_HEIGHT;
+
+            &:has(.trade-notification) {
+                position: unset;
+            }
+
+            &--with-banner {
+                height: calc(100% - #{$MOBILE_HEADER_DTRADER_V2_WITH_BANNER_HEIGHT});
+                margin-block-start: $MOBILE_HEADER_DTRADER_V2_WITH_BANNER_HEIGHT;
+
+                &:has(.trade-notification) {
+                    position: unset;
+                }
+            }
+        }
+
+        .ciq-menu {
+            top: 0;
+            margin: 0.8rem;
+            z-index: 2;
+        }
+
+        .cq-symbol-select-btn {
+            padding: 0.3rem 0.9rem;
+
+            .cq-symbol-dropdown {
+                transform: scale(1);
+                margin-left: auto;
+            }
+            .cq-symbol {
+                font-size: 1.2rem;
+            }
+            .cq-chart-price {
+                display: none;
+            }
+            .cq-symbol-info {
+                margin: 0 0.8rem;
+                white-space: nowrap;
+            }
+        }
+
+        .chart-container__loader {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            top: 0;
+        }
+        .contract-details-wrapper {
+            height: inherit;
+            position: relative;
+            z-index: 1;
+        }
+        .contract-audit-card {
+            background-color: var(--color-surface-primary);
+            border-radius: $BORDER_RADIUS;
+
+            .contract-audit__wrapper {
+                height: 100%;
+            }
+        }
+    }
+}
+
+/** @define popup-root */
+.popup-root {
+    position: absolute;
+    z-index: 9999;
+}
+
+/** @define contract */
+.contract {
+    &--enter {
+        transform: translate3d(calc(100% + 1.6em), 0, 0);
+        opacity: 0;
+    }
+    &--exit {
+        transform: translate3d(calc(100% + 1.6em), 0, 0);
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+/** @define advanced-simple-toggle */
+
+/*rtl:begin:ignore*/
+.advanced-simple-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* margin shorthand for values below does not work */
+    width: calc(100% + 16px);
+    margin-top: 8px;
+    margin-left: -8px;
+    margin-bottom: -9px;
+    margin-right: 0;
+    padding: 8px 0;
+    border-bottom-right-radius: $BORDER_RADIUS;
+    border-bottom-left-radius: $BORDER_RADIUS;
+    border: 0;
+    background: none;
+    transition: background-color 0.25s linear;
+
+    &__icon {
+        transition: transform 0.2s ease;
+        @extend %inline-icon;
+
+        &--active {
+            transform: rotate(180deg);
+        }
+    }
+    &:hover {
+        cursor: pointer;
+        background-color: var(--color-interactive-hover);
+    }
+    &:focus {
+        outline: none;
+    }
+}
+/*rtl:end:ignore*/
+
+@mixin contract_type_icon_wrapper {
+    width: 2.4em;
+    height: 2.4em;
+    border-radius: $BORDER_RADIUS;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface-section);
+}
+
+/** @define category-wrapper */
+.category-wrapper {
+    @include contract_type_icon_wrapper;
+}
+
+/** @define type-wrapper */
+.type-wrapper {
+    @include contract_type_icon_wrapper;
+
+    /* postcss-bem-linter: ignore */
+    .color1-fill {
+        fill: var(--brand-primary);
+    }
+    /* postcss-bem-linter: ignore */
+    .color2-fill {
+        fill: var(--brand-secondary);
+    }
+}
+
+// Helpers
+/** @define no-scroll */
+.no-scroll {
+    overflow: hidden;
+    max-height: 100vh;
+}
+
+/** @define mobile-only */
+.mobile-only {
+    @media (min-width: 769px) {
+        display: none !important;
+    }
+}
+
+/** @define error */
+.error {
+    &__container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: calc(100vh - 9em); // TODO: replace with 100vh - header height - footer height
+    }
+    &__message {
+        @include interpolate(font-size, 320px, 1440px, 14px, 20px);
+        color: var(--color-text-secondary);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

@@ -1,0 +1,39 @@
+/**
+ * New Theme System - Main Entry Point
+ * 
+ * This file imports the new token-based theme system.
+ * It replaces the old themes.scss (now in legacy/themes.scss).
+ */
+
+// Import color constants first (required by token files)
+@import 'constants/colors'; // SCSS color variables (auto-generated)
+
+// Import design tokens in order of dependency
+@import 'tokens/brand'; // Core brand variables (6 primary colors)
+@import 'tokens/semantic'; // Semantic color system (consolidates duplicates)
+@import 'tokens/components'; // Component-specific variables
+@import 'tokens/typography'; // Text sizes, weights, line heights
+
+/**
+ * Theme System Architecture:
+ * 
+ * 1. Brand Tokens (tokens/brand.scss)
+ *    - 6 core brand colors that control everything
+ *    - White-label override system
+ *    - Auto-derived color variants
+ * 
+ * 2. Semantic Tokens (tokens/semantic.scss)
+ *    - Surface colors (consolidates 19 white variables)
+ *    - Text colors (consolidates 63 text variables)
+ *    - Interactive states (consolidates state/border/fill)
+ *    - Status colors (consolidates 28 status variables)
+ * 
+ * 3. Component Tokens (tokens/components.scss)
+ *    - Button colors (consolidates 24 button variables)
+ *    - Trading colors (consolidates 12 purchase variables)
+ *    - Form, navigation, modal, table colors
+ * 
+ * 4. Typography Tokens (tokens/typography.scss)
+ *    - Text sizes, line heights, font weights
+ *    - Semantic typography combinations
+ */

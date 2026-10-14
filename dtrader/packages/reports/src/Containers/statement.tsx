@@ -1,0 +1,281 @@
+import React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+
+import { Clipboard, DataList, DataTable, Text } from '@deriv/components';
+import { TSource } from '@deriv/components/src/components/data-table/table-row';
+import { TRow } from '@deriv/components/src/components/types/common.types';
+import {
+    capitalizeFirstLetter,
+    extractInfoFromShortcode,
+    getContractPath,
+    getUnsupportedContracts,
+    initMoment,
+} from '@deriv/shared';
+import { observer, useStore } from '@deriv/stores';
+import { Localize, useTranslations } from '@deriv-com/translations';
+import { useDevice } from '@deriv-com/ui';
+
+import { useReportsStore } from 'Stores/useReportsStores';
+import { TUnsupportedContractType } from 'Types';
+
+import { ReportsTableRowLoader } from '../Components/Elements/ContentLoader';
+import EmptyTradeHistoryMessage from '../Components/empty-trade-history-message';
+import FilterComponent from '../Components/filter-component';
+import PlaceholderComponent from '../Components/placeholder-component';
+import { ReportsMeta } from '../Components/reports-meta';
+import { getStatementTableColumnsTemplate } from '../Constants/data-table-constants';
+
+type TGetStatementTableColumnsTemplate = ReturnType<typeof getStatementTableColumnsTemplate>;
+type TColIndex = 'icon' | 'refid' | 'currency' | 'transaction_time' | 'action_type' | 'amount' | 'balance';
+
+type TAction =
+    | {
+          message?: string;
+          component?: React.ReactElement;
+      }
+    | string;
+
+type TStatement = RouteComponentProps & {
+    component_icon: React.ReactElement;
+};
+
+type TDetailsComponent = {
+    message: string;
+    action_type: string;
+};
+
+type TDataList = React.ComponentProps<typeof DataList>;
+type TDataListCell = React.ComponentProps<typeof DataList.Cell>;
+
+const DetailsComponent = ({ message = '', action_type = '' }: TDetailsComponent) => {
+    const address_hash_match = /:\s([0-9a-zA-Z]+.{25,28})/gm.exec(message.split(/,\s/)[0]);
+    const address_hash = address_hash_match?.[1];
+    const blockchain_hash_match = /:\s([0-9a-zA-Z]+.{25,34})/gm.exec(message.split(/,\s/)[1]);
+    const blockchain_hash = blockchain_hash_match?.[1];
+
+    let messages = [message];
+
+    if (address_hash || blockchain_hash) {
+        const lines = message.split(/,\s/);
+        messages = lines.map((text, index) => {
+            return capitalizeFirstLetter(index !== lines.length - 1 ? `${text}, ` : text);
+        });
+    }
+
+    return (
+        <Text as='div' size='xs' className='statement__row--detail-text' align='center'>
+            {messages.map((text, index) => {
+                return (
+                    <div key={text}>
+                        {text}
+                        {blockchain_hash && index === messages.length - 1 && (
+                            <Clipboard text_copy={blockchain_hash} popoverAlignment='top' />
+                        )}
+                        {address_hash && action_type === 'withdrawal' && index === messages.length - 1 && (
+                            <Clipboard text_copy={address_hash} popoverAlignment='top' />
+                        )}
+                    </div>
+                );
+            })}
+        </Text>
+    );
+};
+
+export const getRowAction = (row_obj: TSource | TRow): TAction => {
+    let action: TAction = {};
+    const { action_type, desc, id, longcode, shortcode, withdrawal_details } = row_obj;
+    if (id && ['buy', 'sell'].includes(action_type)) {
+        const contract_type = extractInfoFromShortcode(shortcode)?.category?.toUpperCase();
+        const unsupportedContractConfig = getUnsupportedContracts()[contract_type as TUnsupportedContractType];
+        action = unsupportedContractConfig
+            ? {
+                  message: '',
+                  component: (
+                      <Localize
+                          i18n_default_text="The {{trade_type_name}} contract details aren't currently available. We're working on making them available soon."
+                          values={{
+                              trade_type_name: unsupportedContractConfig?.name,
+                          }}
+                      />
+                  ),
+              }
+            : getContractPath(id);
+    } else if (action_type === 'withdrawal') {
+        // For withdrawal: show details only if withdrawal_details or longcode exists
+        if ((withdrawal_details && longcode) || desc) {
+            action = {
+                message: withdrawal_details && longcode ? `${withdrawal_details} ${longcode}` : desc,
+            };
+        } else {
+            // No details available, make row non-clickable
+            return { disabled: true } as any;
+        }
+    } else if (action_type === 'deposit') {
+        // For deposit: show details only if desc/longcode exists
+        if (desc || longcode) {
+            action = {
+                message: desc || longcode,
+            };
+        } else {
+            // No details available, make row non-clickable
+            return { disabled: true } as any;
+        }
+    } else if (desc && ['transfer', 'adjustment', 'hold', 'release'].includes(action_type)) {
+        action = {
+            message: desc,
+        };
+    }
+
+    // add typeof check because action can be object or string
+    if (typeof action === 'object' && action?.message) {
+        action.component = <DetailsComponent message={action.message} action_type={action_type} />;
+    }
+
+    return action;
+};
+
+const Statement = observer(({ component_icon }: TStatement) => {
+    const { localize } = useTranslations();
+    const { client, common } = useStore();
+    const { current_language } = common;
+    const { statement } = useReportsStore();
+    const { currency, is_virtual } = client;
+    const {
+        action_type,
+        data,
+        date_from,
+        date_to,
+        error,
+        handleScroll,
+        has_selected_date,
+        is_empty,
+        is_loading,
+        onMount,
+        onUnmount,
+    } = statement;
+    const { isMobile } = useDevice();
+
+    React.useEffect(() => {
+        initMoment(current_language);
+    }, [current_language]);
+
+    React.useEffect(() => {
+        onMount();
+
+        return () => {
+            onUnmount();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    if (error) return <p>{error}</p>;
+
+    const columns: TGetStatementTableColumnsTemplate = getStatementTableColumnsTemplate(currency, !isMobile);
+    const columns_map = columns.reduce(
+        (map, item) => {
+            map[item.col_index as TColIndex] = item;
+            return map;
+        },
+        {} as Record<TColIndex, (typeof columns)[number]>
+    );
+
+    const mobileRowRenderer = ({
+        row,
+        passthrough,
+    }: Pick<Parameters<TDataList['rowRenderer']>[0], 'row' | 'passthrough'>) => (
+        <React.Fragment>
+            <div className='data-list__row'>
+                <DataList.Cell
+                    row={row}
+                    column={columns_map.icon as TDataListCell['column']}
+                    passthrough={passthrough}
+                />
+                <DataList.Cell
+                    row={row}
+                    column={columns_map.action_type as TDataListCell['column']}
+                    passthrough={passthrough}
+                />
+            </div>
+            <div className='data-list__row'>
+                <DataList.Cell row={row} column={columns_map.refid as TDataListCell['column']} />
+                <DataList.Cell
+                    className='data-list__row-cell--amount'
+                    row={row}
+                    column={columns_map.currency as TDataListCell['column']}
+                />
+            </div>
+            <div className='data-list__row'>
+                <DataList.Cell row={row} column={columns_map.transaction_time as TDataListCell['column']} />
+                <DataList.Cell
+                    className='data-list__row-cell--amount'
+                    row={row}
+                    column={columns_map.amount as TDataListCell['column']}
+                />
+            </div>
+            <div className='data-list__row'>
+                <DataList.Cell row={row} column={columns_map.balance as TDataListCell['column']} />
+            </div>
+        </React.Fragment>
+    );
+
+    return (
+        <React.Fragment>
+            <ReportsMeta
+                className='reports__meta--statement'
+                filter_component={<FilterComponent />}
+                is_statement
+                // key param is needed to force rerendering of the ReportsMeta component on language change
+                key={current_language}
+            />
+            <React.Fragment>
+                {data?.length === 0 || is_empty ? (
+                    <PlaceholderComponent
+                        is_loading={is_loading}
+                        has_selected_date={has_selected_date}
+                        is_empty={is_empty}
+                        empty_message_component={EmptyTradeHistoryMessage}
+                        component_icon={component_icon}
+                        localized_message={localize('You have no transactions yet.')}
+                        localized_period_message={localize(
+                            "You've made no transactions of this type during this period."
+                        )}
+                    />
+                ) : (
+                    <div className='reports__content'>
+                        {!isMobile ? (
+                            <DataTable
+                                className='statement'
+                                columns={columns}
+                                content_loader={ReportsTableRowLoader}
+                                data_source={data}
+                                getRowAction={getRowAction}
+                                onScroll={handleScroll}
+                                passthrough={{
+                                    isTopUp: (item: { action?: string }) => is_virtual && item.action === 'Deposit',
+                                }}
+                            >
+                                <PlaceholderComponent is_loading={is_loading} />
+                            </DataTable>
+                        ) : (
+                            <DataList
+                                className='statement'
+                                data_source={data}
+                                getRowAction={getRowAction}
+                                onScroll={handleScroll}
+                                rowRenderer={mobileRowRenderer}
+                                row_gap={8}
+                                passthrough={{
+                                    isTopUp: (item: { action?: string }) => is_virtual && item.action === 'Deposit',
+                                }}
+                            >
+                                <PlaceholderComponent is_loading={is_loading} />
+                            </DataList>
+                        )}
+                    </div>
+                )}
+            </React.Fragment>
+        </React.Fragment>
+    );
+});
+
+export default withRouter(Statement);

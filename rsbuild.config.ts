@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import { defineConfig, loadEnv } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
@@ -8,6 +9,15 @@ import { pluginSass } from '@rsbuild/plugin-sass';
 loadEnv({ mode: 'production' });
 
 const isStaticBuild = process.env.NEXT_PUBLIC_APP_BUILD === 'true';
+
+// The Manual Trader tab embeds DTrader, built by scripts/build-dtrader.js into
+// dtrader-dist/dtrader/. Serving dtrader-dist/ as a second public folder puts
+// it at /dtrader/ on the dev server and at dist/dtrader/ in a build. The static
+// preview lives under /bot/preview/, where DTrader's /dtrader/ base would not
+// resolve, so it is left out there.
+const dtraderDist = path.resolve(__dirname, 'dtrader-dist');
+const publicDirs = [{ name: 'public' }];
+if (!isStaticBuild && fs.existsSync(dtraderDist)) publicDirs.push({ name: 'dtrader-dist' });
 
 // Resolve smartcharts from wherever the package actually lives so the asset
 // copy works both standalone and inside the monorepo (npm workspaces hoist the
@@ -110,6 +120,7 @@ export default defineConfig({
   html: { template: './index.html' },
   server: {
     compress: true,
+    publicDir: publicDirs,
   },
   dev: { hmr: true },
   tools: {

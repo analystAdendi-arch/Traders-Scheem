@@ -1,0 +1,27 @@
+.market-category {
+    &-content {
+        &__container {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    &-title {
+        padding: 0 var(--core-spacing-800);
+        &__container {
+            display: flex;
+            padding-top: var(--core-spacing-400);
+            flex-direction: column;
+            margin-bottom: calc(-1 * var(--core-spacing-400));
+        }
+    }
+    &-subtitle {
+        padding: var(--core-spacing-200) var(--core-spacing-800);
+        margin: var(--core-spacing-400) 0;
+        color: var(--component-textIcon-normal-default);
+    }
+    &-items {
+        margin: 0 var(--core-spacing-400);
+        display: flex;
+        flex-direction: column;
+    }
+}

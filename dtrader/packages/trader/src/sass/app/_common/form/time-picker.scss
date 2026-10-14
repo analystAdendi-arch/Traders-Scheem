@@ -1,0 +1,94 @@
+/** @define time-picker */
+.time-picker {
+    position: relative;
+    margin-top: 0.8em;
+
+    &--padding {
+        padding: 1.6em;
+    }
+    &__icon {
+        @extend %inline-icon;
+        position: absolute;
+        top: 0.4em;
+        left: 0.6rem;
+        z-index: 1;
+        margin: unset;
+        /* postcss-bem-linter: ignore */
+        g {
+            stroke: var(--color-text-secondary);
+        }
+    }
+    &__dialog {
+        box-shadow: 0 2px 4px 0 var(--color-shadow-medium);
+        border-radius: 4px;
+        padding-top: 10px;
+        position: absolute;
+        top: 0;
+        transform-origin: right;
+        transform: scale(1, 0) translate3d(0, 0, 0);
+        transition:
+            transform 0.25s ease,
+            opacity 0.25s linear;
+        width: 231px;
+        z-index: 2;
+        background-color: var(--color-surface-primary);
+
+        &--enter,
+        &--exit {
+            opacity: 0;
+            transform: scale(1, 1) translate3d(-225px, 0, 0);
+        }
+        &--enter-done {
+            opacity: 1;
+            transform: translate3d(-245px, 0, 0);
+        }
+    }
+    &__selector {
+        height: inherit;
+
+        &--hours {
+            border-right: 1px solid var(--color-surface-border);
+            border-radius: 0 0 0 4px;
+            width: 150px;
+        }
+        &--minutes {
+            width: 80px;
+            border-radius: 0 5px 5px 0;
+        }
+        &--hours,
+        &--minutes {
+            display: inline-block;
+            height: 228px;
+            overflow: hidden;
+            text-align: center;
+            border-color: var(--color-surface-border);
+            color: var(--color-text-primary);
+        }
+        &-list-title {
+            @include typeface(--small-center-bold-black);
+            color: var(--color-text-primary);
+        }
+        &-list-item {
+            @include typeface(--small-left-normal-black);
+            cursor: pointer;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 3px;
+            padding: 7px;
+            color: var(--color-text-secondary);
+
+            &:hover:not(&--disabled):not(&--selected) {
+                background: var(--color-interactive-hover);
+                color: var(--color-text-secondary);
+            }
+            &--selected {
+                background: var(--color-interactive-active);
+                color: var(--color-text-primary) !important;
+            }
+            &--disabled {
+                color: var(--color-text-disabled);
+                cursor: default;
+            }
+        }
+    }
+}

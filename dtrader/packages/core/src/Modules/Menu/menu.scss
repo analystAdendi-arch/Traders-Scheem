@@ -1,0 +1,69 @@
+/** @define menu-page */
+.menu-page {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--color-surface-primary);
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        height: 11.2rem;
+        padding: 1.2rem 1.6rem 1.6rem;
+        gap: 2.8rem;
+
+        &-close {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 3.2rem;
+            width: 3.2rem;
+            border-radius: 50%;
+            background-color: var(--semantic-color-monochrome-surface-normal-lowest);
+        }
+    }
+    &__main {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(0);
+        transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+        &--hidden {
+            transform: translateX(-100%);
+            pointer-events: none;
+        }
+    }
+
+    &__item {
+        height: 5.6rem;
+        padding: 0 1.6rem;
+        cursor: pointer;
+
+        &:active {
+            background-color: var(--color-interactive-hover);
+        }
+    }
+
+    &__language-drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--color-surface-primary);
+        overflow-y: auto;
+        overscroll-behavior: none;
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+        &--open {
+            transform: translateX(0) !important;
+        }
+    }
+}

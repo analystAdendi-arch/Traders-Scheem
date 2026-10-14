@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Traders Scheem">
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#0B1426"/>
+  <path d="M14 44 L26 30 L34 38 L50 18" stroke="#38BDF8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="50" cy="18" r="5" fill="#F0C040"/>
+</svg>

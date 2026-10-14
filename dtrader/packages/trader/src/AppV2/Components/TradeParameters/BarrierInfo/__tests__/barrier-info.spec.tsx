@@ -1,0 +1,70 @@
+import React from 'react';
+
+import { CONTRACT_TYPES } from '@deriv/shared';
+import { mockStore } from '@deriv/stores';
+import { render, screen } from '@testing-library/react';
+
+import TraderProviders from '../../../../../trader-providers';
+import BarrierInfo from '../barrier-info';
+
+const barrier_label = 'Barrier';
+
+describe('<BarrierInfo />', () => {
+    let default_mock_store: ReturnType<typeof mockStore>;
+
+    beforeEach(
+        () =>
+            (default_mock_store = mockStore({
+                modules: {
+                    trade: {
+                        ...mockStore({}),
+                        barrier_1: '1.2345',
+                        contract_type: 'turboslong',
+                    },
+                },
+            }))
+    );
+
+    const mockedBarrierInfo = () =>
+        render(
+            <TraderProviders store={default_mock_store}>
+                <BarrierInfo />
+            </TraderProviders>
+        );
+
+    it('does not render if there is an API error ', () => {
+        default_mock_store.modules.trade.proposal_info = {
+            [CONTRACT_TYPES.TURBOS.LONG]: {
+                has_error: true,
+            },
+        };
+        const { container } = mockedBarrierInfo();
+
+        expect(container).toBeEmptyDOMElement();
+    });
+
+    it('renders loader if barrier_1 is falsy but there is no API error', () => {
+        default_mock_store.modules.trade.barrier_1 = '';
+        mockedBarrierInfo();
+
+        expect(screen.getByText(barrier_label)).toBeInTheDocument();
+        expect(screen.getByTestId('dt_skeleton')).toBeInTheDocument();
+        expect(screen.queryByText('1.2345')).not.toBeInTheDocument();
+    });
+
+    it('renders correct barrier value', () => {
+        mockedBarrierInfo();
+
+        const barrier = screen.getByText(barrier_label);
+        expect(barrier).toBeInTheDocument();
+        expect(barrier).not.toHaveClass('trade-params__text--disabled');
+        expect(screen.getByText('1.2345')).toBeInTheDocument();
+    });
+
+    it('applies specific className if is_market_closed === true', () => {
+        default_mock_store.modules.trade.is_market_closed = true;
+        mockedBarrierInfo();
+
+        expect(screen.getByText(barrier_label)).toHaveClass('trade-params__text--disabled');
+    });
+});

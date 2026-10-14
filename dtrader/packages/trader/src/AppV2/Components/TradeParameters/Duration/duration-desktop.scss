@@ -1,0 +1,92 @@
+.duration-popover {
+    &__layout {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        gap: var(--core-spacing-800);
+    }
+
+    &__sidebar {
+        width: 10.4rem;
+        flex-shrink: 0;
+        border-right: 0.1rem solid var(--component-divider-default);
+        background-color: transparent;
+        overflow-y: auto;
+    }
+
+    &__main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    &__header {
+        border-bottom: 0.1rem solid var(--component-divider-default);
+    }
+
+    &__content {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    &__coming-soon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--component-textIcon-normal-subtle);
+    }
+
+    .segmented-control-single button {
+        height: 3.2rem;
+    }
+}
+
+.duration-input-desktop {
+    &__wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    &__fields {
+        display: flex;
+        gap: var(--core-spacing-800);
+        margin-bottom: var(--core-spacing-400);
+
+        &--hours-minutes {
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+    }
+
+    &__field-group {
+        flex: 1;
+    }
+
+    &__range {
+        margin-top: var(--core-spacing-400);
+        margin-bottom: var(--core-spacing-400);
+    }
+
+    &__range-text {
+        font-size: 1.2rem;
+        color: var(--component-textIcon-normal-subtle);
+    }
+
+    &__footer {
+        margin-top: auto;
+
+        button {
+            font-size: 1.6rem !important;
+            font-weight: bold !important;
+            border-radius: 10rem !important;
+        }
+    }
+
+    &__save-button {
+        width: 100%;
+    }
+}

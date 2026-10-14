@@ -1,0 +1,199 @@
+import React from 'react';
+
+import { usePrevious } from '@deriv/components';
+import { getDurationPeriod, getDurationUnitText, getEndTime, getPlatformRedirect } from '@deriv/shared';
+import { observer, useStore } from '@deriv/stores';
+import { Loader, useDevice } from '@deriv-com/ui';
+
+import { SmartChart } from 'Modules/SmartChart';
+import ChartMarker from 'Modules/SmartChart/Components/Markers/marker';
+import ResetContractChartElements from 'Modules/SmartChart/Components/Markers/reset-contract-chart-elements';
+import { useSmartChartsAdapter } from 'Modules/SmartChart/Hooks/useSmartChartsAdapter';
+
+import { ChartBottomWidgets, ChartTopWidgets } from './contract-replay-widget';
+
+const ReplayChart = observer(
+    ({
+        is_dark_theme_prop,
+        is_accumulator_contract,
+        is_reset_contract,
+        is_vertical_scroll_disabled,
+    }: {
+        is_dark_theme_prop?: boolean;
+        is_accumulator_contract?: boolean;
+        is_reset_contract?: boolean;
+        is_vertical_scroll_disabled?: boolean;
+    }) => {
+        const { contract_replay, common, ui } = useStore();
+        const { isMobile } = useDevice();
+        const { contract_store, chart_state, chartStateChange, margin } = contract_replay;
+        const { contract_config, is_digit_contract, barriers_array, getContractsArray, markers_array, contract_info } =
+            contract_store;
+        const symbol = contract_info.underlying_symbol;
+        const { audit_details, barrier_count } = contract_info;
+        const allow_scroll_to_epoch = chart_state === 'READY' || chart_state === 'SCROLL_TO_LEFT';
+        const { current_language, is_socket_opened } = common;
+        const { is_chart_layout_default, is_chart_countdown_visible } = ui;
+        const { end_epoch, chart_type, start_epoch, granularity } = contract_config || {};
+        const is_dark_theme = is_dark_theme_prop || ui.is_dark_mode_on;
+        // Forwarding contract logic removed - contracts now always use start_epoch
+        /**
+         * TODO: remove forcing light theme once DBot supports dark theme
+         * DBot does not support for dark theme since till now,
+         * as a result, if any user come to report detail pages
+         * from DBot, we should force it to have light theme
+         */
+        const from_platform = getPlatformRedirect();
+        const should_force_light_theme = from_platform.name === 'DBot';
+        const settings = {
+            language: current_language,
+            theme: is_dark_theme && !should_force_light_theme ? 'dark' : 'light',
+            position: is_chart_layout_default ? 'bottom' : 'left',
+            countdown: is_chart_countdown_visible,
+            assetInformation: false, // ui.is_chart_asset_info_visible,
+            isHighestLowestMarkerEnabled: false, // TODO: Pending UI
+        };
+        const scroll_to_epoch = allow_scroll_to_epoch && contract_config ? contract_config.scroll_to_epoch : undefined;
+        const all_ticks = audit_details ? audit_details.all_ticks : [];
+
+        // Use centralized SmartCharts adapter hook
+        const {
+            chartData,
+            isLoading,
+            error,
+            getQuotes,
+            subscribeQuotes,
+            unsubscribeQuotes,
+            retryFetchChartData,
+            shouldUseCandlesOverride,
+        } = useSmartChartsAdapter({
+            debug: false,
+            activeSymbols: [], // Replay chart doesn't need active symbols
+            granularity: granularity || 0,
+            is_accumulator: !!is_accumulator_contract,
+            updateAccumulatorBarriersData: () => {}, // No-op for replay chart
+            setTickData: () => {}, // No-op for replay chart
+            current_language,
+            minStartEpoch: start_epoch, // Switch to candles if tick data doesn't cover this
+        });
+
+        // Override chart type and granularity if tick data doesn't cover start_epoch
+        const effective_chart_type = shouldUseCandlesOverride ? 'candles' : chart_type;
+        const effective_granularity = shouldUseCandlesOverride ? 60 : granularity;
+
+        const isBottomWidgetVisible = () => {
+            return !isMobile && is_digit_contract;
+        };
+
+        const getChartYAxisMargin = () => {
+            const chart_margin = {
+                top: isMobile ? 96 : 148,
+                bottom: isBottomWidgetVisible() ? 128 : 112,
+            };
+
+            if (isMobile) {
+                chart_margin.bottom = 48;
+                chart_margin.top = 48;
+            }
+
+            return chart_margin;
+        };
+        const prev_start_epoch = usePrevious(start_epoch);
+
+        const has_ended = !!getEndTime(contract_info);
+        const is_dtrader_v2_enabled = isMobile; // V2 for mobile, V1 for desktop
+
+        if (!symbol) return <Loader />;
+
+        if (isLoading) {
+            return (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+                    <Loader />
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '400px',
+                        gap: '16px',
+                    }}
+                >
+                    <div>Error loading chart data: {error.message}</div>
+                    <button onClick={retryFetchChartData} style={{ padding: '8px 16px', cursor: 'pointer' }}>
+                        Retry
+                    </button>
+                </div>
+            );
+        }
+
+        if (!chartData || !chartData.tradingTimes) return <Loader />;
+
+        return (
+            <SmartChart
+                key={shouldUseCandlesOverride ? 'candles' : 'ticks'}
+                id='replay'
+                barriers={barriers_array}
+                bottomWidgets={isBottomWidgetVisible() ? ChartBottomWidgets : undefined}
+                chartControlsWidgets={null}
+                chartType={effective_chart_type}
+                endEpoch={end_epoch}
+                margin={margin}
+                isMobile={isMobile}
+                enabledNavigationWidget={!isMobile}
+                enabledChartFooter={false}
+                granularity={effective_granularity}
+                getQuotes={getQuotes}
+                chartData={chartData}
+                subscribeQuotes={subscribeQuotes}
+                unsubscribeQuotes={unsubscribeQuotes}
+                crosshairEnabled={isMobile}
+                maxTick={isMobile ? 8 : undefined}
+                settings={settings}
+                startEpoch={start_epoch}
+                scrollToEpoch={scroll_to_epoch}
+                stateChangeListener={chartStateChange}
+                symbol={symbol}
+                allTicks={all_ticks}
+                topWidgets={is_dtrader_v2_enabled ? () => <React.Fragment /> : ChartTopWidgets}
+                isConnectionOpened={is_socket_opened}
+                isStaticChart={
+                    // forcing chart reload when start_epoch changes to an earlier epoch for ACCU closed contract:
+                    !!is_accumulator_contract && !!end_epoch && Number(start_epoch) < Number(prev_start_epoch)
+                }
+                shouldFetchTradingTimes={false}
+                should_zoom_out_on_yaxis={is_accumulator_contract}
+                yAxisMargin={getChartYAxisMargin()}
+                anchorChartToLeft={isMobile}
+                shouldFetchTickHistory={
+                    getDurationUnitText(getDurationPeriod(contract_info)) !== 'seconds' ||
+                    contract_info.status === 'open'
+                }
+                contractInfo={contract_info}
+                contracts_array={getContractsArray()}
+                isLive={!has_ended}
+                isVerticalScrollEnabled={!is_vertical_scroll_disabled}
+                startWithDataFitMode={true}
+            >
+                {markers_array.map(({ content_config, marker_config, react_key, type }) => (
+                    <ChartMarker
+                        key={react_key}
+                        marker_config={marker_config}
+                        marker_content_props={content_config}
+                        is_positioned_before={(type === 'SPOT_ENTRY' || type === 'SPOT_EXIT') && barrier_count === 2}
+                    />
+                ))}
+                {is_reset_contract && contract_info?.reset_time && (
+                    <ResetContractChartElements contract_info={contract_info} />
+                )}
+            </SmartChart>
+        );
+    }
+);
+export default ReplayChart;

@@ -1,0 +1,9 @@
+/** @define page-404 */
+.page-404 {
+    &__image {
+        margin-right: 1.6rem;
+        @media screen and (max-width: 758px) {
+            margin: 0;
+        }
+    }
+}

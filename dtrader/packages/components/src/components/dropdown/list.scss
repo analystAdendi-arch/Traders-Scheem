@@ -1,0 +1,147 @@
+.dc-list {
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+    border-radius: $BORDER_RADIUS;
+    box-shadow: 0 2px 8px 0 var(--color-shadow-medium);
+    background: var(--color-modal-bg);
+    border: 1px solid var(--color-surface-border);
+
+    &--has-suffix-icon {
+        width: 21rem;
+    }
+
+    &--left {
+        width: unset;
+
+        .dc-list__item-text,
+        .dc-list__item-symbol {
+            padding-left: 2.286em;
+            padding-right: 2.286em;
+            overflow: hidden;
+            white-space: nowrap;
+            text-align: center;
+        }
+    }
+    &--large {
+        padding-bottom: 1.6rem;
+        max-height: 404px;
+
+        .dc-list {
+            &__label {
+                padding: 1.6rem 0.8rem 0.8rem;
+                color: var(--color-text-primary);
+                height: 4rem;
+            }
+            &__item {
+                &-text {
+                    width: calc(100% - 1.6rem);
+                    padding: 1rem 1.6rem;
+                    margin: 0 0.8rem;
+                }
+                &:not(&--disabled):not(&--selected):hover,
+                &:not(&--disabled):not(&--selected):focus {
+                    border-radius: $BORDER_RADIUS;
+                    width: calc(100% - 1.6rem);
+                    margin: 0 0.8rem;
+
+                    .dc-list__item-text {
+                        width: 100%;
+                        margin: 0;
+                    }
+                }
+            }
+            &__separator {
+                width: 100%;
+                border-bottom: 4px solid var(--color-surface-border);
+                margin: 1.6rem 0 0;
+            }
+        }
+    }
+    &__label {
+        padding: 0.6rem;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: var(--brand-primary);
+        height: 3.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    &__item {
+        width: 100%;
+        cursor: pointer;
+
+        &-text,
+        &-symbol {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            pointer-events: none;
+            vertical-align: middle;
+            padding: 0.6rem 1.6rem;
+        }
+        &-text--left {
+            justify-content: flex-start;
+            padding-left: 1em;
+        }
+        &:not(&--disabled):not(&--selected):hover {
+            background-color: var(--color-interactive-hover);
+            color: var(--color-text-secondary);
+        }
+        &--selected .dc-list__item-text,
+        &--selected .dc-list__item-symbol,
+        &--selected .dc-list__item-tooltip {
+            @include typeface(--paragraph-left-bold-primary);
+            line-height: 1.43;
+            color: var(--color-text-primary);
+            background: var(--color-interactive-active);
+            border-radius: $BORDER_RADIUS;
+        }
+        &:focus:not(&--disabled) {
+            background-color: var(--color-interactive-hover);
+            color: var(--color-text-secondary);
+            outline: none;
+        }
+        &--disabled {
+            color: var(--color-text-disabled);
+            opacity: 0.3;
+            cursor: default;
+        }
+        &-symbol {
+            width: 100%;
+            padding: 0.6rem 0;
+            margin: 0;
+            justify-content: center;
+            display: flex;
+        }
+    }
+    &__separator {
+        display: flex;
+        width: calc(100% - 3.2rem);
+        border-bottom: 1px solid var(--color-interactive-default);
+        margin: 1.6rem;
+    }
+
+    // fix for safari bug with overflow-x not working in dropdown
+    @media not all and (min-resolution: 0.001dpcm) {
+        // stylelint-disable-line
+        @supports (-webkit-appearance: none) {
+            /* postcss-bem-linter: ignore */
+            & > div:nth-child(1) & > div:nth-child(1) {
+                overflow-y: auto;
+                overflow-x: hidden !important;
+
+                /* postcss-bem-linter: ignore */
+                &::-webkit-scrollbar {
+                    -webkit-appearance: none;
+                }
+
+                /* postcss-bem-linter: ignore */
+                & > div:nth-child(1) {
+                    padding-bottom: 11.5em !important;
+                }
+            }
+        }
+    }
+}

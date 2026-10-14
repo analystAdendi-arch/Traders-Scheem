@@ -1,0 +1,91 @@
+import React from 'react';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+
+import { TooltipPortal } from '@deriv/components';
+import { clickAndKeyEventHandler } from '@deriv/shared';
+import { ActionSheet, Heading, Text, ToggleSwitch } from '@deriv-com/quill-ui';
+import { Localize } from '@deriv-com/translations';
+import { useDevice } from '@deriv-com/ui';
+
+import { hasCallPutEqual, hasDurationForCallPutEqual } from 'Stores/Modules/Trading/Helpers/allow-equals';
+import { useTraderStore } from 'Stores/useTraderStores';
+
+const AllowEquals = observer(() => {
+    const { contract_types_list, duration_unit, expiry_type, is_equal, is_market_closed, onChange } = useTraderStore();
+    const { isDesktop } = useDevice();
+
+    const [is_open, setIsOpen] = React.useState(false);
+
+    const has_callputequal_duration = hasDurationForCallPutEqual(contract_types_list, duration_unit);
+    const has_callputequal = hasCallPutEqual(contract_types_list);
+    const has_allow_equals = (has_callputequal_duration || expiry_type === 'endtime') && has_callputequal;
+
+    const onToggleSwitch = (is_enabled: boolean) => {
+        onChange({ target: { name: 'is_equal', value: Number(is_enabled) } });
+        setIsOpen(false);
+    };
+
+    const openDescription = (e?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
+        if (is_market_closed) return;
+        if (isDesktop) return; // Don't open ActionSheet on desktop
+        clickAndKeyEventHandler(() => setIsOpen(true), e);
+    };
+
+    const closeDescription = () => setIsOpen(false);
+
+    if (!has_allow_equals) return null;
+
+    const tooltipMessage = <Localize i18n_default_text='Win payout if exit spot is also equal to entry spot.' />;
+
+    return (
+        <React.Fragment>
+            <div className='allow-equals__wrapper'>
+                {isDesktop ? (
+                    <TooltipPortal message={tooltipMessage} position='left'>
+                        <Text
+                            size='sm'
+                            className={clsx('allow-equals__title', is_market_closed && 'allow-equals__title--disabled')}
+                        >
+                            <Localize i18n_default_text='Allow equals' />
+                        </Text>
+                    </TooltipPortal>
+                ) : (
+                    <Text
+                        size='sm'
+                        className={clsx('allow-equals__title', is_market_closed && 'allow-equals__title--disabled')}
+                        onClick={openDescription}
+                        onKeyDown={openDescription}
+                    >
+                        <Localize i18n_default_text='Allow equals' />
+                    </Text>
+                )}
+                <ToggleSwitch checked={!!is_equal} onChange={onToggleSwitch} disabled={is_market_closed} />
+            </div>
+            {!isDesktop && (
+                <ActionSheet.Root isOpen={is_open} onClose={closeDescription} position='left' expandable={false}>
+                    <ActionSheet.Portal shouldCloseOnDrag>
+                        <ActionSheet.Content className='allow-equals__definition__wrapper'>
+                            <Heading.H4 className='allow-equals__definition__title'>
+                                <Localize i18n_default_text='Allow equals' />
+                            </Heading.H4>
+                            <Text as='div'>
+                                <Localize i18n_default_text='Win payout if exit spot is also equal to entry spot.' />
+                            </Text>
+                        </ActionSheet.Content>
+                        <ActionSheet.Footer
+                            alignment='vertical'
+                            primaryAction={{
+                                content: <Localize i18n_default_text='Got it' />,
+                                onAction: closeDescription,
+                            }}
+                            className='allow-equals__button'
+                        />
+                    </ActionSheet.Portal>
+                </ActionSheet.Root>
+            )}
+        </React.Fragment>
+    );
+});
+
+export default AllowEquals;
