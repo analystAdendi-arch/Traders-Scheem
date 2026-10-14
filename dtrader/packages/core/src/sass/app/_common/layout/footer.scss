@@ -1,0 +1,59 @@
+/** @define server-time */
+.server-time {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 1rem;
+    padding: 0 1rem;
+    @include typeface(--small-left-normal-black);
+    color: var(--color-text-secondary);
+
+    &--is-mobile {
+        padding: 0 1rem 0 0;
+        margin-right: 0;
+    }
+}
+
+@keyframes blinking-network-status {
+    40% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/** @define network-status  */
+.network-status {
+    &__wrapper {
+        height: 1.4rem;
+        position: relative;
+
+        &--is-mobile {
+            .network-status__circle {
+                margin: 0.2rem 0 0.2rem -0.2rem;
+            }
+        }
+    }
+    &__tooltip {
+        left: unset;
+        text-decoration-line: none;
+    }
+    &__circle {
+        background: var(--color-surface-primary);
+        width: 1rem;
+        height: 1rem;
+        margin: 0;
+        border-radius: 50%;
+
+        &--online {
+            background: var(--color-text-success);
+        }
+        &--offline {
+            background: var(--color-text-danger);
+        }
+        &--blinker {
+            animation: blinking-network-status 0.4s alternate infinite;
+            background: var(--color-text-success);
+        }
+    }
+}

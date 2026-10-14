@@ -1,0 +1,41 @@
+.take-profit-popover {
+    height: 24.8rem;
+}
+
+.take-profit-input-desktop {
+    &__wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: var(--core-spacing-800);
+        height: 100%;
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__content {
+        position: relative;
+        flex: 1;
+    }
+
+    &__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        cursor: pointer;
+        background: transparent;
+    }
+
+    &__save-button {
+        font-size: 1.6rem !important;
+        font-weight: bold !important;
+        border-radius: 100px !important;
+        margin-top: auto;
+    }
+}

@@ -5,6 +5,13 @@
     --at-border: var(--general-border, #e3e8ef);
     --at-text: var(--text-general, #0f172a);
     --at-muted: var(--text-less-prominent, #7b8698);
+    // Traders Scheem accents: sky leads, gold highlights; green/rose only for rise/fall.
+    --at-sky: #0284c7;
+    --at-sky-text: #0369a1;
+    --at-gold: #d4a017;
+    --at-gold-text: #8a6508;
+    --at-emerald-text: #047857;
+    --at-slate-text: #475569;
 
     width: 100%;
     min-height: 100%;
@@ -57,7 +64,7 @@
         white-space: nowrap;
 
         &:hover {
-            border-color: var(--status-primary, #6d19b5);
+            border-color: var(--at-sky);
         }
     }
 
@@ -172,7 +179,7 @@
         font-variant-numeric: tabular-nums;
 
         &--pending {
-            color: #e11d48;
+            color: var(--at-muted);
         }
 
         &--up {
@@ -378,7 +385,11 @@
         font-size: 1.05rem;
         font-weight: 700;
 
-        &--over,
+        &--over {
+            background: rgba(2, 132, 199, 0.14);
+            color: var(--at-sky-text);
+        }
+
         &--rise {
             background: rgba(22, 163, 74, 0.14);
             color: #15803d;
@@ -390,23 +401,23 @@
         }
 
         &--match {
-            background: rgba(225, 29, 72, 0.14);
-            color: #9f1239;
+            background: rgba(5, 150, 105, 0.14);
+            color: var(--at-emerald-text);
         }
 
         &--differ {
-            background: rgba(139, 92, 246, 0.16);
-            color: #6d28d9;
+            background: rgba(100, 116, 139, 0.16);
+            color: var(--at-slate-text);
         }
 
         &--even {
-            background: rgba(14, 165, 233, 0.14);
-            color: #0369a1;
+            background: rgba(2, 132, 199, 0.14);
+            color: var(--at-sky-text);
         }
 
         &--odd {
-            background: rgba(190, 24, 93, 0.14);
-            color: #9d174d;
+            background: rgba(212, 160, 23, 0.18);
+            color: var(--at-gold-text);
         }
 
         &--fall {
@@ -451,7 +462,7 @@
         cursor: pointer;
 
         &:hover {
-            border-color: var(--status-primary, #6d19b5);
+            border-color: var(--at-sky);
         }
 
         &--active {
@@ -459,15 +470,15 @@
         }
 
         &--active.analysis-tool__chip--over {
-            border-color: #d4a017;
-            color: #d4a017;
-            box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.2);
+            border-color: var(--at-sky);
+            color: var(--at-sky);
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
         }
 
         &--active.analysis-tool__chip--match {
-            border-color: #e11d48;
-            color: #e11d48;
-            box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.2);
+            border-color: #059669;
+            color: #059669;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
         }
     }
 
@@ -509,11 +520,11 @@
 
     &__meter-label--over,
     &__meter-value--over {
-        color: #15803d;
+        color: var(--at-sky-text);
     }
 
     &__meter-fill--over {
-        background: linear-gradient(90deg, #14532d 0%, #22c55e 100%);
+        background: linear-gradient(90deg, #075985 0%, #38bdf8 100%);
     }
 
     &__meter-label--under,
@@ -527,38 +538,38 @@
 
     &__meter-label--match,
     &__meter-value--match {
-        color: #be123c;
+        color: var(--at-emerald-text);
     }
 
     &__meter-fill--match {
-        background: linear-gradient(90deg, #fecdd3 0%, #fb7185 100%);
+        background: linear-gradient(90deg, #065f46 0%, #34d399 100%);
     }
 
     &__meter-label--differ,
     &__meter-value--differ {
-        color: #7c3aed;
+        color: var(--at-slate-text);
     }
 
     &__meter-fill--differ {
-        background: linear-gradient(90deg, #1e1b4b 0%, #a78bfa 100%);
+        background: linear-gradient(90deg, #334155 0%, #94a3b8 100%);
     }
 
     &__meter-label--even,
     &__meter-value--even {
-        color: #e11d48;
+        color: var(--at-sky-text);
     }
 
     &__meter-fill--even {
-        background: linear-gradient(90deg, #fde2e2 0%, #e11d48 100%);
+        background: linear-gradient(90deg, #075985 0%, #38bdf8 100%);
     }
 
     &__meter-label--odd,
     &__meter-value--odd {
-        color: #881337;
+        color: var(--at-gold-text);
     }
 
     &__meter-fill--odd {
-        background: linear-gradient(90deg, #450a0a 0%, #be123c 100%);
+        background: linear-gradient(90deg, #3f2d05 0%, #f0c040 100%);
     }
 
     &__meter-label--rise,
@@ -588,7 +599,7 @@
         border: 1px solid var(--at-border);
         border-radius: 6px;
         background: var(--at-surface);
-        color: var(--status-primary, #6d19b5);
+        color: var(--at-sky);
         font-size: 1rem;
         font-weight: 700;
         cursor: pointer;

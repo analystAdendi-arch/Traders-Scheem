@@ -1,0 +1,383 @@
+.player {
+    position: unset !important;
+
+    &__wrapper {
+        position: relative;
+        direction: ltr;
+    }
+
+    &__loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+
+        &-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid var(--color-surface-border);
+            border-top-color: var(--brand-primary);
+            animation: spin 1s infinite linear;
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    &__overlay {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.72);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        // Line below fixes the z-index problem in Safari
+        -webkit-transform: translate3d(0, 0, 200px);
+
+        &--visible {
+            opacity: 1;
+        }
+
+        &__icon {
+            margin: 0;
+            &-close {
+                position: fixed;
+                top: 0;
+                right: 0;
+                padding: 1.6rem;
+            }
+        }
+    }
+
+    &__controls {
+        &__wrapper {
+            position: absolute;
+            bottom: 0.2rem;
+            z-index: 2;
+            width: 100%;
+            height: 5.6rem;
+            padding: 0 1.6rem;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s linear;
+            // Line below fixes the z-index problem in Safari
+            -webkit-transform: translate3d(0, 0, 200px);
+
+            &--visible {
+                opacity: 1;
+            }
+
+            &--interactive {
+                pointer-events: auto;
+            }
+        }
+
+        &__progress-bar {
+            width: 100%;
+            background-color: var(--color-surface-primary);
+            height: 0.4rem;
+            border-radius: $BORDER_RADIUS;
+            margin: 0.8rem 0;
+            cursor: pointer;
+            direction: ltr;
+
+            &:not(&--v2):before {
+                content: '';
+                display: block;
+                height: 2rem;
+                width: 100%;
+                position: absolute;
+                bottom: 67%;
+            }
+
+            &__filled {
+                position: relative;
+                width: 0%;
+                height: 0.4rem;
+                border-radius: $BORDER_RADIUS;
+                background-color: var(--brand-primary);
+                direction: ltr;
+
+                &--animated {
+                    transition: all 0.3s linear;
+                }
+
+                &--ended {
+                    width: 100%;
+                }
+            }
+        }
+
+        &__bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 3.6rem;
+            padding-bottom: 0.4rem;
+            direction: ltr;
+
+            &--v2 {
+                display: flex;
+                flex-direction: column;
+                height: 3.6rem;
+                padding-bottom: 0.4rem;
+                direction: ltr;
+
+                .controls__right--v2 {
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                    gap: 0.8rem;
+                    direction: ltr;
+                }
+            }
+
+            &--blocked {
+                pointer-events: none;
+            }
+
+            .controls__right {
+                width: 10.2rem;
+            }
+        }
+
+        &__time-wrapper {
+            margin: 0 1.6rem;
+            * {
+                color: var(--color-text-white);
+            }
+
+            &--v2 {
+                margin: 0;
+                * {
+                    color: var(--color-text-white);
+                }
+            }
+        }
+
+        &__button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            width: 2.4rem;
+            height: 2.4rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            svg {
+                margin: 0 !important; // Override default margin from contract-type-info.scss
+                fill: var(--color-text-white);
+            }
+        }
+    }
+
+    &__volume {
+        &__wrapper {
+            position: relative;
+
+            &:before {
+                content: '';
+                display: block;
+                height: 1rem;
+                width: 4rem;
+                position: absolute;
+                right: -1rem;
+            }
+        }
+
+        &-bar {
+            position: relative;
+            width: 0.4rem;
+            height: 100%;
+            border-radius: $BORDER_RADIUS;
+            cursor: pointer;
+            background-color: var(--color-text-secondary);
+
+            &__wrapper {
+                width: 4rem;
+                height: 10.4rem;
+                position: absolute;
+                bottom: 2.5rem;
+                right: -1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.8rem 0;
+                border-radius: $BORDER_RADIUS * 2;
+                background-color: var(--color-surface-primary);
+                box-shadow: 0 0.8rem 1.6rem 0 var(--color-shadow-medium);
+                transform: translateY(0);
+                transition:
+                    transform 0.25s ease,
+                    opacity 0.25s linear;
+                opacity: 0;
+
+                &--enter,
+                &--exit {
+                    transform: translateY(1rem);
+                    opacity: 0;
+                }
+                &--enter-done {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            &__filled {
+                position: absolute;
+                bottom: 0;
+                width: 0.4rem;
+                border-radius: $BORDER_RADIUS;
+                background-color: var(--brand-primary);
+
+                &--animated {
+                    transition: all 0.3s linear;
+                }
+            }
+        }
+
+        &-dot {
+            position: absolute;
+            left: -0.4rem;
+            bottom: 90%;
+        }
+    }
+
+    &__progress-dot,
+    &__volume-dot {
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 50%;
+        background-color: var(--brand-primary);
+        cursor: pointer;
+    }
+
+    &__progress-dot {
+        position: absolute;
+        left: calc(100% - 0.6rem);
+        bottom: -0.3rem;
+
+        @include desktop {
+            &:hover {
+                bottom: -0.6rem;
+                width: 1.6rem;
+                height: 1.6rem;
+            }
+        }
+        &--increased-drag-area {
+            &:before {
+                position: absolute;
+                content: '';
+                height: 2.5rem;
+                width: 2.5rem;
+                left: 50%;
+                top: 50%;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        &--enlarged {
+            bottom: -0.6rem;
+            width: 1.6rem;
+            height: 1.6rem;
+        }
+    }
+
+    &__playback-rate__wrapper {
+        width: 6.2rem;
+        position: relative;
+
+        .playback-rate__icon {
+            position: absolute;
+            left: 0;
+        }
+
+        .dc-dropdown {
+            &__select-arrow {
+                display: none;
+            }
+
+            &__display--playback-rate {
+                width: 6.2rem;
+                height: 2.3rem;
+                background: none;
+                border: none;
+                border-radius: $BORDER_RADIUS * 2;
+                justify-content: flex-start;
+
+                &--v2 {
+                    width: 6.2rem;
+                    height: 2.3rem;
+                    background: none;
+                    border: none;
+                    border-radius: $BORDER_RADIUS * 2;
+
+                    .dc-dropdown__display-text {
+                        padding: 0 0 0 3.5rem;
+                        color: var(--color-text-white);
+                        font-size: var(--text-size-xxs);
+                    }
+                }
+
+                .dc-dropdown__display-text {
+                    padding: 0 0 0 2.5rem;
+                    color: var(--color-text-white);
+                    font-size: 1rem;
+                }
+            }
+
+            &-container {
+                min-width: 6.2rem;
+                width: unset;
+
+                &:before {
+                    content: '';
+                    display: block;
+                    height: 1.7rem;
+                    width: 7rem;
+                    position: absolute;
+                    bottom: 1rem;
+                }
+            }
+            &__list {
+                width: 9.7rem;
+                right: 10%;
+                left: unset;
+            }
+
+            &__display--playback-rate__item {
+                height: 4rem;
+                display: flex;
+                justify-content: start;
+                align-items: center;
+            }
+        }
+
+        .dc-list,
+        .dc-themed-scrollbars {
+            @include mobile {
+                max-height: 100vh !important;
+            }
+        }
+    }
+}

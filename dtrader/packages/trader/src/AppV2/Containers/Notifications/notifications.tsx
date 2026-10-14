@@ -1,0 +1,59 @@
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+
+import { StandaloneFlagCheckeredFillIcon } from '@deriv/quill-icons';
+import { routes } from '@deriv/shared';
+import { observer, useStore } from '@deriv/stores';
+import { NotificationBanners, useNotifications } from '@deriv-com/quill-ui';
+
+const Notifications = observer(() => {
+    const { addBanner, banners, removeBanner } = useNotifications();
+    const { portfolio } = useStore();
+    const { setAddNotificationBannerCallback } = portfolio;
+    const { pathname } = useLocation();
+
+    React.useEffect(() => {
+        if (banners.length > 1) removeBanner(banners[0].id);
+        if (pathname === routes.index) return;
+        banners.forEach(({ type, id }) => {
+            if (!type) {
+                // Sell notifications have type and Purchase ones do not.
+                removeBanner(id);
+            }
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [banners, pathname]);
+
+    React.useEffect(() => {
+        const addNotificationBannerCallback = (params: Parameters<typeof addBanner>[0], result: string) =>
+            addBanner({
+                icon: (
+                    <StandaloneFlagCheckeredFillIcon
+                        iconSize='sm'
+                        className={`trade-notification--${result}`}
+                        key='contract-closed'
+                        fill='var(--color-text-primary)'
+                    />
+                ),
+                ...params,
+            });
+
+        setAddNotificationBannerCallback(addNotificationBannerCallback);
+
+        return () => setAddNotificationBannerCallback();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return (
+        <NotificationBanners
+            autohideTimeout={4000}
+            banners={banners}
+            className='trade-notification'
+            isMobile
+            onClose={removeBanner}
+            zIndex={100}
+        />
+    );
+});
+
+export default Notifications;

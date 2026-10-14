@@ -1,0 +1,95 @@
+.dc-label {
+    font-size: 14px;
+    font-weight: bold;
+    height: 24px;
+    line-height: 20px;
+    border-radius: $BORDER_RADIUS * 3;
+    padding: 2px 8px;
+    margin: 0 2px;
+    position: relative;
+
+    &:after {
+        opacity: 0.16;
+        content: '';
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        position: absolute;
+        border-radius: $BORDER_RADIUS * 3;
+    }
+    /* TODO: change all :after to normal background color once styleguide ready */
+    &--general {
+        &--default {
+            color: var(--color-status-neutral);
+
+            &:after {
+                background-color: var(--color-status-neutral);
+            }
+        }
+        &--adjustment {
+            color: var(--color-status-neutral);
+
+            &:after {
+                background-color: var(--color-status-neutral);
+            }
+        }
+        &--danger {
+            color: var(--color-status-danger);
+
+            &:after {
+                background-color: var(--color-status-danger);
+            }
+        }
+        &--warn {
+            color: var(--color-status-warning);
+
+            &:after {
+                background-color: var(--color-status-warning);
+            }
+        }
+        &--success {
+            color: var(--color-status-success);
+
+            &:after {
+                background-color: var(--color-status-success);
+            }
+        }
+        &--transfer {
+            color: var(--status-transfer);
+
+            &:after {
+                background-color: var(--status-transfer);
+            }
+        }
+        &--default-invert {
+            color: var(--color-text-secondary);
+
+            &:after {
+                background-color: var(--color-text-secondary);
+            }
+        }
+        &--success-invert {
+            color: var(--color-surface-primary);
+            background-color: var(--color-status-success);
+        }
+        &--warn-invert {
+            color: var(--color-surface-primary);
+            background-color: var(--color-status-warning);
+        }
+        &--info {
+            color: var(--color-status-info);
+
+            &:after {
+                background-color: var(--color-status-info);
+            }
+        }
+    }
+    &--large {
+        height: 28px;
+        border-radius: $BORDER_RADIUS * 5;
+        padding: 4px 8px 4px 4px;
+        margin: 0 2px;
+        font-size: 16px;
+    }
+}

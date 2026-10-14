@@ -1,0 +1,72 @@
+import React from 'react';
+import { CONTRACT_TYPES } from '@deriv/shared';
+import { render, screen } from '@testing-library/react';
+import AccumulatorsChartElements from '../accumulators-chart-elements';
+
+jest.mock('Modules/Contract/Components/ContractAudit/positions-helper', () => ({
+    filterByContractType: jest.fn(() => true),
+}));
+jest.mock('../accumulators-profit-loss-tooltip', () => jest.fn(() => <div>AccumulatorsProfitLossTooltip</div>));
+jest.mock('../marker', () => jest.fn(() => <div>Spot-emphasizing ChartMarker</div>));
+
+describe('AccumulatorsChartElements', () => {
+    const mock_props = {
+        all_positions: [
+            {
+                contract_info: {
+                    underlying_symbol: 'test symbol',
+                    contract_type: CONTRACT_TYPES.ACCUMULATOR,
+                    entry_spot: '9454.1',
+                    contract_id: 1,
+                    shortcode: 'test',
+                    profit: '100',
+                },
+                indicative: 100,
+                reference: 1,
+                contract_update: {},
+                is_sell_requested: false,
+                is_valid_to_sell: true,
+                profit_loss: 100,
+                display_name: 'test',
+            },
+            {
+                contract_info: {
+                    underlying_symbol: 'test symbol',
+                    contract_type: CONTRACT_TYPES.ACCUMULATOR,
+                    entry_spot: '9467.78',
+                    contract_id: 2,
+                    shortcode: 'test',
+                    profit: '120',
+                },
+                indicative: 120,
+                reference: 2,
+                contract_update: {},
+                is_sell_requested: false,
+                is_valid_to_sell: true,
+                profit_loss: 120,
+                display_name: 'test',
+            },
+        ] as React.ComponentProps<typeof AccumulatorsChartElements>['all_positions'],
+        current_spot: 9478.34,
+        current_spot_time: 1234567890,
+        has_crossed_accu_barriers: false,
+        should_show_profit_text: true,
+        symbol: 'test symbol',
+    };
+
+    it('should render AccumulatorsChartElements without Spot-emphasizing ChartMarker', () => {
+        render(<AccumulatorsChartElements {...mock_props} />);
+        const tooltip_arr = screen.getAllByText('AccumulatorsProfitLossTooltip');
+        expect(tooltip_arr).toHaveLength(2);
+        expect(screen.queryByText('Spot-emphasizing ChartMarker')).not.toBeInTheDocument();
+    });
+
+    it('should render AccumulatorsChartElements with Spot-emphasizing ChartMarker when has_crossed_accu_barriers = true', () => {
+        mock_props.has_crossed_accu_barriers = true;
+        render(<AccumulatorsChartElements {...mock_props} />);
+
+        const tooltip_arr = screen.getAllByText('AccumulatorsProfitLossTooltip');
+        expect(tooltip_arr).toHaveLength(2);
+        expect(screen.getByText('Spot-emphasizing ChartMarker')).toBeInTheDocument();
+    });
+});

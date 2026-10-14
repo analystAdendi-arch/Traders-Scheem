@@ -1,0 +1,71 @@
+$tooltip-arrow-size: 0.6rem;
+$tooltip-padding-vertical: 0.8rem;
+$tooltip-padding-horizontal: 1.6rem;
+$tooltip-border-radius: 0.8rem;
+$tooltip-max-width: 28rem;
+
+.dc-tooltip-portal {
+    position: absolute;
+    z-index: 9999;
+    pointer-events: none;
+
+    &__trigger {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    &__content {
+        background-color: var(--color-surface-inverse);
+        color: var(--color-text-inverse);
+        padding: $tooltip-padding-vertical $tooltip-padding-horizontal;
+        border-radius: $tooltip-border-radius;
+        font-size: 1.2rem;
+        line-height: 1.5;
+        max-width: $tooltip-max-width;
+        box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.3);
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    &__arrow {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+
+        &--top {
+            bottom: -$tooltip-arrow-size;
+            left: $tooltip-padding-horizontal;
+            right: auto;
+            border-width: $tooltip-arrow-size $tooltip-arrow-size 0;
+            border-color: var(--color-surface-inverse) transparent transparent transparent;
+        }
+
+        &--bottom {
+            top: -$tooltip-arrow-size;
+            left: $tooltip-padding-horizontal;
+            right: auto;
+            border-width: 0 $tooltip-arrow-size $tooltip-arrow-size;
+            border-color: transparent transparent var(--color-surface-inverse) transparent;
+        }
+
+        &--left {
+            right: -$tooltip-arrow-size;
+            left: auto;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: $tooltip-arrow-size 0 $tooltip-arrow-size $tooltip-arrow-size;
+            border-color: transparent transparent transparent var(--color-surface-inverse);
+        }
+
+        &--right {
+            left: -$tooltip-arrow-size;
+            right: auto;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: $tooltip-arrow-size $tooltip-arrow-size $tooltip-arrow-size 0;
+            border-color: transparent var(--color-surface-inverse) transparent transparent;
+        }
+    }
+}

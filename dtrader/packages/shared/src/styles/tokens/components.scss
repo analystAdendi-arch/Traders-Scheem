@@ -1,0 +1,203 @@
+/**
+ * Component Color Tokens (Auto-Generated)
+ * 
+ * This file is auto-generated from brand.config.json
+ * Do not edit manually - run 'npm run generate:colors' instead
+ * 
+ * These variables define colors for specific UI components.
+ * SCSS functions use actual color constants, not CSS variables.
+ */
+
+:root {
+  .theme--light {
+    // Button Colors
+    --color-button-primary-bg: var(--brand-primary);
+    --color-button-primary-text: var(--color-text-white);
+    --color-button-primary-hover: var(--brand-primary-dark);
+    
+    --color-button-secondary-bg: transparent;
+    --color-button-secondary-border: var(--color-interactive-active);
+    --color-button-secondary-text: var(--color-text-black);
+    --color-button-secondary-hover: var(--color-interactive-hover);
+    
+    --color-button-tertiary-bg: transparent;
+    --color-button-tertiary-text: var(--brand-primary);
+    --color-button-tertiary-hover: #{transparentize($color-primary, 0.92)};
+    
+    --color-button-disabled-bg: var(--color-interactive-disabled);
+    --color-button-disabled-text: var(--color-text-disabled);
+
+    // Trading/Purchase Colors (exact legacy match for light theme)
+    --color-trade-buy: #{$color-success};                               // Buy/Higher/Rise trades
+    --color-trade-buy-bg: #{darken($color-success, 10%)};               // Buy background (derived from brand-secondary to get #3d9494)
+    --color-trade-sell: #{$color-danger};                               // Sell/Lower/Fall trades
+    --color-trade-sell-bg: #{darken($color-danger, 10%)};               // Sell background (derived from brand-danger)
+    --color-trade-disabled: var(--color-interactive-disabled);
+
+    // Form Colors
+    --color-input-bg: var(--color-surface-primary);
+    --color-input-border: var(--color-interactive-default);
+    --color-input-border-focus: var(--color-interactive-focus);
+    --color-input-border-error: var(--brand-danger);
+    --color-input-text: var(--color-text-secondary);
+    --color-input-placeholder: var(--color-text-disabled);
+
+    // Link Colors
+    --color-link-default: var(--brand-primary);
+    --color-link-hover: var(--brand-primary-dark);
+    --color-link-visited: var(--brand-primary);
+
+    // Card/Container Colors
+    --color-card-bg: var(--color-surface-primary);
+    --color-card-border: var(--color-interactive-default);
+    --color-card-shadow: var(--color-shadow-subtle);
+
+    // Navigation Colors
+    --color-nav-bg: var(--color-surface-primary);
+    --color-nav-border: var(--color-surface-border);
+    --color-nav-item-active: var(--brand-danger);
+    --color-nav-item-hover: var(--color-interactive-hover);
+
+    // Modal/Dialog Colors
+    --color-modal-bg: var(--color-surface-primary);
+    --color-modal-bg-secondary: var(--color-surface-section);
+    --color-modal-popover-bg: #ffffff;
+    --color-modal-backdrop: #{transparentize($color-black, 0.72)};
+    --color-modal-border: var(--color-interactive-default);
+
+    // Table Colors
+    --color-table-header-bg: #{mix($color-black, $color-white, 5%)};
+    --color-table-border: var(--color-interactive-default);
+    --color-table-row-hover: #{mix($color-black, $color-white, 7%)};
+    --color-table-row-selected: var(--color-status-info-bg);
+
+    // Chart Colors (for trading charts)
+    --color-chart-buy: var(--color-trade-buy);
+    --color-chart-sell: var(--color-trade-sell);
+    --color-chart-grid: var(--color-interactive-default);
+    --color-chart-axis: var(--color-text-secondary);
+
+    // Notification/Toast Colors
+    --color-notification-success-bg: var(--color-status-success-bg);
+    --color-notification-success-border: var(--color-status-success);
+    --color-notification-error-bg: var(--color-status-danger-bg);
+    --color-notification-error-border: var(--color-status-danger);
+    --color-notification-warning-bg: var(--color-status-warning-bg);
+    --color-notification-warning-border: var(--color-status-warning);
+    --color-notification-info-bg: var(--color-status-info-bg);
+    --color-notification-info-border: var(--color-status-info);
+
+    // Progress/Loading Colors
+    --color-progress-bg: #{transparentize($color-black, 0.9)};
+    --color-progress-fill: var(--brand-primary);
+    --color-loading-spinner: var(--brand-primary);
+
+    // Badge Colors
+    --color-badge-success-bg: var(--color-status-success);
+    --color-badge-success-text: var(--color-surface-primary);
+    --color-badge-danger-bg: var(--color-status-danger);
+    --color-badge-danger-text: var(--color-surface-primary);
+    --color-badge-warning-bg: var(--color-status-warning);
+    --color-badge-warning-text: var(--brand-black);
+    --color-badge-info-bg: var(--color-status-info);
+    --color-badge-info-text: var(--color-surface-primary);
+    --color-badge-neutral-bg: var(--color-status-neutral);
+    --color-badge-neutral-text: var(--color-surface-primary);
+  }
+
+  .theme--dark {
+    // Button Colors
+    --color-button-primary-bg: var(--brand-primary);
+    --color-button-primary-text: var(--color-text-white);
+    --color-button-primary-hover: var(--brand-primary-dark);
+    
+    --color-button-secondary-bg: transparent;
+    --color-button-secondary-border: var(--color-interactive-active);
+    --color-button-secondary-text: var(--color-text-white);
+    --color-button-secondary-hover: #{transparentize($color-white, 0.92)};
+    
+    --color-button-tertiary-bg: transparent;
+    --color-button-tertiary-text: var(--brand-primary);
+    --color-button-tertiary-hover: #{transparentize($color-danger, 0.92)};
+    
+    --color-button-disabled-bg: var(--color-interactive-disabled);
+    --color-button-disabled-text: var(--color-text-disabled);
+
+    // Trading/Purchase Colors (dark theme variants)
+    --color-trade-buy: #{$color-success};                               // Buy/Higher/Rise trades (dark)
+    --color-trade-buy-bg: #{darken($color-success, 10%)};               // Buy background (derived from brand-secondary to get #3d9494)
+    --color-trade-sell: #{$color-danger};                               // Sell/Lower/Fall trades (dark)
+    --color-trade-sell-bg: #{darken($color-danger, 10%)};               // Sell background (derived from brand-danger)
+    --color-trade-disabled: var(--color-interactive-disabled);
+
+    // Form Colors
+    --color-input-bg: var(--color-surface-primary);
+    --color-input-border: var(--color-interactive-default);
+    --color-input-border-focus: var(--color-interactive-focus);
+    --color-input-border-error: var(--brand-danger);
+    --color-input-text: var(--color-text-secondary);
+    --color-input-placeholder: var(--color-text-disabled);
+
+    // Link Colors
+    --color-link-default: var(--brand-primary);
+    --color-link-hover: var(--brand-primary-dark);
+    --color-link-visited: var(--brand-primary);
+
+    // Card/Container Colors
+    --color-card-bg: #{lighten($color-black, 8%)};
+    --color-card-border: var(--color-interactive-default);
+    --color-card-shadow: var(--color-shadow-subtle);
+
+    // Navigation Colors
+    --color-nav-bg: var(--color-surface-primary);
+    --color-nav-border: var(--color-surface-border);
+    --color-nav-item-active: var(--brand-danger);
+    --color-nav-item-hover: var(--color-interactive-hover);
+
+    // Modal/Dialog Colors
+    --color-modal-bg: var(--core-color-solid-slate-1100);
+    --color-modal-bg-secondary: var(--core-color-solid-slate-1000);
+    --color-modal-popover-bg: #20242F;
+    --color-modal-backdrop: #{transparentize($color-black, 0.4)};
+    --color-modal-border: var(--color-interactive-default);
+
+    // Table Colors
+    --color-table-header-bg: #{lighten($color-black, 15%)};
+    --color-table-border: var(--color-interactive-default);
+    --color-table-row-hover: #{lighten($color-black, 15%)};
+    --color-table-row-selected: var(--color-status-info-bg);
+
+    // Chart Colors (for trading charts)
+    --color-chart-buy: var(--color-trade-buy);
+    --color-chart-sell: var(--color-trade-sell);
+    --color-chart-grid: var(--color-interactive-default);
+    --color-chart-axis: var(--color-text-secondary);
+
+    // Notification/Toast Colors
+    --color-notification-success-bg: var(--color-status-success-bg);
+    --color-notification-success-border: var(--color-status-success);
+    --color-notification-error-bg: var(--color-status-danger-bg);
+    --color-notification-error-border: var(--color-status-danger);
+    --color-notification-warning-bg: var(--color-status-warning-bg);
+    --color-notification-warning-border: var(--color-status-warning);
+    --color-notification-info-bg: var(--color-status-info-bg);
+    --color-notification-info-border: var(--color-status-info);
+
+    // Progress/Loading Colors
+    --color-progress-bg: #{lighten($color-black, 12%)};
+    --color-progress-fill: var(--brand-primary);
+    --color-loading-spinner: var(--brand-primary);
+
+    // Badge Colors
+    --color-badge-success-bg: var(--color-status-success);
+    --color-badge-success-text: var(--color-surface-primary);
+    --color-badge-danger-bg: var(--color-status-danger);
+    --color-badge-danger-text: var(--color-surface-primary);
+    --color-badge-warning-bg: var(--color-status-warning);
+    --color-badge-warning-text: var(--brand-black);
+    --color-badge-info-bg: var(--color-status-info);
+    --color-badge-info-text: var(--color-surface-primary);
+    --color-badge-neutral-bg: var(--color-status-neutral);
+    --color-badge-neutral-text: var(--color-surface-primary);
+  }
+}

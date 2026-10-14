@@ -1,0 +1,13 @@
+.trade-notification {
+    &--purchase {
+        fill: var(--component-textIcon-statusNormal-information);
+    }
+
+    &--success {
+        fill: var(--component-textIcon-statusNormal-success);
+    }
+
+    &--error {
+        fill: var(--component-textIcon-statusNormal-danger);
+    }
+}

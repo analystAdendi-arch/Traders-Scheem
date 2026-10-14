@@ -1,0 +1,31 @@
+// Base
+@import 'app/_common/base/index';
+
+// Shared
+@import '~@deriv/shared/src/styles/reset.scss';
+@import '~@deriv/shared/src/styles/themes.scss';
+
+// Layout
+@import 'app/_common/layout/app-layouts';
+@import 'app/_common/layout/header';
+@import 'app/_common/layout/modal-root';
+@import 'app/_common/layout/footer';
+
+// Components
+@import 'app/_common/components/account-settings-toggle';
+@import 'app/_common/components/error-boundary';
+@import 'app/_common/components/media-item';
+@import 'app/_common/components/side-menu';
+@import 'app/_common/components/cookie-banner';
+@import 'app/_common/components/notification-banner';
+@import 'app/_common/components/notification-promo';
+@import 'app/_common/components/account-common';
+@import 'app/_common/components/initial-callback';
+@import 'app/_common/components/flyout-selector';
+
+// Modules
+@import 'app/modules/page-404';
+@import 'app/modules/account-closed';
+@import 'app/modules/reset-password';
+@import 'app/modules/reset-email';
+@import 'app/modules/external-link';

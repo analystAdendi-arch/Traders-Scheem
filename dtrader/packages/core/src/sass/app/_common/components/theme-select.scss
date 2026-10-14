@@ -1,0 +1,55 @@
+.theme-select-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+
+    &__title {
+        margin-bottom: 16px;
+        color: var(--color-text-primary);
+    }
+    &__content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+    }
+    &__option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 234px;
+        height: 207px;
+
+        &__title {
+            margin-top: 9px;
+            font-size: 14px;
+            line-height: 1.43;
+            color: var(--color-text-secondary);
+
+            &--selected {
+                font-weight: bold;
+                color: var(--color-text-primary);
+            }
+        }
+        &__icon {
+            width: 234px;
+            height: 178px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid var(--color-interactive-default);
+
+            &:hover:not(&--active) {
+                border-color: var(--color-interactive-hover);
+            }
+            &--active {
+                border-color: var(--color-interactive-active);
+            }
+            &--disabled {
+                opacity: 0.16 !important; // TODO: [disable-dark-bot] Delete this when Bot is ready
+                cursor: not-allowed !important;
+            }
+        }
+    }
+}

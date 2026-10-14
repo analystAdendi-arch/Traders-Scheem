@@ -1,0 +1,30 @@
+:root {
+    --custom-indicator-red: #ff444f;
+}
+
+.app-shell {
+    display: flex;
+
+    @include desktop-screen {
+        flex-direction: row;
+    }
+
+    @include tablet-screen {
+        flex-direction: row;
+    }
+
+    @include mobile-screen {
+        flex-direction: column;
+        height: 100%;
+    }
+
+    &__main-content {
+        flex: 1;
+        min-width: 0;
+        min-height: 0;
+
+        @include mobile-screen {
+            margin-left: 0;
+        }
+    }
+}

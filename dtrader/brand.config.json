@@ -1,0 +1,75 @@
+{
+    "brand_name": "Traders Scheem",
+    "brand_logo": "brand/platform-logo.svg",
+    "brand_logo_dark": "brand/platform-logo.svg",
+    "brand_domain": "deriv.com",
+    "brand_hostname": {
+        "staging": "staging-home.deriv.com/dashboard",
+        "production": "home.deriv.com/dashboard"
+    },
+    "platform": {
+        "name": "Traders Scheem",
+        "description": "Manual trading on Traders Scheem.",
+        "logo": "brand/platform-logo.svg",
+        "home_url": "https://traderscheem.com/",
+        "help_centre_url": "https://trade.deriv.com/help-centre"
+    },
+    "signup_url": {
+        "production": "https://home.deriv.com/dashboard/signup",
+        "staging": "https://staging-home.deriv.com/dashboard/signup"
+    },
+    "deposit_url": {
+        "staging": "https://staging-home.deriv.com/dashboard",
+        "production": "https://home.deriv.com/dashboard"
+    },
+    "auth": {
+        "staging": "https://staging-auth.deriv.com",
+        "production": "https://auth.deriv.com",
+        "oauth_scopes": [
+            "trade",
+            "account_manage"
+        ],
+        "oauth_redirect_uri_staging": "https://staging.traderscheem.com/callback",
+        "oauth_redirect_uri_production": "https://traderscheem.com/callback",
+        "oauth_app_id": "",
+        "oauth_client_id": ""
+    },
+    "derivws": {
+        "staging": "https://staging-api.derivws.com",
+        "production": "https://api.derivws.com"
+    },
+    "api_core": {
+        "staging": "staging-api-core.deriv.com",
+        "production": "api-core.deriv.com"
+    },
+    "api": {
+        "staging": "staging-api.deriv.com",
+        "production": "api.deriv.com"
+    },
+    "colors": {
+        "primary": "#0284C7",
+        "secondary": "#64748b",
+        "tertiary": "#F0C040",
+        "success": "#10b981",
+        "danger": "#E11D48",
+        "warning": "#D4A017",
+        "info": "#38BDF8",
+        "neutral": "#6b7280",
+        "black": "#0B1426",
+        "white": "#ffffff"
+    },
+    "color_variants": {
+        "auto_generate": true,
+        "lighten_percentage": 10,
+        "darken_percentage": 10
+    },
+    "features": {
+        "dark_mode": true,
+        "language_switcher": false
+    },
+    "production_hosts": [
+        "traderscheem.com",
+        "www.traderscheem.com"
+    ],
+    "environment": ""
+}

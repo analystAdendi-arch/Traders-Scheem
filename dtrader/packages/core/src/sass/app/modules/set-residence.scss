@@ -1,0 +1,45 @@
+/* @define set-residence */
+.set-residence {
+    margin: 1.6rem 1.6rem 0;
+
+    &__residence-selection {
+        display: flex;
+        justify-content: center;
+        gap: 0.4rem;
+        flex-flow: nowrap column;
+    }
+    &__heading {
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 3.3rem;
+    }
+    &__text {
+        text-align: center;
+        margin-bottom: 3.3rem;
+    }
+    &__subtext {
+        margin: 0 0 2.4rem;
+        max-width: 90%;
+    }
+    &__button_wrapper {
+        margin-top: 1.6rem;
+        display: flex;
+        flex-direction: column;
+    }
+    &__btn {
+        align-self: flex-end;
+        margin: 0;
+        background-color: var(--color-button-primary-bg);
+        font-weight: bold;
+        color: var(--color-surface-primary);
+        margin-bottom: -16px;
+
+        &:hover {
+            background-color: var(--color-button-primary-hover);
+        }
+        &--disabled {
+            opacity: 0.32;
+            cursor: not-allowed;
+        }
+    }
+}

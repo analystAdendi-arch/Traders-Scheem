@@ -1,0 +1,38 @@
+import React from 'react';
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import PropTypes from 'prop-types';
+
+import {
+    LabelPairedFlagCheckeredMdFillIcon,
+    LabelPairedStopwatchMdRegularIcon,
+    LegacyResetIcon,
+} from '@deriv/quill-icons';
+
+const MarkerLine = ({ label, line_style, marker_config }) => {
+    // TODO: Find a more elegant solution
+    if (!marker_config) return <div />;
+    return (
+        <div className={classNames('chart-marker-line__wrapper', `chart-marker-line--${line_style}`)}>
+            {label === marker_config.LINE_END.content_config.label && (
+                <LabelPairedFlagCheckeredMdFillIcon
+                    className={classNames('chart-marker-line__icon')}
+                    fill='var(--color-text-primary)'
+                />
+            )}
+            {label === marker_config.LINE_START.content_config.label && (
+                <LabelPairedStopwatchMdRegularIcon className='chart-marker-line__icon chart-marker-line__icon--time' />
+            )}
+            {label === marker_config.LINE_RESET.content_config.label && (
+                <LegacyResetIcon className='chart-marker-line__icon chart-marker-line__icon--time' iconSize='sm' />
+            )}
+        </div>
+    );
+};
+
+MarkerLine.propTypes = {
+    label: PropTypes.string,
+    line_style: PropTypes.string,
+    marker_config: PropTypes.object,
+};
+export default observer(MarkerLine);

@@ -1,0 +1,52 @@
+.barrier-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--core-spacing-800);
+    height: 100%;
+
+    &__spot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__spot-label {
+        font-size: 1.4rem;
+        color: var(--component-textIcon-normal-default);
+    }
+
+    &__spot-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--component-textIcon-normal-prominent);
+    }
+
+    &__input {
+        flex: 1;
+
+        .quill-input__wrapper__size--lg {
+            gap: var(--core-spacing-400);
+        }
+    }
+
+    &__prefix {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--component-textIcon-normal-prominent);
+    }
+
+    &__actions {
+        margin-top: auto;
+    }
+
+    &__error-area {
+        height: var(--core-spacing-1100);
+    }
+
+    &__save-button {
+        border-radius: 100px;
+    }
+}

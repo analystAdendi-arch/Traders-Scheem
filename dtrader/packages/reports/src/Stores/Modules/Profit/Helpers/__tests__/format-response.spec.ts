@@ -1,0 +1,59 @@
+import { TActiveSymbolsResponse } from '@deriv/api';
+
+import { formatProfitTableTransactions, TTransaction } from '../format-response';
+
+let mockProfitTableTransactionData: TTransaction;
+describe('formatProfitTableTransactions', () => {
+    beforeEach(() => {
+        mockProfitTableTransactionData = {
+            buy_price: 1,
+            contract_id: 55113405821,
+            contract_type: 'CALL',
+            duration_type: 'minutes',
+            longcode:
+                'Win payout if Volatility 100 (1s) Index is strictly higher than entry spot at 15 minutes after contract start time.',
+            payout: 1.96,
+            purchase_time: 1700539661,
+            sell_price: 0.61,
+            sell_time: 1700539816,
+            shortcode: 'CALL_1HZ100V_1.96_1700539661_1700540561_S0P_0',
+            transaction_id: 111189668101,
+            underlying_symbol: '1HZ100V',
+        };
+    });
+
+    it('should return correct formatted object', () => {
+        const currency = 'USD';
+        const returnValue = formatProfitTableTransactions(mockProfitTableTransactionData, currency);
+        expect(returnValue).toEqual({
+            ...mockProfitTableTransactionData,
+            display_name: 'Volatility 100 (1s) Index',
+            purchase_time_unix: 1700539661,
+            sell_time_unix: 1700539816,
+            profit_loss: '-0.39',
+        });
+    });
+
+    it('should not return purchase time unix if purchase time is not available', () => {
+        mockProfitTableTransactionData.purchase_time = undefined;
+        const currency = 'USD';
+        const returnValue = formatProfitTableTransactions(mockProfitTableTransactionData, currency);
+        expect(returnValue.purchase_time_unix).toBeUndefined();
+    });
+
+    it('should return profit loss for with correct BTC formatted value', () => {
+        mockProfitTableTransactionData.buy_price = 0.0001;
+        mockProfitTableTransactionData.sell_price = 0.0002;
+        const currency = 'BTC';
+        const returnValue = formatProfitTableTransactions(mockProfitTableTransactionData, currency);
+        expect(returnValue.profit_loss).toEqual('0.00010000');
+    });
+
+    it('should return positive profit loss if sell price is more than buy price', () => {
+        mockProfitTableTransactionData.sell_price = 1;
+        mockProfitTableTransactionData.buy_price = 0.5;
+        const currency = 'USD';
+        const returnValue = formatProfitTableTransactions(mockProfitTableTransactionData, currency);
+        expect(returnValue.profit_loss).toEqual('0.50');
+    });
+});

@@ -1,0 +1,221 @@
+/** @define mobile-widget */
+.mobile-widget {
+    border-radius: $BORDER_RADIUS;
+    border-width: 0;
+    padding: 1rem 0.8rem;
+    height: 4rem;
+    background-color: var(--color-surface-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 0.8rem;
+    flex: 1;
+    position: relative;
+
+    &__button {
+        background: none;
+        border: none;
+        padding: 0;
+    }
+    &__digit {
+        border-radius: $BORDER_RADIUS;
+        padding: 1rem 0.8rem;
+        margin-left: 0.8rem;
+        height: 4rem;
+        background-color: var(--color-surface-primary);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 8.8rem;
+    }
+    &__amount {
+        @include typeface(--paragraph-center-bold-black);
+        color: var(--color-text-primary);
+    }
+    &__duration {
+        @include typeface(--paragraph-center-normal-black);
+        color: var(--color-text-primary);
+    }
+    &__type {
+        @include typeface(--paragraph-center-normal-black);
+        color: var(--color-text-secondary);
+    }
+    &__item {
+        color: var(--color-text-primary);
+        line-height: 1.4rem;
+
+        &-disabled {
+            color: var(--color-text-disabled);
+        }
+
+        &-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        &-tooltip {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 4rem;
+            width: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    &__multiplier {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0;
+
+        &-amount {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.4rem 0.8rem 0;
+
+            .mobile-widget__item-label {
+                margin-right: 0.4rem;
+            }
+        }
+        &-expiration {
+            min-width: 7.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        &-options {
+            flex: none;
+            flex-direction: column;
+            padding: 0.6rem 0.8rem;
+            margin-bottom: 0.6rem;
+            margin-left: 0.8rem;
+            justify-content: center;
+            min-width: 11.9rem;
+            &:has(.mobile-widget__item-tooltip) {
+                min-width: 9.9rem;
+            }
+
+            .mobile-widget__item-label {
+                color: var(--color-text-secondary);
+            }
+        }
+        &-risk-management {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: stretch;
+            margin-bottom: 0.6rem;
+            color: var(--color-text-secondary);
+            padding: 0.4rem 0.8rem;
+
+            .mobile-widget__item {
+                flex: 1;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .mobile-widget__item-label {
+                color: var(--color-text-secondary);
+            }
+            .mobile-widget__item-label,
+            .mobile-widget__item-value {
+                font-size: 1.4rem;
+                line-height: 1.8rem;
+            }
+        }
+        &-trade-info {
+            display: flex;
+            justify-content: space-evenly;
+            background: var(--color-surface-primary);
+            flex: 2;
+            margin-left: 0.8rem;
+
+            &--no-stop-out {
+                justify-content: flex-end;
+                margin-right: 1.6rem;
+            }
+            &-tooltip-text {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+
+                span:before {
+                    content: ': ';
+                }
+                &:first-child {
+                    margin-right: 0.8rem;
+                }
+                @media only screen and (max-width: 340px) {
+                    font-size: 0.8rem;
+                }
+            }
+        }
+    }
+    &__wrapper {
+        display: flex;
+
+        .mobile-widget:last-child:not(:only-child) {
+            margin-left: 0.8rem;
+            flex: unset;
+        }
+    }
+    &:is(.take-profit) {
+        height: auto;
+    }
+    .trade-container__fieldset:is(.take-profit *) {
+        width: 100%;
+        margin-bottom: 0;
+    }
+}
+
+/** @define fieldset-minimized */
+.fieldset-minimized {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5em;
+    white-space: pre-line;
+
+    &__amount {
+        grid-area: c;
+    }
+    &__barrier1 {
+        grid-area: b;
+    }
+    &__barrier2 {
+        grid-area: d;
+    }
+    &__currency:before {
+        margin-right: 0.1em;
+        position: static;
+        display: inline;
+        font-size: 1em;
+    }
+    &__basis {
+        font-weight: bold;
+        color: var(--color-text-primary);
+    }
+}
+
+.duration_amount_selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .mobile-widget {
+        &__duration {
+            flex: 1 1 auto;
+            text-align: left;
+        }
+        &__amount {
+            flex: 1 1 auto;
+        }
+        &__type {
+            flex: 1 1 auto;
+            text-align: right;
+        }
+    }
+}

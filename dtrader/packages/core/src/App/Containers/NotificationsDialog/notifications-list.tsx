@@ -1,0 +1,125 @@
+import classNames from 'classnames';
+import React from 'react';
+import { Button, Text } from '@deriv/components';
+import { isEmptyObject, toTitleCase } from '@deriv/shared';
+import { icon_types } from 'App/Components/Elements/NotificationMessage/constants';
+import { observer, useStore } from '@deriv/stores';
+import { BinaryLink } from 'App/Components/Routes';
+import { useHistory } from 'react-router-dom';
+import EmptyNotification from 'App/Components/Elements/Notifications/empty-notification';
+
+type TActionProps = ReturnType<typeof useStore>['notifications']['notifications'][0]['action'];
+type TNotificationMessage = ReturnType<typeof useStore>['notifications']['notifications'][0];
+
+const NotificationsList = observer(() => {
+    const { notifications } = useStore();
+    const { notifications: notifications_array, toggleNotificationsModal } = notifications;
+    const history = useHistory();
+
+    const getNotificationItemIcon = (item: TNotificationMessage) => {
+        const { type } = item;
+        const iconConfig = icon_types[type as keyof typeof icon_types] || icon_types.info;
+        const IconComponent = iconConfig.component;
+        const iconFill = iconConfig.fill;
+
+        return (
+            <IconComponent
+                fill={iconFill}
+                className={classNames('notifications-item__title-icon', {
+                    [`notifications-item__title-icon--${type}`]: type,
+                })}
+            />
+        );
+    };
+
+    const getButtonSettings = (item: TNotificationMessage): TActionProps | undefined => {
+        const object_key = ['action', 'secondary_btn', 'cta_btn', 'primary_btn'].find(
+            obj_key => !isEmptyObject(item[obj_key as keyof TNotificationMessage])
+        );
+        switch (object_key) {
+            case 'primary_btn':
+                return item.primary_btn;
+            case 'cta_btn':
+                return item.cta_btn;
+            case 'secondary_btn':
+                return item.secondary_btn;
+            case 'action':
+                return item.action;
+            default:
+                return undefined;
+        }
+    };
+
+    const onActionTrackEvent = (_key: string) => {};
+    const filtered_notifications = notifications_array.filter(item => !item.only_toast_message);
+    return (
+        <React.Fragment>
+            {filtered_notifications.length > 0 ? (
+                filtered_notifications.map(item => (
+                    <div className='notifications-item' key={item.key}>
+                        <Text as='h2' className='notifications-item__title' weight='bold' size='xs' color='primary'>
+                            {item.type && getNotificationItemIcon(item)}
+                            {item.header}
+                        </Text>
+                        <div className='notifications-item__message'>{item.message}</div>
+                        <div className='notifications-item__action'>
+                            {!!getButtonSettings(item) && (
+                                <React.Fragment>
+                                    {getButtonSettings(item)?.route && !getButtonSettings(item)?.onClick ? (
+                                        <BinaryLink
+                                            onClick={() => {
+                                                const buttonSettings = getButtonSettings(item);
+                                                if (buttonSettings?.onClick) {
+                                                    buttonSettings.onClick();
+                                                }
+                                                toggleNotificationsModal();
+                                                onActionTrackEvent(item.key);
+                                            }}
+                                            active_class='notifications-item'
+                                            className={classNames(
+                                                'dc-btn',
+                                                'dc-btn--secondary',
+                                                'notifications-item__cta-button'
+                                            )}
+                                            to={getButtonSettings(item)?.route}
+                                        >
+                                            <Text weight='bold' size='xxs'>
+                                                {getButtonSettings(item)?.text}
+                                            </Text>
+                                        </BinaryLink>
+                                    ) : (
+                                        <Button
+                                            className={classNames(
+                                                'dc-btn--secondary',
+                                                'notifications-item__cta-button'
+                                            )}
+                                            onClick={() => {
+                                                getButtonSettings(item)?.onClick();
+                                                onActionTrackEvent(item.key);
+                                                if (getButtonSettings(item)?.route) {
+                                                    history.push(
+                                                        getButtonSettings(item)?.route as unknown as Parameters<
+                                                            typeof history.push
+                                                        >[0]
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <Text weight='bold' size='xxs'>
+                                                {getButtonSettings(item)?.text}
+                                            </Text>
+                                        </Button>
+                                    )}
+                                </React.Fragment>
+                            )}
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <EmptyNotification />
+            )}
+        </React.Fragment>
+    );
+});
+
+export default NotificationsList;

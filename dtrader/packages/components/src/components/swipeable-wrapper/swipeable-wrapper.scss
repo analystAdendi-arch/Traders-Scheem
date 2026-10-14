@@ -1,0 +1,46 @@
+.dc-swipeable {
+    position: relative;
+    height: 100%;
+
+    &__view {
+        display: flex;
+        flex-direction: row;
+        transition: left 0.1s linear;
+        width: max-content;
+        height: inherit;
+        position: relative;
+    }
+    &__item {
+        position: relative;
+        display: inline-flex;
+        width: 100vw;
+
+        &--is-disabled {
+            & .dc-swipeable__view {
+                left: -100vw;
+                transition: none;
+            }
+        }
+    }
+    &__nav {
+        position: absolute;
+        bottom: 0;
+        width: 100vw;
+        display: flex;
+        padding: 1.6rem 0.8rem;
+        justify-content: space-between;
+        pointer-events: none;
+
+        &-elevated {
+            bottom: 9rem;
+        }
+
+        svg {
+            z-index: 3;
+        }
+
+        * {
+            pointer-events: all;
+        }
+    }
+}

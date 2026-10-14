@@ -1,0 +1,68 @@
+$FIXED_PADDING_HEIGHT: var(--core-size-1600);
+$HEADER_HEIGHT: var(--core-size-2000);
+$ONE_BUTTON_FOOTER_HEIGHT: 12rem; // 5.6rem (bottom nav) + 4.8rem (one button footer) + 1.6rem (padding)
+$TWO_BUTTONS_FOOTER_HEIGHT: 17.6rem; // 5.6rem (bottom nav) + 4.8rem * 2 (two buttons footer) + 2.4rem (padding)
+
+.contract-details {
+    background-color: var(--semantic-color-slate-solid-surface-frame-mid);
+    padding: 0 var(--core-spacing-400);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    gap: var(--semantic-spacing-general-sm);
+    height: 100%;
+    padding-bottom: var(--core-size-3200);
+
+    @include mobile-screen {
+        padding-bottom: 6.4rem;
+    }
+
+    .contract-details-chart {
+        height: min(360px, calc(100vh - $HEADER_HEIGHT - $FIXED_PADDING_HEIGHT));
+    }
+    &--two-buttons {
+        height: 100%;
+        padding-bottom: $TWO_BUTTONS_FOOTER_HEIGHT;
+        .contract-details-chart {
+            height: min(360px, calc(100vh - $HEADER_HEIGHT - $FIXED_PADDING_HEIGHT - $TWO_BUTTONS_FOOTER_HEIGHT));
+        }
+    }
+    &--one-button {
+        padding-bottom: $ONE_BUTTON_FOOTER_HEIGHT;
+        .contract-details-chart {
+            height: min(360px, calc(100vh - $HEADER_HEIGHT - $FIXED_PADDING_HEIGHT - $ONE_BUTTON_FOOTER_HEIGHT));
+        }
+    }
+    &:not(:has(.banner__wrapper)) {
+        .contract-card-wrapper {
+            margin-top: var(--core-spacing-200);
+        }
+    }
+}
+
+.contract-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: var(--core-borderRadius-500);
+    padding: var(--core-spacing-800);
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    }
+
+    .last-row {
+        margin-top: var(--core-spacing-400);
+        .red {
+            color: var(--brand-primary);
+        }
+    }
+}

@@ -1,0 +1,335 @@
+.guide {
+    &__title {
+        margin-block-end: var(--component-actionSheet-spacing-padding-lg);
+    }
+
+    &__menu {
+        position: relative;
+        margin-block-end: var(--component-actionSheet-spacing-padding-md);
+        margin-inline-end: calc(-1 * var(--component-actionSheet-spacing-padding-lg));
+        padding-inline-end: var(--component-actionSheet-spacing-padding-lg);
+        display: flex;
+        gap: var(--core-spacing-400);
+        overflow-x: auto;
+        overflow-y: hidden;
+        min-height: var(--core-spacing-1600);
+        white-space: nowrap;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        button {
+            background-color: transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+    }
+
+    &__wrapper {
+        &__content {
+            padding: var(--component-actionSheet-spacing-padding-lg) var(--component-actionSheet-spacing-padding-lg) 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+
+            &--separate {
+                padding: 0 var(--component-actionSheet-spacing-padding-lg)
+                    var(--component-actionSheet-spacing-padding-md);
+                overflow-x: hidden;
+            }
+        }
+    }
+
+    &__contract-description {
+        flex: 1;
+        min-height: 40rem;
+
+        &--without-btn {
+            height: calc(90dvh - 17rem);
+        }
+    }
+
+    &__button {
+        padding: var(--component-actionSheet-spacing-padding-lg);
+    }
+
+    &-video {
+        position: relative;
+        border-radius: var(--core-borderRadius-400);
+
+        &__preview {
+            position: relative;
+            border-radius: var(--core-borderRadius-400);
+            height: 25.2rem;
+            width: 44.8rem;
+
+            @media (max-width: 768px) {
+                height: 7.3rem;
+                width: 11.2rem;
+                flex-shrink: 0;
+            }
+
+            &__icon {
+                position: absolute;
+                top: 50%;
+                left: 53%;
+                transform: translate(-50%, -53%);
+                fill: var(--semantic-color-slate-solid-surface-normal-lowest);
+
+                &__wrapper {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background-color: var(--component-textIcon-normal-prominent);
+                    border-radius: 50%;
+                    width: 8.8rem;
+                    height: 8.8rem;
+                    z-index: 2;
+
+                    @media (max-width: 768px) {
+                        width: 3.4rem;
+                        height: 3.4rem;
+                    }
+                }
+            }
+        }
+
+        iframe {
+            border-radius: var(--core-borderRadius-400);
+        }
+
+        &:before {
+            content: '';
+            display: block;
+            height: 25.2rem;
+            width: 44.8rem;
+            position: absolute;
+            top: 0;
+            inset-inline-start: 0;
+            border-radius: var(--core-borderRadius-400);
+            background-color: var(--core-color-opacity-black-200);
+            z-index: 1;
+
+            @media (max-width: 768px) {
+                height: 7.3rem;
+                width: 11.2rem;
+            }
+        }
+
+        &__wrapper {
+            border-top: var(--core-spacing-75) solid var(--semantic-color-monochrome-surface-normal-low);
+            padding-block-start: var(--component-actionSheet-spacing-padding-lg);
+            margin-block-start: var(--component-actionSheet-spacing-padding-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--component-actionSheet-spacing-padding-sm);
+            cursor: pointer;
+
+            @media (max-width: 768px) {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        &__description {
+            display: none;
+
+            @media (max-width: 768px) {
+                display: block;
+                flex: 1;
+            }
+        }
+    }
+
+    &-link {
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: opacity 0.2s ease;
+        text-decoration: none;
+        color: inherit;
+
+        &:hover {
+            text-decoration: underline;
+            text-decoration-color: var(--component-textIcon-normal-prominent);
+        }
+
+        svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--component-textIcon-normal-prominent);
+        }
+    }
+}
+
+.description {
+    &__paragraph {
+        padding-block-end: var(--component-actionSheet-spacing-padding-sm);
+    }
+
+    &__general {
+        padding-block-end: var(--component-actionSheet-spacing-padding-md);
+    }
+
+    &__heading {
+        padding-block-end: var(--component-actionSheet-spacing-padding-sm);
+    }
+
+    &__content {
+        &--definition {
+            all: unset;
+            color: var(--brand-primary);
+        }
+        &--bold {
+            font-weight: var(--core-fontWeight-bold);
+        }
+    }
+}
+
+.quoted-button {
+    white-space: nowrap;
+    &:before {
+        // for opening quotes
+        content: '\201C';
+        color: var(--component-textIcon-normal-default);
+    }
+    &:after {
+        // for closing quotes
+        content: '\201D';
+        color: var(--component-textIcon-normal-default);
+    }
+}
+
+.definition {
+    &__title {
+        margin-block-end: var(--component-actionSheet-spacing-padding-lg);
+    }
+
+    &__wrapper {
+        padding: var(--component-actionSheet-spacing-padding-lg);
+    }
+
+    &__paragraph {
+        padding-block-end: var(--component-actionSheet-spacing-padding-md);
+    }
+
+    &__button {
+        padding: var(--component-actionSheet-spacing-padding-lg);
+    }
+}
+
+.video-fragment {
+    &__wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 32rem;
+        height: 20.8rem;
+        position: relative;
+        margin-inline: auto;
+
+        &--accumulator {
+            margin-block-end: var(--component-actionSheet-spacing-padding-sm);
+        }
+
+        .skeleton-video-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+}
+
+.modal-player {
+    position: fixed;
+    inset: 0;
+    padding: 0;
+    border: unset;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--core-color-solid-slate-1400);
+    z-index: 10000;
+
+    &__container {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__video-container {
+        position: relative;
+        width: 800px;
+        height: 450px;
+        max-width: 90vw;
+        max-height: 90vh;
+        background-color: var(--core-color-solid-slate-1550);
+        border-radius: var(--core-borderRadius-400);
+        overflow: hidden;
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    }
+
+    &__close-button {
+        position: absolute;
+        top: 1.6rem;
+        right: 1.6rem;
+        z-index: 10001;
+        background-color: rgba(0, 0, 0, 0.6);
+        border: none;
+        border-radius: 50%;
+        width: 4rem;
+        height: 4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        svg {
+            width: 2.4rem;
+            height: 2.4rem;
+            fill: var(--component-textIcon-normal-prominent);
+        }
+    }
+
+    &__icon {
+        &-close {
+            position: fixed;
+            top: 0;
+            inset-inline-end: 0;
+            padding: 1.6rem;
+        }
+    }
+
+    &__wrapper {
+        width: 100vw;
+        height: 100vh;
+        background-color: #000000;
+
+        .player__controls__wrapper {
+            position: fixed;
+            left: 0;
+            bottom: 4rem;
+            padding: 0 2rem;
+        }
+    }
+}

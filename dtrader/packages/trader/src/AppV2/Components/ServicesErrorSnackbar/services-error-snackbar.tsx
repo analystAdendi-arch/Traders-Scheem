@@ -1,0 +1,80 @@
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+
+import { getBrandUrl, isEmptyObject, isValidToCancel, routes } from '@deriv/shared';
+import { observer, useStore } from '@deriv/stores';
+import { SnackbarController, useSnackbar } from '@deriv-com/quill-ui';
+import { useTranslations } from '@deriv-com/translations';
+
+import useContractDetails from 'AppV2/Hooks/useContractDetails';
+import { checkIsServiceModalError, SERVICE_ERROR } from 'AppV2/Utils/layout-utils';
+import { getDisplayedContractTypes } from 'AppV2/Utils/trade-types-utils';
+import { useTraderStore } from 'Stores/useTraderStores';
+
+const ServicesErrorSnackbar = observer(() => {
+    const { localize } = useTranslations();
+    const {
+        common: { services_error, resetServicesError },
+        client: { is_logged_in },
+    } = useStore();
+    const { is_multiplier, proposal_info, validation_errors, trade_types, contract_type, trade_type_tab } =
+        useTraderStore();
+    const { contract_info } = useContractDetails();
+    const { addSnackbar } = useSnackbar();
+    const { pathname } = useLocation();
+
+    const { code, message } = services_error || {};
+    const has_services_error = !isEmptyObject(services_error);
+    const is_modal_error = checkIsServiceModalError({ services_error });
+    const contract_types = getDisplayedContractTypes(trade_types, contract_type, trade_type_tab);
+
+    // Some BO errors comes inside of proposal and we store them inside of proposal_info.
+    // Such error have no error_field and it is one of the main differences from trade parameters errors (duration, stake and etc).
+    // Another difference is that trade params errors arrays in validation_errors are empty.
+    const { has_error, error_field, message: contract_error_message } = proposal_info[contract_types[0]] ?? {};
+    const contract_error =
+        has_error && !error_field && !Object.keys(validation_errors).some(key => validation_errors[key].length);
+
+    const checkShouldShowErrorSnackBar = () => {
+        if (!has_services_error && !contract_error) return false;
+        if (pathname === routes.index) return (has_services_error && !is_modal_error) || contract_error;
+        if (pathname === routes.trader_positions || pathname.startsWith(routes.contract.replace('/:contract_id', '')))
+            return has_services_error;
+        return false;
+    };
+
+    const should_show_error_snackbar = checkShouldShowErrorSnackBar();
+    const should_contain_action = should_show_error_snackbar && code === SERVICE_ERROR.COMPANY_WIDE_LIMIT_EXCEEDED;
+    const bottom_position =
+        pathname.startsWith(routes.contract.replace('/:contract_id', '')) &&
+        is_multiplier &&
+        isValidToCancel(contract_info)
+            ? '104px'
+            : '48px';
+    const action_props = {
+        actionText: localize('View'),
+        onActionClick: () => window.open(`${getBrandUrl()}/tnc/trading-terms.pdf`),
+    };
+
+    React.useEffect(() => {
+        if (should_show_error_snackbar) {
+            addSnackbar({
+                message: message ?? contract_error_message,
+                status: 'fail',
+                hasCloseButton: true,
+                hasFixedHeight: false,
+                onSnackbarRemove: resetServicesError,
+                style: {
+                    marginBottom: is_logged_in ? bottom_position : '-8px',
+                    width: 'calc(100% - var(--core-spacing-800)',
+                },
+                ...(should_contain_action ? action_props : {}),
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [should_show_error_snackbar, should_contain_action]);
+
+    return <SnackbarController />;
+});
+
+export default ServicesErrorSnackbar;

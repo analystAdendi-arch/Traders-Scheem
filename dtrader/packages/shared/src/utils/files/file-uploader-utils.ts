@@ -1,0 +1,123 @@
+import { useMutation } from '@deriv/api';
+
+import { compressImg, convertToBase64, getFormatFromMIME, isImageType, TImage } from './image/image_utility';
+
+export type TSettings = {
+    document_type?: string;
+    document_id?: string;
+    expiration_date?: string;
+    lifetime_valid?: boolean;
+    page_type?: string;
+    proof_of_ownership?: any;
+    document_issuing_country?: string;
+};
+
+export type TFileObject = TSettings & {
+    filename: File['name'];
+    buffer: FileReader['result'];
+    documentFormat: string;
+    file_size: File['size'];
+};
+
+export const truncateFileName = (file: File, limit: number) => {
+    const string_limit_regex = new RegExp(`(.{${limit || 30}})..+`);
+    return file?.name?.replace(string_limit_regex, `$1….${getFileExtension(file)}`);
+};
+
+export const getFileExtension = (file: Blob) => {
+    if (!file?.type) return null;
+
+    // Prevent ReDoS by limiting input length and using safer approach
+    const mimeType = file.type;
+    if (mimeType.length > 100) return null; // Prevent long inputs
+
+    const lastSlashIndex = mimeType.lastIndexOf('/');
+    return lastSlashIndex !== -1 ? mimeType.substring(lastSlashIndex + 1) : null;
+};
+
+export const compressImageFiles = (files?: File[]) => {
+    if (!files?.length) return Promise.resolve([]);
+
+    const promises: Promise<Blob>[] = [];
+    Array.from(files).forEach(file => {
+        const promise = new Promise<Blob>(resolve => {
+            if (isImageType(file?.type)) {
+                convertToBase64(file).then(img => {
+                    compressImg(img as TImage).then(resolve);
+                });
+            } else {
+                resolve(file);
+            }
+        });
+        promises.push(promise);
+    });
+
+    return Promise.all(promises);
+};
+
+export const readFiles = (
+    files: Blob[],
+    getFileReadErrorMessage: (t: string) => string,
+    settings?: Partial<TSettings>
+) => {
+    const promises: Array<Promise<Partial<TFileObject> & { message?: string }>> = [];
+
+    files.forEach(f => {
+        const fr = new FileReader();
+        const promise = new Promise<Partial<TFileObject> & { message?: string }>(resolve => {
+            fr.onload = () => {
+                const file_metadata = {
+                    filename: f.name,
+                    buffer: fr.result,
+                    documentFormat: getFormatFromMIME(f),
+                    file_size: f.size,
+                    documentType: settings?.document_type ?? UPLOAD_FILE_TYPE.utility_bill,
+                    documentId: settings?.document_id,
+                    expirationDate: settings?.expiration_date,
+                    lifetimeValid: settings?.lifetime_valid,
+                    pageType: settings?.page_type,
+                    proof_of_ownership: settings?.proof_of_ownership,
+                    document_issuing_country: settings?.document_issuing_country,
+                };
+                resolve(file_metadata);
+            };
+
+            fr.onerror = () => {
+                resolve({
+                    message:
+                        typeof getFileReadErrorMessage === 'function'
+                            ? getFileReadErrorMessage(f.name)
+                            : `Unable to read file ${f.name}`,
+                });
+            };
+            // Reading file
+            fr.readAsArrayBuffer(f);
+        });
+
+        promises.push(promise);
+    });
+
+    return Promise.all(promises);
+};
+
+export const UPLOAD_FILE_TYPE = Object.freeze({
+    amlglobalcheck: 'amlglobalcheck',
+    bankstatement: 'bankstatement',
+    docverification: 'docverification',
+    driverslicense: 'driverslicense',
+    driving_licence: 'driving_licence',
+    national_identity_card: 'national_identity_card',
+    other: 'other',
+    passport: 'passport',
+    power_of_attorney: 'power_of_attorney',
+    proof_of_ownership: 'proof_of_ownership',
+    proofaddress: 'proofaddress',
+    proofid: 'proofid',
+    utility_bill: 'utility_bill',
+});
+
+export const PAGE_TYPE = Object.freeze({
+    back: 'back',
+    front: 'front',
+    photo: 'photo',
+});

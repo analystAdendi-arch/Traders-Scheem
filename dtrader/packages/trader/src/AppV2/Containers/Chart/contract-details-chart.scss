@@ -1,0 +1,12 @@
+.contract-details-chart {
+    direction: ltr;
+    position: relative;
+    border-radius: var(--core-borderRadius-400);
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: var(--core-elevation-shadow-130);
+
+    .ciq-disabled {
+        display: none;
+    }
+}

@@ -1,0 +1,104 @@
+.risk-management-popover {
+    height: 36rem;
+
+    &__layout {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        gap: var(--core-spacing-800);
+    }
+
+    &__sidebar {
+        width: 10.4rem;
+        flex-shrink: 0;
+        border-right: 0.1rem solid var(--component-divider-default);
+        background-color: transparent;
+        overflow-y: auto;
+    }
+
+    &__main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+}
+
+.risk-management-desktop__tp-sl-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: var(--core-spacing-800);
+}
+
+.risk-management-desktop__field {
+    display: flex;
+    flex-direction: column;
+}
+
+.risk-management-desktop__field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.risk-management-desktop__field-content {
+    position: relative;
+}
+
+.risk-management-desktop__field-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.risk-management-desktop__save-button {
+    margin-top: auto;
+    font-size: 1.6rem !important;
+    font-weight: bold !important;
+    border-radius: 10rem !important;
+}
+
+.deal-cancellation-desktop {
+    &__wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--core-spacing-400);
+    }
+
+    &__chips {
+        flex: 1;
+
+        .value-chips--disabled {
+            pointer-events: none;
+            opacity: 0.4;
+        }
+    }
+
+    &__footer {
+        margin-top: auto;
+        padding-top: var(--core-spacing-800);
+
+        button {
+            font-size: 1.6rem !important;
+            font-weight: bold !important;
+            border-radius: 10rem !important;
+        }
+    }
+
+    &__save-button {
+        width: 100%;
+    }
+}

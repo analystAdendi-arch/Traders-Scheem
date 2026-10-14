@@ -1,0 +1,77 @@
+/** @define number-selector */
+.number-selector {
+    margin-top: 1.2em;
+    text-align: center;
+
+    &__row:first-child {
+        margin-bottom: 0.8em;
+    }
+    &__selection {
+        width: calc(20% - 4px);
+        height: 24px;
+        border-radius: $BORDER_RADIUS;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        @include typeface(--paragraph-left-normal-black);
+        background-color: var(--color-surface-primary);
+        color: var(--color-text-secondary);
+
+        &:not(:first-child) {
+            margin-left: 5px;
+        }
+        &--selected {
+            @include typeface(--paragraph-left-bold-primary);
+            background-color: var(--color-interactive-active);
+            color: var(--color-text-primary);
+        }
+        &--disabled {
+            color: var(--color-text-disabled);
+            cursor: not-allowed;
+        }
+        &:hover:not(&--disabled):not(&--selected) {
+            cursor: pointer;
+            background-color: var(--color-interactive-hover);
+        }
+        &:last-child {
+            margin-right: 0;
+        }
+        &--percentage {
+            border-radius: unset;
+            flex: 1;
+            height: 3.2rem;
+
+            &:not(:first-child) {
+                margin-left: 0;
+            }
+            &:first-child {
+                border-top-left-radius: $BORDER_RADIUS;
+                border-bottom-left-radius: $BORDER_RADIUS;
+            }
+            &:last-child {
+                border-top-right-radius: $BORDER_RADIUS;
+                border-bottom-right-radius: $BORDER_RADIUS;
+            }
+        }
+    }
+    @include mobile-screen {
+        margin-top: 0;
+        padding: 0.8rem;
+        border-radius: $BORDER_RADIUS;
+        background-color: var(--color-surface-primary);
+
+        &__selection {
+            width: calc(20% - 7px);
+            height: 32px;
+            font-size: 1.6rem;
+            background-color: var(--color-surface-primary);
+
+            &--selected {
+                background-color: var(--color-interactive-active);
+            }
+            &:not(:first-child) {
+                margin-left: 0.8rem;
+            }
+        }
+    }
+}

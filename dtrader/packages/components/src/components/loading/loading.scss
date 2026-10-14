@@ -1,0 +1,273 @@
+/** @define barspinner */
+.barspinner {
+    margin: auto;
+    width: 6rem;
+    height: 2rem;
+    white-space: nowrap;
+
+    &__rect {
+        margin: 0.4rem;
+        border-radius: 20px;
+        height: 60%;
+        width: 0.6rem;
+        display: inline-block;
+        @include createBarspinnerAnimation(5, 1.2s, 0.1);
+    }
+    &--dark .barspinner__rect {
+        background-color: var(--brand-secondary);
+    }
+}
+
+@keyframes sk-stretchdelay {
+    0%,
+    40%,
+    100% {
+        transform: scaleY(1);
+    }
+    20% {
+        transform: scaleY(2);
+    }
+}
+
+/** @define initial-loader */
+.initial-loader {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+    background: transparent;
+
+    &--fullscreen {
+        width: 100vw;
+        height: 100vh;
+
+        @include desktop {
+            height: calc(100vh - #{$HEADER_HEIGHT} - #{$FOOTER_HEIGHT});
+        }
+        @include mobile {
+            height: calc(100vh - #{$MOBILE_HEADER_HEIGHT});
+        }
+    }
+    &__barspinner {
+        margin: 5rem auto;
+
+        &--rect {
+            background-color: var(--brand-secondary);
+        }
+    }
+}
+
+.loading-dtrader-v2 {
+    &__trade,
+    &__positions,
+    &__contract-details {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    &__trade {
+        position: relative;
+        overflow-x: hidden;
+
+        @include mobile-screen {
+            padding: var(--core-spacing-400);
+            gap: var(--semantic-spacing-general-sm);
+        }
+
+        .skeleton-box {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            border-radius: var(--semantic-borderRadius-md);
+
+            @include mobile-screen {
+                height: unset;
+                background-color: var(--component-modal-bg);
+            }
+
+            &__header {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: nowrap;
+                width: 100%;
+                height: 6.5rem;
+                border-radius: unset;
+                border-bottom: 1px solid var(--semantic-color-monochrome-border-normal-mid);
+                padding: var(--semantic-spacing-general-sm) var(--semantic-spacing-general-md);
+
+                .skeleton {
+                    flex-shrink: 0;
+                }
+
+                @include mobile-screen {
+                    height: unset;
+                    border-bottom: none;
+                    padding: unset;
+                }
+
+                &-trade-types {
+                    display: flex;
+                    gap: var(--core-spacing-400);
+                }
+            }
+            &__trade-types {
+                display: flex;
+                gap: var(--core-spacing-400);
+            }
+            &__market {
+                display: flex;
+                flex-direction: column;
+                padding: 0 var(--semantic-spacing-general-sm);
+                background-color: unset;
+
+                @include mobile-screen {
+                    padding: unset;
+                }
+            }
+            &__trade-params {
+                display: flex;
+                flex-direction: column;
+                padding: var(--semantic-spacing-general-md);
+                gap: var(--semantic-spacing-general-md);
+                width: 32rem;
+
+                @include mobile-screen {
+                    width: unset;
+                    padding: unset;
+                }
+
+                &-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-direction: row;
+                }
+                &-column {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--semantic-spacing-general-sm);
+                }
+            }
+            &__chart {
+                flex-direction: column;
+                width: calc(100% - 32rem);
+                height: 100%;
+                padding: var(--semantic-spacing-general-sm);
+
+                @include mobile-screen {
+                    width: unset;
+                    padding: unset;
+                }
+            }
+        }
+    }
+    &__positions {
+        width: 100%;
+        background-color: var(--semantic-color-slate-solid-surface-frame-mid);
+
+        .skeleton-box {
+            &__filters,
+            &__total-pnl-or-date {
+                display: flex;
+                gap: var(--semantic-spacing-gap-md);
+                margin: var(--semantic-spacing-gap-md) 0;
+                padding: 0 var(--semantic-spacing-gap-md);
+            }
+            &__tabs {
+                display: flex;
+                background-color: var(--component-modal-bg);
+                width: 100%;
+                justify-content: space-around;
+                padding: 1.3rem 0;
+            }
+            &__total-pnl-or-date {
+                justify-content: space-between;
+            }
+            &__contract-cards {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: var(--semantic-spacing-gap-md);
+                padding: 0 var(--semantic-spacing-gap-md);
+            }
+        }
+    }
+    &__contract-details {
+        background-color: var(--semantic-color-slate-solid-surface-frame-mid);
+        padding: var(--core-spacing-400);
+        gap: var(--semantic-spacing-general-sm);
+
+        .skeleton-box,
+        .skeleton-box__chart,
+        .skeleton-box__details {
+            display: flex;
+            flex-direction: column;
+            border-radius: var(--semantic-borderRadius-md);
+            background-color: var(--component-modal-bg);
+
+            &__chart {
+                min-height: 360px;
+                padding: var(--semantic-spacing-general-sm);
+            }
+            &__details {
+                padding: var(--semantic-spacing-general-md);
+                gap: var(--semantic-spacing-general-md);
+
+                &-row {
+                    display: flex;
+                    justify-content: space-between;
+                    padding-top: var(--semantic-spacing-general-sm);
+
+                    &:first-child {
+                        padding-top: unset;
+                    }
+                    &:not(:last-child) {
+                        border-bottom: 1px solid var(--semantic-color-monochrome-border-normal-mid);
+                        padding-bottom: var(--semantic-spacing-general-sm);
+                    }
+                }
+                &-column {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    gap: var(--semantic-spacing-general-2xs);
+                }
+            }
+        }
+    }
+    &__contract-card {
+        width: 100%;
+        height: 10.4rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: var(--semantic-spacing-gap-md);
+        flex-shrink: 0;
+        padding: var(--semantic-spacing-general-md);
+        border-radius: var(--semantic-borderRadius-md);
+        background-color: var(--component-modal-bg);
+
+        .details,
+        .status-and-profit {
+            display: flex;
+            gap: var(--core-spacing-400);
+            align-items: center;
+        }
+        .status-and-profit {
+            justify-content: space-between;
+        }
+        .title {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: var(--semantic-spacing-general-xs);
+        }
+        .stake {
+            align-self: flex-end;
+        }
+    }
+}

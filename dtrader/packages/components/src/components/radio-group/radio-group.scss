@@ -1,0 +1,48 @@
+.dc-radio-group {
+    display: flex;
+    margin-top: 16px;
+    flex-direction: row;
+    align-items: center;
+    &__input {
+        display: none;
+    }
+    &__item {
+        display: flex;
+        @include typeface(--paragraph-left-normal-primary);
+
+        cursor: pointer;
+        color: var(--color-text-secondary);
+    }
+    &__item:not(:last-child) {
+        margin-right: 16px;
+    }
+    &__circle {
+        border: 2px solid var(--color-text-secondary);
+        border-radius: 50%;
+        box-shadow: 0 0 1px 0 var(--color-shadow-medium);
+        min-width: 16px;
+        height: 16px;
+        transition: all 0.3s ease-in-out;
+        margin-right: 8px;
+        align-self: center;
+
+        &--disabled {
+            border-color: var(--color-interactive-disabled);
+        }
+        &--selected {
+            border-width: 4px;
+            border-color: var(--brand-primary);
+        }
+        &--error {
+            border-color: var(--color-text-secondary);
+        }
+    }
+    &__label {
+        &--disabled {
+            color: var(--color-text-disabled);
+        }
+        &--error {
+            color: var(--color-text-danger);
+        }
+    }
+}

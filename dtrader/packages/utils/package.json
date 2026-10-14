@@ -1,0 +1,20 @@
+{
+    "name": "@deriv/utils",
+    "private": true,
+    "version": "1.0.0",
+    "main": "src/index.ts",
+    "engines": {
+        "node": "^22.14.0 || ^24.10.0"
+    },
+    "dependencies": {
+        "bowser": "^2.9.0",
+        "lodash.groupby": "^4.6.0",
+        "lodash.pickby": "^4.6.0",
+        "moment": "^2.29.2"
+    },
+    "devDependencies": {
+        "@types/lodash.groupby": "^4.6.7",
+        "@types/lodash.pickby": "^4.6.7",
+        "typescript": "^5.0.0"
+    }
+}

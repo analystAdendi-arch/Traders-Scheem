@@ -1,0 +1,62 @@
+/** @define .market-symbol-icon; weak */
+.market-symbol-icon {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+
+    .color1-fill {
+        fill: var(--brand-primary);
+    }
+    .color2-fill {
+        fill: var(--brand-secondary);
+    }
+    &-name,
+    &-category {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        @include typeface(--paragraph-left-bold-primary);
+        color: var(--color-text-primary);
+    }
+    &-name {
+        width: 3.2rem;
+        margin-right: 0.8rem;
+    }
+    &-category {
+        svg {
+            width: 2.4rem;
+            height: 2.4rem;
+        }
+    }
+    &__multiplier {
+        color: var(--color-text-secondary);
+        font-size: 1rem;
+        display: flex;
+        align-items: flex-end;
+        margin: 0 0 0.4rem 0.4rem;
+    }
+
+    @include mobile-or-tablet-screen {
+        width: 0.8rem;
+
+        &__full-title {
+            width: 100%;
+            .market-symbol-icon {
+                &-name {
+                    width: 55%;
+
+                    .dc-popover {
+                        padding-right: 1rem;
+                    }
+                }
+                &-category {
+                    width: 45%;
+
+                    .dc-popover {
+                        padding-right: 1rem;
+                    }
+                }
+            }
+        }
+    }
+}

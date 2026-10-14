@@ -3,7 +3,7 @@
   "version": "0.2.2",
   "private": true,
   "engines": {
-    "node": ">=20"
+    "node": ">=22.14.0 <25"
   },
   "scripts": {
     "dev": "rsbuild dev --port 4003",
@@ -12,7 +12,8 @@
     "test": "jest",
     "type-check": "tsc --noEmit",
     "generate:brand-css": "node scripts/generate-brand-css.js",
-    "prebuild": "node scripts/generate-brand-css.js"
+    "prebuild": "node scripts/generate-brand-css.js && node scripts/build-dtrader.js",
+    "build:dtrader": "node scripts/build-dtrader.js"
   },
   "dependencies": {
     "@deriv-com/quill-ui": "1.18.1",

@@ -1,0 +1,74 @@
+/**
+ * Typography Tokens
+ * 
+ * These variables define text sizes, line heights, and font weights.
+ * These are well-structured and don't need consolidation.
+ */
+
+:root {
+    // Text Sizes (Keep existing - well structured)
+    --text-size-xxxxs: 0.8rem;
+    --text-size-xxxs: 1rem;
+    --text-size-xxs: 1.2rem;
+    --text-size-xs: 1.4rem;
+    --text-size-s: 1.6rem;
+    --text-size-xsm: 1.8rem;
+    --text-size-sm: 2rem;
+    --text-size-m: 2.4rem;
+    --text-size-xm: 2.8rem;
+    --text-size-l: 3.2rem;
+    --text-size-xl: 4.8rem;
+    --text-size-xxl: 6.4rem;
+
+    // Line Heights (Keep existing - well structured)
+    --text-lh-xxs: 1;
+    --text-lh-xs: 1.25;
+    --text-lh-s: 1.4;
+    --text-lh-m: 1.5;
+    --text-lh-l: 1.75;
+    --text-lh-xl: 2;
+    --text-lh-xxl: 2.4;
+
+    // Font Weights (Keep existing - well structured)
+    --text-weight-lighter: lighter;
+    --text-weight-normal: normal;
+    --text-weight-bold: bold;
+    --text-weight-bolder: bolder;
+
+    // Text Alignment (Keep existing - well structured)
+    --text-align-left: start;
+    --text-align-right: right;
+    --text-align-center: center;
+    --text-align-end: end;
+
+    /**
+ * Semantic Typography Tokens
+ * 
+ * These provide semantic meaning to typography combinations.
+ */
+
+    // Heading Typography
+    --typography-heading-xl: var(--text-weight-bold) var(--text-size-xxl) / var(--text-lh-xs);
+    --typography-heading-l: var(--text-weight-bold) var(--text-size-xl) / var(--text-lh-s);
+    --typography-heading-m: var(--text-weight-bold) var(--text-size-l) / var(--text-lh-s);
+    --typography-heading-s: var(--text-weight-bold) var(--text-size-m) / var(--text-lh-m);
+
+    // Body Typography
+    --typography-body-l: var(--text-weight-normal) var(--text-size-s) / var(--text-lh-m);
+    --typography-body-m: var(--text-weight-normal) var(--text-size-xs) / var(--text-lh-m);
+    --typography-body-s: var(--text-weight-normal) var(--text-size-xxs) / var(--text-lh-s);
+
+    // Caption Typography
+    --typography-caption-l: var(--text-weight-normal) var(--text-size-xs) / var(--text-lh-s);
+    --typography-caption-m: var(--text-weight-normal) var(--text-size-xxs) / var(--text-lh-s);
+    --typography-caption-s: var(--text-weight-normal) var(--text-size-xxxs) / var(--text-lh-xs);
+
+    // Button Typography
+    --typography-button-l: var(--text-weight-bold) var(--text-size-xs) / var(--text-lh-xs);
+    --typography-button-m: var(--text-weight-bold) var(--text-size-xxs) / var(--text-lh-xs);
+    --typography-button-s: var(--text-weight-bold) var(--text-size-xxxs) / var(--text-lh-xs);
+
+    // Label Typography
+    --typography-label: var(--text-weight-bold) var(--text-size-xxs) / var(--text-lh-s);
+    --typography-label-small: var(--text-weight-bold) var(--text-size-xxxs) / var(--text-lh-s);
+}

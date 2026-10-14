@@ -1,0 +1,44 @@
+/** @define flyout-selector */
+.flyout-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 0.8rem;
+
+    &__option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.2rem;
+        padding: 1.2rem;
+        border-radius: 0.8rem;
+        color: var(--color-text-primary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1.4rem;
+        width: 100%;
+        height: 5.6rem;
+        text-align: left;
+
+        &:hover:not(:disabled) {
+            background-color: var(--color-surface-section);
+        }
+
+        &--active {
+            border: 1px solid var(--color-text-primary);
+            background-color: var(--color-surface-section);
+        }
+
+        &:disabled {
+            cursor: default;
+        }
+
+        svg {
+            flex-shrink: 0;
+        }
+
+        span {
+            flex: 1;
+        }
+    }
+}

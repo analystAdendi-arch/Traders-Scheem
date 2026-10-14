@@ -1,0 +1,96 @@
+/* @define account-signup; weak */
+.account-signup {
+    & .signup-separator-container {
+        border-bottom: 1px solid var(--color-surface-border);
+        @include mobile {
+            display: none;
+        }
+    }
+    &__dialog {
+        .dc-dialog__content {
+            margin-bottom: 0;
+        }
+        .dc-dialog__dialog {
+            max-height: unset;
+            @include mobile {
+                padding: 1.6rem;
+            }
+        }
+    }
+    &__error-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 0.8rem;
+    }
+    &__location-selection,
+    &__password-selection {
+        display: flex;
+        flex-direction: column;
+        gap: 2.4rem;
+        @include mobile {
+            gap: 1.6rem;
+        }
+    }
+    &__location-selection {
+        .account-signup__residence-selection {
+            height: 8.6rem;
+            .dc-field--error,
+            .account-signup__subtext {
+                margin-left: 1.6rem;
+                margin-top: 1rem;
+                padding-left: unset;
+            }
+        }
+    }
+    &__password-selection {
+        & .dc-password-meter__container {
+            max-height: 6rem;
+            width: 100%;
+        }
+        & .dc-password-meter,
+        .dc-password-meter__bg {
+            bottom: 2.1rem;
+        }
+        & .dc-field--error {
+            top: 4.4rem;
+        }
+    }
+    .dc-password-input {
+        &__visibility-icon {
+            background-color: var(--color-surface-primary);
+        }
+    }
+    &__heading {
+        @include mobile {
+            margin-bottom: 0.8rem;
+        }
+    }
+    &__checkbox {
+        align-items: flex-start;
+    }
+    &__label {
+        line-height: var(--text-lh-m);
+        @include mobile {
+            line-height: var(--text-lh-l);
+            font-size: var(--text-size-xxs);
+        }
+    }
+    &__footer {
+        display: grid;
+        justify-content: flex-end;
+        @include mobile {
+            justify-content: stretch;
+        }
+    }
+    &__btn {
+        background-color: var(--color-button-primary-bg);
+        font-weight: bold;
+        color: var(--color-surface-primary);
+        &:hover {
+            background-color: var(--color-button-primary-hover);
+        }
+    }
+    &__password-field {
+        width: 100%;
+    }
+}
