@@ -20,11 +20,7 @@ export const PRODUCTION_DOMAINS = {
     WWW: `www.${brandConfig.platform.hostname.production.com}`,
 } as const;
 
-/**
- * The site's one public address: the bare domain. Visitors on www are sent
- * here (server.js and index.html), and every login returns here, so the login
- * and its return trip always share one browser storage.
- */
+/** The bare-domain address of the site (the www address is served as well). */
 export const CANONICAL_ORIGIN = `https://${brandConfig.platform.hostname.production.com}`;
 
 // Staging app domains
@@ -105,13 +101,11 @@ export const getDebugServiceWorker = () => {
  * registered on the Deriv app exactly, and the same value must be sent again
  * when the code is exchanged for a token - so both callers read it from here.
  */
-export const getOAuthRedirectUri = (): string => {
-    // On the live site, always the one URL registered on the Deriv app.
-    const site_hosts = Object.values(PRODUCTION_DOMAINS) as string[];
-    if (site_hosts.includes(window.location.hostname)) return `${CANONICAL_ORIGIN}/callback`;
-    // Local development and staging keep their own address.
-    return `${window.location.origin}/callback`;
-};
+export const getOAuthRedirectUri = (): string =>
+    // The address the user is on, so the login starts and ends in the same browser
+    // storage whether they came by traderscheem.com or www.traderscheem.com. Both
+    // https://<host>/callback URLs must be registered on the Deriv app.
+    `${window.location.origin}/callback`;
 
 /*
  * Return-to-tab after login. Deriv always comes back to /callback, so the tab the
