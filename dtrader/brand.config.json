@@ -30,7 +30,7 @@
             "account_manage"
         ],
         "oauth_redirect_uri_staging": "https://staging.traderscheem.com/callback",
-        "oauth_redirect_uri_production": "https://traderscheem.com/callback",
+        "oauth_redirect_uri_production": "https://www.traderscheem.com/callback",
         "oauth_app_id": "",
         "oauth_client_id": ""
     },
