@@ -83,7 +83,27 @@ function App() {
 
     React.useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
-        if (!urlParams.has('code')) return;
+        if (!urlParams.has('code')) {
+            // /callback without a code (Deriv returned an error, or the page was reloaded
+            // after the code was used) has nothing to process and would sit on the
+            // "Signing you in..." loader forever. Log why, then go home.
+            if (window.location.pathname === '/callback') {
+                console.error(
+                    'OAuth callback had no code:',
+                    urlParams.get('error') || '(no error param)',
+                    urlParams.get('error_description') || ''
+                );
+                window.location.replace(`${window.location.origin}/`);
+            }
+            return;
+        }
+
+        // Never let a slow or hung request after the token exchange keep the user on /callback.
+        const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> =>
+            Promise.race([
+                promise,
+                new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${label} timed out`)), ms)),
+            ]);
 
         const handleCallback = async () => {
             try {
@@ -95,7 +115,11 @@ function App() {
                 });
 
                 const { DerivWSAccountsService } = await import('@/services/derivws-accounts.service');
-                const accounts = await DerivWSAccountsService.fetchAccountsList(authInfo.access_token);
+                const accounts = await withTimeout(
+                    DerivWSAccountsService.fetchAccountsList(authInfo.access_token),
+                    15000,
+                    'Fetching accounts'
+                );
 
                 if (accounts && accounts.length > 0) {
                     DerivWSAccountsService.storeAccounts(accounts);
@@ -106,7 +130,7 @@ function App() {
                     localStorage.setItem('account_type', isDemo ? 'demo' : 'real');
 
                     const { api_base } = await import('@/external/bot-skeleton');
-                    await api_base.init(true);
+                    await withTimeout(api_base.init(true), 15000, 'Connecting to Deriv');
                 } else {
                     console.error('No accounts returned after authentication');
                 }
