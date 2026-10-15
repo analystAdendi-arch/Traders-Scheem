@@ -145,6 +145,32 @@ export const takeReturnTab = (): string => {
     return '';
 };
 
+/*
+ * Why the last login did not complete. The callback runs on a loader page and
+ * then sends the user home; without this they would just see the landing page
+ * again with no hint that anything went wrong. The landing page shows it once.
+ */
+const LOGIN_ERROR_KEY = 'ts-login-error';
+
+export const rememberLoginError = (message: string) => {
+    try {
+        sessionStorage.setItem(LOGIN_ERROR_KEY, message);
+    } catch {
+        /* storage blocked: the user just sees the landing page */
+    }
+};
+
+/** The message left by a failed login, read once and then forgotten. */
+export const takeLoginError = (): string => {
+    try {
+        const message = sessionStorage.getItem(LOGIN_ERROR_KEY) || '';
+        sessionStorage.removeItem(LOGIN_ERROR_KEY);
+        return message;
+    } catch {
+        return '';
+    }
+};
+
 /**
  * Generates the OAuth login or sign-up URL using vendored deriv-core
  *

@@ -22,6 +22,37 @@
         z-index: 1;
     }
 
+    /* ------------------------------------------------- login problem notice */
+
+    &__alert {
+        position: relative;
+        z-index: 4;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.2rem;
+        margin: 1.2rem auto 0;
+        padding: 1.2rem 1.6rem;
+        max-width: 72rem;
+        width: calc(100% - 3.2rem);
+        border: 1px solid rgba(225, 29, 72, 0.55);
+        border-radius: 1rem;
+        background: rgba(225, 29, 72, 0.14);
+        color: #ffe4e6;
+        font-size: 1.4rem;
+        line-height: 1.45;
+
+        button {
+            flex: none;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            font-size: 2.2rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+    }
+
     /* ---------------------------------------------------------- top bar */
 
     &__top {

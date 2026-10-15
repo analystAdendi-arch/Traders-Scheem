@@ -31,9 +31,11 @@ const OUT = path.join(OUT_ROOT, BASE);
 
 const log = message => console.log(`[dtrader] ${message}`);
 
+class DtraderBuildError extends Error {}
+
 const fail = message => {
     console.error(`[dtrader] ${message}`);
-    process.exit(1);
+    throw new DtraderBuildError(message);
 };
 
 /** KEY=value lines, as rsbuild's loadEnv reads them. Real env vars win. */
@@ -123,4 +125,15 @@ const main = () => {
     log(`Done: ${path.relative(ROOT, OUT)}`);
 };
 
-main();
+try {
+    main();
+} catch (error) {
+    // DTrader only powers the Manual Trader tab. If its build cannot finish
+    // (memory limit, a registry hiccup, a timeout on the host), the rest of the
+    // site - login, bots, scanner - must still deploy rather than the whole
+    // release failing and the site going down. Set DTRADER_REQUIRED=1 to make a
+    // DTrader failure fail the build again.
+    if (process.env.DTRADER_REQUIRED === '1') throw error;
+    console.error(`[dtrader] ${error.message}`);
+    console.error('[dtrader] Continuing without the Manual Trader build; the rest of the site is unaffected.');
+}
