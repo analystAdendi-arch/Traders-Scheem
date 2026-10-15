@@ -173,7 +173,22 @@ const serve = (req, res, file, status = 200) => {
     fs.createReadStream(file).pipe(res);
 };
 
+// The site's one public address. The bare domain redirects here, so a login
+// started on it and the return to /callback share the same browser storage.
+const CANONICAL_HOST = 'www.traderscheem.com';
+const BARE_HOST = 'traderscheem.com';
+
 const server = http.createServer((req, res) => {
+    const host = String(req.headers['x-forwarded-host'] || req.headers.host || '')
+        .split(',')[0]
+        .trim()
+        .split(':')[0]
+        .toLowerCase();
+    if (host === BARE_HOST) {
+        res.writeHead(301, { Location: `https://${CANONICAL_HOST}${req.url || '/'}`, 'Cache-Control': 'max-age=3600' });
+        return res.end();
+    }
+
     if (req.method !== 'GET' && req.method !== 'HEAD') {
         return send(res, 405, 'Method not allowed', { Allow: 'GET, HEAD' });
     }
