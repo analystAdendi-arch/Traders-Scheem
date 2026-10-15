@@ -21,11 +21,11 @@ export const PRODUCTION_DOMAINS = {
 } as const;
 
 /**
- * The site's one public address. Visitors on the bare domain are sent here
- * (server.js and index.html), and every login returns here, so the login and
- * its return trip always share one browser storage.
+ * The site's one public address: the bare domain. Visitors on www are sent
+ * here (server.js and index.html), and every login returns here, so the login
+ * and its return trip always share one browser storage.
  */
-export const CANONICAL_ORIGIN = `https://www.${brandConfig.platform.hostname.production.com}`;
+export const CANONICAL_ORIGIN = `https://${brandConfig.platform.hostname.production.com}`;
 
 // Staging app domains
 export const STAGING_DOMAINS = {
